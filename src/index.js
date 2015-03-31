@@ -2,17 +2,22 @@
     "use strict";
     
     if(typeof define === "function" && define["amd"]) {
-        define(["RBush","SAT","EventEmitter"], factory);
+        define(["RBush","SAT"], factory);
     }
     else if(typeof exports === "object") {
-        module.exports = factory(require("rbush"), require("sat"), require("last-eventemitter"));
+        module.exports = factory(require("rbush"), require("sat"));
     }
     else {
-        window.Crash = factory(window.rbush, window.SAT, window.EventEmitter);
+        window.Crash = factory(window.rbush, window.SAT);
     }
     
-}(function(RBush, SAT, EventEmitter) {
+}(function(RBush, SAT) {
     "use strict";
+    
+    
+    
+    
+    
     
     
     
@@ -21,11 +26,12 @@
      * UTILITIES *
      *************/
     
+    
     var RESPONSE = new SAT.Response();
     var BREAK = false;
     
     var extend = function(child, base) {
-        child.prototype = new base();
+        child.prototype = new Base();
     }
     
     var getTestString = function(type1, type2) {
@@ -42,9 +48,13 @@
     }
     
     
-      /****************
-       * AABB UPDATES *
-       ****************/
+    
+    
+    
+    
+    /****************
+    * AABB UPDATES *
+    ****************/
     
     
     var updateAABB = function(collider) {
@@ -128,31 +138,44 @@
     
     
     
+    
+    
     /***********
      * EXPORTS *
      ***********/
     
     
-    var exports = new EventEmitter();
+    var exports = {
+        RBush:       RBush,
+        SAT:         SAT,
+        Vector:      SAT.Vector,
+        V:           SAT.Vector,
+        cancel:      cancel,
+        maxChecks:   100,
+        RESPONSE:    RESPONSE,
+        onCollision: function(a, b, res, cancel) {
+            // Fill in...
+        },
+        
+        rbush: null,
+        __notYetInserted: [],
+        __moved: [],
+        
+        updateAABB: updateAABB,
+        updateAABBBox: updateAABBBox,
+        updateAABBCircle: updateAABBCircle,
+        updateAABBPoint: updateAABBPoint,
+        updateAABBPolygon: updateAABBPolygon
+    }
     
-    exports.RBush = RBush;
-    exports.SAT = SAT;
-    exports.EventEmitter = EventEmitter;
-    exports.Vector = exports.V = SAT.Vector;
-    exports.RESPONSE = RESPONSE;
-    exports.cancel = cancel;
-    exports.maxChecks = 100;
     
-    exports.rbush = null;
-    exports.__notYetInserted = [];
-    exports.__moved = [];
     
     
     exports.init = function(maxEntries) {
         this.rbush = RBush(maxEntries || 9, [".aabb.x1", ".aabb.y1", ".aabb.x2", ".aabb.y2"]);
         
         for(var i = 0, len = this.__notYetInserted.length; i < len; i++) {
-            this.insert(this.__notYetInserted[i]);
+            this.rbush.insert(this.__notYetInserted[i]);
         }
         
         return this;
@@ -170,14 +193,38 @@
         return this;
     }
     
+    exports.remove = function(collider) {
+        if(this.rbush) {
+            this.rbush.remove(collider);
+        }
+        else {
+            var index = this.__notYetInserted.indexOf(collider);
+            if(index > -1) {
+                this.__notYetInserted.splice(index, 1);
+            }
+        }
+        
+        return this;
+    }
+    
     
     exports.moved = function(collider) {
-        if(this.__moved.indexOf(collider) > -1) {
+        if(this.__moved.indexOf(collider) === -1) {
             this.__moved.push(collider);
         }
         
         return this;
     }
+    
+    exports.update = function(collider) {
+        updateAABB(collider);
+        rbush.remove(collider);
+        rbush.insert(collider);
+        
+        return this;
+    }
+    
+    
     
     
     
@@ -201,7 +248,7 @@
     }
     
     
-    exports.TestAll = function(a, res) {
+    exports.testAll = function(a, res) {
         var res = res || RESPONSE;
         var possible = this.rbush.search(a);
         
@@ -212,7 +259,7 @@
             res.clear();
             
             if(SAT[str](a.sat, b.sat, res)) {
-                exports.emit("collision", a, b, res, cancel);
+                this.onCollision(a, b, res, cancel);
                 if(BREAK) {
                     break loop;
                 }
@@ -228,11 +275,19 @@
     exports.check = function(res) {
         var i = 0;
         while(this.__moved.length && i < this.maxChecks) {
-            this.testAll(this.__moved.pop(), res);
+            var collider = this.__moved.pop();
+            this.update(collider);
+            this.testAll(collider, res);
+            
+            collider.lastPos.x = collider.sat.pos.x;
+            collider.lastPos.y = collider.sat.pos.y;
+            i++;
         }
         
         return this;
     }
+    
+    
     
     
     
@@ -243,15 +298,11 @@
      * CLASSES *
      ***********/
     
-    var Collider = exports.Collider = function(type, sat, data, insert) {
-        EventEmitter.call(this);
-        
+    var Collider = exports.Collider = function Collider(type, sat, data, insert) {
         this.type = type;
         this.sat = sat;
-        
-        if(data !== undefined) {
-            this.data = data;
-        }
+        this.data = data;
+        this.lastPos = new SAT.Vector();
         
         updateAABB(this);
         
@@ -262,7 +313,148 @@
         return this;
     }
     
-    extend(Collider, EventEmitter);
+    Collider.prototype.insert = function() {
+        exports.insert(this);
+        
+        return this;
+    }
+    
+    Collider.prototype.remove = function() {
+        exports.remove(this);
+        
+        return this;
+    }
+    
+    Collider.prototype.update = function() {
+        exports.update(this);
+        
+        return this;
+    }
+    
+    Collider.prototype.updateAABB = function() {
+        updateAABB(this);
+        
+        return this;
+    }
+    
+    Collider.prototype.moved = function() {
+        exports.moved(this);
+        
+        return this;
+    }
+    
+    Collider.prototype.setData = function(data) {
+        this.data = data;
+        
+        return this;
+    }
+    
+    Collider.prototype.getData = function() {
+        return this.data;
+    }
+    
+    Collider.prototype.moveTo = function(x, y) {
+        this.sat.pos.x = x;
+        this.sat.pos.y = y;
+        this.moved();
+        
+        return this;
+    }
+    
+    Collider.prototype.moveBy = Collider.prototype.move = function(x, y) {
+        this.sat.pos.x += x;
+        this.sat.pos.y += y;
+        this.moved();
+        
+        return this;
+    }
+    
+    
+    
+    
+    
+    
+    var Polygon = exports.Polygon = function Polygon(pos, points, data, insert) {
+        var sat = new SAT.Polygon(pos, points);
+        Collider.call(this, "polygon", sat, data, insert);
+        
+        return this;
+    }
+    
+    extend(Polygon, Collider);
+    
+    Polygon.prototype.setPoints = function(points) {
+        this.sat.setPoints(points);
+        this.moved();
+        
+        return this;
+    }
+    
+    Polygon.prototype.setAngle = function(angle) {
+        this.sat.setAngle(angle);
+        this.moved();
+        
+        return this;
+    }
+    
+    Polygon.prototype.setOffset = function(offset) {
+        this.sat.setOffset(offset);
+        this.moved();
+        
+        return this;
+    }
+    
+    Polygon.prototype.rotate = function(angle) {
+        this.sat.rotate(angle);
+        this.moved();
+        
+        return this;
+    }
+    
+    
+    
+    
+    var Circle = exports.Circle = function Circle(pos, r, data, insert) {
+        var sat = new SAT.Circle(pos, r);
+        Collider.call(this, "circle", sat, data, insert);
+        
+        return this;
+    }
+    
+    extend(Circle, Collider);
+    
+    
+    
+    
+    
+    var Point = exports.Point = function Point(pos, data, insert) {
+        var sat = (new SAT.Box(pos, 1, 1)).toPolygon();
+        Collider.call(this, "point", sat, data, insert);
+        
+        return this;
+    }
+    
+    extend(Point, Collider);
+    
+    
+    
+    
+    
+    var Box = exports.Box = function Box(pos, w, h, data, insert) {
+        var sat = (new SAT.Box(pos, w, h)).toPolygon();
+        Collider.call(this, "box", sat, data, insert);
+        
+        return this;
+    }
+    
+    extend(Box, Collider);
+    
+    
+    
+    
+    
+    
+    
     
     
     
