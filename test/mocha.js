@@ -121,5 +121,45 @@ describe("Crash", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();
         });
+        it("should call updateAABBPolygon when passed a Polygon", function() {
+            var collider = new Crash.Polygon(new Crash.V, [new Crash.V, new Crash.V(5, 0), new Crash.V(2, 3)]);
+            var cache = Crash.updateAABBPolygon;
+            var spy = Crash.updateAABBPolygon = sinon.spy();
+            Crash.updateAABB(collider);
+            Crash.updateAABBPolygon = cache;
+            
+            expect(spy.called).to.be.ok();
+            expect(spy.callCount).to.be(1);
+        });
+        it("should call updateAABBCircle when passed a Circle", function() {
+            var collider = new Crash.Circle(new Crash.V, 5);
+            var cache = Crash.updateAABBCircle;
+            var spy = Crash.updateAABBCircle = sinon.spy();
+            Crash.updateAABB(collider);
+            Crash.updateAABBCircle = cache;
+            
+            expect(spy.called).to.be.ok();
+            expect(spy.callCount).to.be(1);
+        });
+        it("should call updateAABBBox when passed a Box", function() {
+            var collider = new Crash.Box(new Crash.V, 5, 5);
+            var cache = Crash.updateAABBBox;
+            var spy = Crash.updateAABBBox = sinon.spy();
+            Crash.updateAABB(collider);
+            Crash.updateAABBBox = cache;
+            
+            expect(spy.called).to.be.ok();
+            expect(spy.callCount).to.be(1);
+        });
+        it("should call updateAABBPoint when passed a Point", function() {
+            var collider = new Crash.Point(new Crash.V);
+            var cache = Crash.updateAABBPoint;
+            var spy = Crash.updateAABBPoint = sinon.spy();
+            Crash.updateAABB(collider);
+            Crash.updateAABBPoint = cache;
+            
+            expect(spy.called).to.be.ok();
+            expect(spy.callCount).to.be(1);
+        });
     });
 });

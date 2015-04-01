@@ -49,90 +49,7 @@
     
     
     
-    
-    
-    
-    /****************
-    * AABB UPDATES *
-    ****************/
-    
-    
-    var updateAABB = function(collider) {
-        switch(collider.type) {
-            case "polygon":
-                return updateAABBPolygon(collider);
-                break;
-            case "box":
-                return updateAABBBox(collider);
-                break;
-            case "circle":
-                return updateAABBCircle(collider);
-                break;
-            case "point":
-                return updateAABBPoint(collider);
-                break;
-        }
-    }
-    
-    var updateAABBPolygon = function(collider) {
-        var aabb = collider.aabb;
-        var pos = collider.sat.pos;
-        var points = collider.sat.calcPoints;
-        var len = points.length;
-        var xMin = points[0].x;
-        var yMin = points[0].y;
-        var xMax = points[0].x;
-        var yMax = points[0].y;
-        for (var i = 1; i < len; i++) {
-            var point = points[i];
-            if (point.x < xMin) {
-                xMin = point.x;
-            }
-            else if (point.x > xMax) {
-                xMax = point.x;
-            }
-            if (point.y < yMin) {
-                yMin = point.y;
-            }
-            else if (point.y > yMax) {
-                yMax = point.y;
-            }
-        }
-        
-        aabb.x1 = pos + xMin;
-        aabb.y1 = pos + yMin;
-        aabb.x2 = pos + xMax;
-        aabb.y2 = pos + yMax;
-    }
-    
-    var updateAABBBox = function(collider) {
-        var points = collider.sat.calcPoints;
-        var aabb = collider.aabb;
-        
-        aabb.x1 = points[0].x;
-        aabb.y1 = points[0].y;
-        aabb.x2 = points[2].x;
-        aabb.y2 = points[2].y;
-    }
-    
-    var updateAABBCircle = function(collider) {
-        var aabb = collider.aabb;
-        var r = collider.sat.r;
-        var center = collider.sat.pos;
 
-        aabb.x1 = center.x - r;
-        aabb.y1 = center.y - r;
-        aabb.x2 = center.x + r;
-        aabb.y2 = center.y + r;
-    }
-    
-    var updateAABBPoint = function(collider) {
-        var aabb = collider.aabb;
-        var pos = collider.sat.pos;
-        
-        aabb.x1 = aabb.x2 = pos.x;
-        aabb.y1 = aabb.y2 = pos.x;
-    }
     
     
     
@@ -160,13 +77,7 @@
         
         rbush: null,
         __notYetInserted: [],
-        __moved: [],
-        
-        updateAABB: updateAABB,
-        updateAABBBox: updateAABBBox,
-        updateAABBCircle: updateAABBCircle,
-        updateAABBPoint: updateAABBPoint,
-        updateAABBPolygon: updateAABBPolygon
+        __moved: []
     }
     
     
@@ -240,11 +151,100 @@
     }
     
     exports.update = function(collider) {
-        updateAABB(collider);
+        exports.updateAABB(collider);
         this.rbush.remove(collider);
         this.rbush.insert(collider);
         
         return this;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    /****************
+    * AABB UPDATES *
+    ****************/
+    
+    
+    exports.updateAABB = function(collider) {
+        switch(collider.type) {
+            case "polygon":
+                return exports.updateAABBPolygon(collider);
+                break;
+            case "box":
+                return exports.updateAABBBox(collider);
+                break;
+            case "circle":
+                return exports.updateAABBCircle(collider);
+                break;
+            case "point":
+                return exports.updateAABBPoint(collider);
+                break;
+        }
+    }
+    
+    exports.updateAABBPolygon = function(collider) {
+        var aabb = collider.aabb;
+        var pos = collider.sat.pos;
+        var points = collider.sat.calcPoints;
+        var len = points.length;
+        var xMin = points[0].x;
+        var yMin = points[0].y;
+        var xMax = points[0].x;
+        var yMax = points[0].y;
+        for (var i = 1; i < len; i++) {
+            var point = points[i];
+            if (point.x < xMin) {
+                xMin = point.x;
+            }
+            else if (point.x > xMax) {
+                xMax = point.x;
+            }
+            if (point.y < yMin) {
+                yMin = point.y;
+            }
+            else if (point.y > yMax) {
+                yMax = point.y;
+            }
+        }
+        
+        aabb.x1 = pos + xMin;
+        aabb.y1 = pos + yMin;
+        aabb.x2 = pos + xMax;
+        aabb.y2 = pos + yMax;
+    }
+    
+    exports.updateAABBBox = function(collider) {
+        var points = collider.sat.calcPoints;
+        var aabb = collider.aabb;
+        
+        aabb.x1 = points[0].x;
+        aabb.y1 = points[0].y;
+        aabb.x2 = points[2].x;
+        aabb.y2 = points[2].y;
+    }
+    
+    exports.updateAABBCircle = function(collider) {
+        var aabb = collider.aabb;
+        var r = collider.sat.r;
+        var center = collider.sat.pos;
+
+        aabb.x1 = center.x - r;
+        aabb.y1 = center.y - r;
+        aabb.x2 = center.x + r;
+        aabb.y2 = center.y + r;
+    }
+    
+    exports.updateAABBPoint = function(collider) {
+        var aabb = collider.aabb;
+        var pos = collider.sat.pos;
+        
+        aabb.x1 = aabb.x2 = pos.x;
+        aabb.y1 = aabb.y2 = pos.x;
     }
     
     
@@ -331,7 +331,7 @@
         this.lastPos = new SAT.Vector();
         this.aabb = {};
         
-        updateAABB(this);
+        exports.updateAABB(this);
         
         if(insert) {
             exports.insert(this);
@@ -359,7 +359,7 @@
     }
     
     Collider.prototype.updateAABB = function() {
-        updateAABB(this);
+        exports.updateAABB(this);
         
         return this;
     }
