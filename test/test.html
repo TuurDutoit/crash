@@ -137,11 +137,20 @@
         
         <script type="text/javascript">
             Crash.init();
-            var a = new Crash.Box(new Crash.V, 10, 10, null, true);
-            var b = new Crash.Circle(new Crash.V(2,2), 15, null, true);
-            var c = new Crash.Box(new Crash.V(-5, -5), 20, 20, null, true);
-            var d = new Crash.Circle(new Crash.V(50, 50), 15, null, true);
-            var e = new Crash.Point(new Crash.V(30, 30), null, true);
+            Crash.onCollision = function(A, B, res, cancel) {
+                console.log(A.data + " collided with " + B.data + "; res:", res);
+                A.moveBy(-res.overlapV.x, -res.overlapV.y);
+            }
+            
+            var a = new Crash.Box(new Crash.V, 10, 10, "a", true);
+            var b = new Crash.Circle(new Crash.V(2,2), 15, "b", true);
+            var c = new Crash.Box(new Crash.V(-5, -5), 20, 20, "c", true);
+            var d = new Crash.Circle(new Crash.V(50, 50), 15, "d", true);
+            var e = new Crash.Point(new Crash.V(30, 30), "e", true);
+            
+            
+            a.moved();
+            b.moved();
         </script>
     </body>
 </html>

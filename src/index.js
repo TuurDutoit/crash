@@ -217,7 +217,9 @@
         // I have opened an issue to ask for a way to search for items:
         // https://github.com/mourner/rbush/issues/32
         // In the meantime, this will not work (it returns an empty array)
-        return this.rbush.search(collider);
+        
+        //return this.rbush.search(collider);
+        return this.rbush.search([collider.aabb.x1, collider.aabb.y1, collider.aabb.x2, collider.aabb.y2]);
     }
     
     exports.clear = function() {
@@ -239,8 +241,8 @@
     
     exports.update = function(collider) {
         updateAABB(collider);
-        rbush.remove(collider);
-        rbush.insert(collider);
+        this.rbush.remove(collider);
+        this.rbush.insert(collider);
         
         return this;
     }
@@ -271,8 +273,8 @@
     
     exports.testAll = function(a, res) {
         var res = res || RESPONSE;
-        var possible = this.rbush.search(a);
-        this.update(collider);
+        var possible = this.search(a);
+        this.update(a);
         
         loop:
         for(var i = 0, len = possible.length; i < len; i++) {
@@ -280,16 +282,19 @@
             var str = getTestString(a.type, b.type);
             res.clear();
             
-            if(SAT[str](a.sat, b.sat, res)) {
-                this.onCollision(a, b, res, cancel);
-                if(BREAK) {
-                    break loop;
+            if(b !== a && SAT[str](a.sat, b.sat, res)) {
+                // Fix collisions with infinitely small overlaps causing way too many loops
+                if(Math.abs(res.overlap) > .5) {
+                    this.onCollision(a, b, res, cancel);
+                    if(BREAK) {
+                        break loop;
+                    }
                 }
             }
         }
         
-        collider.lastPos.x = collider.sat.pos.x;
-        collider.lastPos.y = collider.sat.pos.y;
+        a.lastPos.x = a.sat.pos.x;
+        a.lastPos.y = a.sat.pos.y;
         
         BREAK = false;
         
