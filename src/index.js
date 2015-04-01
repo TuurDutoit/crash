@@ -30,7 +30,7 @@
     var RESPONSE = new SAT.Response();
     var BREAK = false;
     
-    var extend = function(child, base) {
+    var extend = function(child, Base) {
         child.prototype = new Base();
     }
     
@@ -215,6 +215,8 @@
         this.rbush.clear();
         this.__moved = [];
         this.__notYetInserted = [];
+        
+        return this;
     }
     
     
@@ -261,6 +263,7 @@
     exports.testAll = function(a, res) {
         var res = res || RESPONSE;
         var possible = this.rbush.search(a);
+        this.update(collider);
         
         loop:
         for(var i = 0, len = possible.length; i < len; i++) {
@@ -276,6 +279,9 @@
             }
         }
         
+        collider.lastPos.x = collider.sat.pos.x;
+        collider.lastPos.y = collider.sat.pos.y;
+        
         BREAK = false;
         
         return this;
@@ -286,11 +292,7 @@
         var i = 0;
         while(this.__moved.length && i < this.maxChecks) {
             var collider = this.__moved.pop();
-            this.update(collider);
             this.testAll(collider, res);
-            
-            collider.lastPos.x = collider.sat.pos.x;
-            collider.lastPos.y = collider.sat.pos.y;
             i++;
         }
         
@@ -313,6 +315,7 @@
         this.sat = sat;
         this.data = data;
         this.lastPos = new SAT.Vector();
+        this.aabb = {};
         
         updateAABB(this);
         
