@@ -1,9 +1,11 @@
-var expect = require("expect.js");
-var Crash = require("../src/index.js");
+if(typeof require === "function") {
+    var expect = require("expect.js");
+    var Crash = require("../src/index.js");
+}
 
 
 
-describe("attributes", function() {
+describe("Crash", function() {
 
     describe("RBush", function() {
         it("should be defined", function() {
@@ -111,6 +113,12 @@ describe("attributes", function() {
         });
         it("should be an array", function() {
             expect(Crash.__moved).to.be.an("array");
+        });
+    });
+    
+    describe("updateAABB", function() {
+        it("should be defined", function() {
+            expect(Crash.updateAABB).to.be.ok();
         });
     });
 });
