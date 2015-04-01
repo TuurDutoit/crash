@@ -207,6 +207,16 @@
         return this;
     }
     
+    exports.search = function(collider) {
+        return this.rbush.search(collider);
+    }
+    
+    exports.clear = function() {
+        this.rbush.clear();
+        this.__moved = [];
+        this.__notYetInserted = [];
+    }
+    
     
     exports.moved = function(collider) {
         if(this.__moved.indexOf(collider) === -1) {
