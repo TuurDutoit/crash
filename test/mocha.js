@@ -1,5 +1,6 @@
 if(typeof require === "function") {
     var expect = require("expect.js");
+    var sinon = require("sinon");
     var Crash = require("../src/index.js");
 }
 
