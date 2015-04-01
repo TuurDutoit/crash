@@ -63,7 +63,7 @@
                 return updateAABBPolygon(collider);
                 break;
             case "box":
-                return updateAABBBox(collide);
+                return updateAABBBox(collider);
                 break;
             case "circle":
                 return updateAABBCircle(collider);
@@ -150,6 +150,7 @@
         SAT:         SAT,
         Vector:      SAT.Vector,
         V:           SAT.Vector,
+        Response:    SAT.Response,
         cancel:      cancel,
         maxChecks:   100,
         RESPONSE:    RESPONSE,
@@ -172,7 +173,7 @@
     
     
     exports.init = function(maxEntries) {
-        this.rbush = RBush(maxEntries || 9, [".aabb.x1", ".aabb.y1", ".aabb.x2", ".aabb.y2"]);
+        this.rbush = new RBush((maxEntries || 9), [".aabb.x1", ".aabb.y1", ".aabb.x2", ".aabb.y2"]);
         
         for(var i = 0, len = this.__notYetInserted.length; i < len; i++) {
             this.rbush.insert(this.__notYetInserted[i]);
@@ -207,7 +208,15 @@
         return this;
     }
     
+    exports.all = function() {
+        return this.rbush.all();
+    }
+    
     exports.search = function(collider) {
+        // search() usually takes an array of AABB coordinates.
+        // I have opened an issue to ask for a way to search for items:
+        // https://github.com/mourner/rbush/issues/32
+        // In the meantime, this will not work (it returns an empty array)
         return this.rbush.search(collider);
     }
     
@@ -354,6 +363,10 @@
         exports.moved(this);
         
         return this;
+    }
+    
+    Collider.prototype.search = function() {
+        return exports.search(this);
     }
     
     Collider.prototype.setData = function(data) {

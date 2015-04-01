@@ -12,6 +12,136 @@
         <script type="text/javascript" src="../src/index.js"></script>
     </head>
     <body>
+        <canvas id="canvas" style="background:#eeeeee"></canvas>
         
+        
+        
+        <script type="text/javascript">
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+            
+            var x = 0;
+            var y = 0;
+            var width = canvas.width;
+            var height = canvas.height;
+            var scaleX = 1;
+            var scaleY = 1;
+            var scale = 1;
+            
+            var scaleCanvas = function() {
+                scaleX = canvas.width / width;
+                scaleY = canvas.height / height;
+                scale = Math.min(scaleX, scaleY);
+                ctx.setTransform(scale, 0, 0, scale, -x*scale, -y*scale);
+            }
+            
+            var drawAxes = function() {
+                ctx.beginPath();
+                ctx.moveTo(-9999, 0);
+                ctx.lineTo(9999, 0);
+                ctx.closePath();
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, -9999);
+                ctx.lineTo(0, 9999);
+                ctx.closePath();
+                ctx.stroke();
+            }
+            
+            var random = function(max) {
+                return Math.floor(Math.random()*max);
+            }
+            
+            var randomColor = function() {
+                return "rgba("+random(255)+","+random(255)+","+random(255)+",0.5)";
+            }
+            
+            var drawCircle = function(collider) {
+                ctx.beginPath();
+                ctx.arc(collider.sat.pos.x, collider.sat.pos.y, collider.sat.r, 0, 2*Math.PI);
+                ctx.fillStyle = randomColor();
+                ctx.fill();
+            }
+            
+            var drawPoint = function(collider) {
+                ctx.fillStyle = randomColor();
+                ctx.fillRect(collider.sat.pos.x-2, collider.sat.pos.y-2, 2, 2);
+            }
+            
+            var drawBox = function(collider) {
+                ctx.fillStyle = randomColor();
+                ctx.fillRect(collider.sat.pos.x, collider.sat.pos.y, collider.sat.calcPoints[2].x, collider.sat.calcPoints[2].y);
+            }
+            
+            var drawPolygon = function(collider) {
+                var pos = collider.sat.pos;
+                var points = collider.sat.calcPoints;
+                
+                ctx.fillStyle = randomColor();
+                ctx.beginPath();
+                ctx.moveTo(points[0].x+pos.x, points[0].y+pos.y);
+                
+                for(var i = 1, len = points.length; i < len; i++) {
+                    ctx.lineTo(points[i].x+pos.x, points[i].y+pos.y);
+                }
+                
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            var drawColliders = function() {
+                var minX = Infinity;
+                var minY = Infinity;
+                var maxX = -Infinity;
+                var maxY = -Infinity;
+                var colliders = Crash.all();
+                
+                for(var i = 0, len = colliders.length; i < len; i++) {
+                    var aabb = colliders[i].aabb;
+                    if(aabb.x1 < minX) {minX = aabb.x1;}
+                    if(aabb.y1 < minY) {minY = aabb.y1;}
+                    if(aabb.x2 > maxX) {maxX = aabb.x2;}
+                    if(aabb.y2 > maxY) {maxY = aabb.y2;}
+                }
+                
+                ctx.clearRect(x, y, width, height);
+                x = minX;
+                y = minY;
+                width = maxX - minX;
+                height = maxY - minY;
+                scaleCanvas();
+                
+                for(var i = 0, len = colliders.length; i < len; i++) {
+                    switch(colliders[i].type) {
+                        case "circle":
+                            drawCircle(colliders[i]);
+                            break;
+                        case "point":
+                            drawPoint(colliders[i]);
+                            break;
+                        case "box":
+                            drawBox(colliders[i]);
+                            break;
+                        case "polygon":
+                            drawPolygon(colliders[i]);
+                            break;
+                    }
+                }
+                
+                drawAxes();
+            }
+        </script>
+        
+        
+        
+        <script type="text/javascript">
+            Crash.init();
+            var a = new Crash.Box(new Crash.V, 10, 10, null, true);
+            var b = new Crash.Circle(new Crash.V(2,2), 15, null, true);
+            var c = new Crash.Box(new Crash.V(-5, -5), 20, 20, null, true);
+            var d = new Crash.Circle(new Crash.V(50, 50), 15, null, true);
+            var e = new Crash.Point(new Crash.V(30, 30), null, true);
+        </script>
     </body>
 </html>
