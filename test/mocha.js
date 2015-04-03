@@ -162,4 +162,40 @@ describe("Crash", function() {
             expect(spy.callCount).to.be(1);
         });
     });
+    
+    describe("updateAABBPolygon", function() {
+        it("should update the AABB correctly", function() {
+            var collider = new Crash.Polygon(new Crash.V, [new Crash.V(0,0), new Crash.V(0,5), new Crash.V(2,3)]);
+            Crash.updateAABBPolygon(collider);
+
+            expect(collider.aabb).to.eql({x1:0, y1:0, x2:5, y2: 2});
+        });
+    });
+
+    describe("updateAABBCircle", function() {
+        it("should update the AABB correctly", function() {
+            var collider = new Crash.Circle(new Crash.V, 5);
+            Crash.updateAABBCircle(collider);
+
+            expect(collider.aabb).to.eql({x1:-5, y1:-5, x2:5, y2: 5});
+        });
+    });
+
+    describe("updateAABBPoint", function() {
+        it("should update the AABB correctly", function() {
+            var collider = new Crash.Point(new Crash.V);
+            Crash.updateAABBPoint(collider);
+
+            expect(collider.aabb).to.eql({x1:0, y1:0, x2:0, y2: 0});
+        });
+    });
+
+    describe("updateAABBBox", function() {
+        it("should update the AABB correctly", function() {
+            var collider = new Crash.Box(new Crash.V, 5, 2);
+            Crash.updateAABBBox(collider);
+
+            expect(collider.aabb).to.eql({x1:0, y1:0, x2:5, y2: 2});
+        });
+    });
 });
