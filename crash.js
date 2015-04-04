@@ -259,15 +259,11 @@
      *********/
     
     exports.test = function(a, b, res) {
+        var res = res || RESPONSE;
         var str = getTestString(a, b);
         
-        if(res) {
-            res.clear();
-            return SAT[str](a.sat, b.sat, res);
-        }
-        else {
-            return SAT[str](a.sat, b.sat);
-        }
+        res.clear();
+        return SAT[str](a.sat, b.sat, res);
     }
     
     

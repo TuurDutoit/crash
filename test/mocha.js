@@ -117,6 +117,28 @@ describe("Crash", function() {
         });
     });
     
+    describe("init", function() {
+        it("should be defined", function() {
+            expect(Crash.init).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.init).to.be.a("function");
+        });
+        it("should create Crash.rbush", function() {
+            Crash.init();
+            expect(Crash.rbush).to.be.ok();
+            expect(Crash.rbush).to.be.a(Crash.RBush);
+        });
+        it("should set the right maxEntries", function() {
+            Crash.init(5);
+            expect(Crash.rbush._maxEntries).to.be(5);
+        });
+        it("should set maxEntries to 9 by default", function() {
+            Crash.init();
+            expect(Crash.rbush._maxEntries).to.be(9);
+        });
+    });
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();
