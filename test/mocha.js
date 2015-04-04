@@ -264,6 +264,28 @@ describe("Crash", function() {
         });
     });
     
+    describe("clear", function() {
+        it("should clear everything", function() {
+            Crash.init();
+            Crash.insert(new Crash.Point(new Crash.V));
+            Crash.__moved = ["content"];
+            Crash.__notYetInserted = ["content"];
+            Crash.clear();
+
+            expect(Crash.all()).to.be.empty();
+            expect(Crash.__moved).to.be.empty();
+            expect(Crash.__notYetInserted).to.be.empty();
+        });
+        it("should not crash if rbush is not defined", function() {
+            Crash.rbush = null;
+            var fn = function() {
+                Crash.clear();
+            }
+            
+            expect(fn).to.not.throwError();
+        });
+    });
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();

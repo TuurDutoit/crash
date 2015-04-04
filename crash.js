@@ -142,7 +142,9 @@
     }
     
     exports.clear = function() {
-        this.rbush.clear();
+        if(this.rbush) {
+            this.rbush.clear();
+        }
         this.__moved = [];
         this.__notYetInserted = [];
         
