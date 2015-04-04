@@ -324,6 +324,51 @@ describe("Crash", function() {
         });
     });
     
+    describe("update", function() {
+        it("should be defined", function() {
+            expect(Crash.update).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.update).to.be.a("function");
+        });
+        it("should call updateAABB", function() {
+            Crash.init();
+            var collider = new Crash.Point(new Crash.V);
+            sinon.spy(Crash, "updateAABB");
+            Crash.update(collider);
+            
+            expect(Crash.updateAABB.called).to.be.ok();
+            expect(Crash.updateAABB.callCount).to.be(1);
+            expect(Crash.updateAABB.calledWith(collider)).to.be.ok();
+            
+            Crash.updateAABB.restore();
+        });
+        it("should call rbush.remove", function() {
+            Crash.init();
+            var collider = new Crash.Point(new Crash.V);
+            sinon.spy(Crash.rbush, "remove");
+            Crash.update(collider);
+            
+            expect(Crash.rbush.remove.called).to.be.ok();
+            expect(Crash.rbush.remove.callCount).to.be(1);
+            expect(Crash.rbush.remove.calledWith(collider)).to.be.ok();
+            
+            Crash.rbush.remove.restore();
+        });
+        it("should call rbush.insert", function() {
+            Crash.init();
+            var collider = new Crash.Point(new Crash.V);
+            sinon.spy(Crash.rbush, "insert");
+            Crash.update(collider);
+            
+            expect(Crash.rbush.insert.called).to.be.ok();
+            expect(Crash.rbush.insert.callCount).to.be(1);
+            expect(Crash.rbush.insert.calledWith(collider)).to.be.ok();
+            
+            Crash.rbush.insert.restore();
+        });
+    });
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();
