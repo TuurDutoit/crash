@@ -165,9 +165,9 @@ describe("Crash", function() {
     
     describe("updateAABBPolygon", function() {
         it("should update the AABB correctly", function() {
-            var collider = new Crash.Polygon(new Crash.V, [new Crash.V(0,0), new Crash.V(0,5), new Crash.V(2,3)]);
+            var collider = new Crash.Polygon(new Crash.V, [new Crash.V(0,0), new Crash.V(5,0), new Crash.V(3,2)]);
             Crash.updateAABBPolygon(collider);
-
+          
             expect(collider.aabb).to.eql({x1:0, y1:0, x2:5, y2: 2});
         });
     });

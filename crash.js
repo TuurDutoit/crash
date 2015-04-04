@@ -212,10 +212,10 @@
             }
         }
         
-        aabb.x1 = pos + xMin;
-        aabb.y1 = pos + yMin;
-        aabb.x2 = pos + xMax;
-        aabb.y2 = pos + yMax;
+        aabb.x1 = pos.x + xMin;
+        aabb.y1 = pos.y + yMin;
+        aabb.x2 = pos.x + xMax;
+        aabb.y2 = pos.y + yMax;
     }
     
     exports.updateAABBBox = function(collider) {
