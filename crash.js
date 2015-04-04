@@ -136,6 +136,9 @@
             
             return res;
         }
+        else {
+            return [];
+        }
     }
     
     exports.clear = function() {
@@ -335,6 +338,16 @@
             this.testAll(collider, res);
             i++;
         }
+        
+        return this;
+    }
+    
+    exports.checkAll = function(res) {
+        var all = this.all();
+        for(var i = 0, len = all.length; i < len; i++) {
+            this.testAll(all[i], res);
+        }
+        this.check(res);
         
         return this;
     }
