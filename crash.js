@@ -120,7 +120,7 @@
     }
     
     exports.all = function() {
-        return this.rbush.all();
+        return this.rbush ? this.rbush.all() : this.__notYetInserted;
     }
     
     exports.search = function(collider) {

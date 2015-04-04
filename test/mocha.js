@@ -186,6 +186,19 @@ describe("Crash", function() {
         });
     });
     
+    describe("all", function() {
+        it("should return __notYetInserted if rbush is not defined", function() {
+            Crash.rbush = null;
+            
+            expect(Crash.all()).to.be(Crash.__notYetInserted);
+        });
+        it("should return rbush.all() if rbush is defined", function() {
+            Crash.init();
+            
+            expect(Crash.all()).to.eql(Crash.rbush.all());
+        });
+    });
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();
