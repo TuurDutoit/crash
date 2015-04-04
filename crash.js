@@ -290,7 +290,7 @@
     
     exports.test = function(a, b, res) {
         var res = res || RESPONSE;
-        var str = getTestString(a, b);
+        var str = getTestString(a.type, b.type);
         
         res.clear();
         return SAT[str](a.sat, b.sat, res);

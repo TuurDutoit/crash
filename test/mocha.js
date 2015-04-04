@@ -583,5 +583,44 @@ describe("Crash", function() {
      *********/
     
     
-    
+    describe("test", function() {
+        it("should be defined", function() {
+            expect(Crash.test).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.test).to.be.a("function");
+        });
+        it("should retrun true when the colliders collide", function() {
+            var a = new Crash.Circle(new Crash.V, 5);
+            var b = new Crash.Point(new Crash.V(1,0));
+            
+            expect(Crash.test(a, b)).to.be(true);
+        });
+        it("should return false when the colliders don't collide", function() {
+            var a = new Crash.Circle(new Crash.V, 5);
+            var b = new Crash.Point(new Crash.V(10,0));
+            
+            expect(Crash.test(a, b)).to.be(false);
+        });
+        it("should should update the Response correctly", function() {
+            var a = new Crash.Circle(new Crash.V, 5);
+            var b = new Crash.Point(new Crash.V(1,0));
+            var res = new Crash.Response();
+            Crash.test(a, b, res);
+            
+            expect(res.a).to.be(a.sat);
+            expect(res.b).to.be(b.sat);
+            expect(res.overlap).to.be(4);
+        });
+        it("should use RESPONSE when no Response has been passed", function() {
+            var a = new Crash.Circle(new Crash.V, 5);
+            var b = new Crash.Point(new Crash.V(1,0));
+            var res = Crash.RESPONSE;
+            Crash.test(a, b);
+            
+            expect(res.a).to.be(a.sat);
+            expect(res.b).to.be(b.sat);
+            expect(res.overlap).to.be(4);
+        });
+    })
 });
