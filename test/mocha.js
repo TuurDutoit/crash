@@ -157,6 +157,35 @@ describe("Crash", function() {
         });
     });
     
+    describe("remove", function() {
+        it("should remove the collider from rbush if it is defined", function() {
+            var collider = new Crash.Circle(new Crash.V, 5);
+            Crash.init();
+            Crash.insert(collider);
+            Crash.remove(collider);
+            
+            expect(Crash.rbush.all()).to.be.empty();
+        });
+        it("should remove the collider from __notYetInserted if rbush is not defined", function() {
+            var collider = new Crash.Circle(new Crash.V, 5);
+            Crash.rbush = null;
+            Crash.__notYetInserted = [collider];
+            Crash.remove(collider);
+            
+            expect(Crash.__notYetInserted).to.be.empty();
+        });
+        it("should not crash when the collider has not been inserted", function() {
+            var collider = new Crash.Circle(new Crash.V, 5);
+            Crash.rbush = null;
+            Crash.__notYetInserted = [collider];
+            var fn = function() {
+                Crash.remove(collider);
+            }
+            
+            expect(fn).to.not.throwError();
+        });
+    });
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();
