@@ -93,19 +93,19 @@ describe("Crash", function() {
         });
     });
 
-    describe("onCollision", function() {
-        it("should expose onCollision", function() {
-            expect(Crash.onCollision).to.be.ok();
-        });
-        it("should be a function", function() {
-            expect(Crash.onCollision).to.be.a("function");
-        });
-    });
-
     describe("rbush", function() {
         it("should be null (default)", function() {
             expect(Crash.rbush).to.be(null);
         }); 
+    });
+    
+    describe("__listeners", function() {
+        it("should expose onCollision", function() {
+            expect(Crash.__listeners).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.__listeners).to.eql([]);
+        });
     });
 
     describe("__notYetInserted", function() {
@@ -404,6 +404,40 @@ describe("Crash", function() {
             }
             
             expect(fn).to.not.throwError();
+        });
+    });
+    
+    describe("onCollision", function() {
+        it("should be defined", function() {
+            expect(Crash.onCollision).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.onCollision).to.be.a("function");
+        });
+        it("should add the listener to __listeners", function() {
+            var fn = function(){};
+            Crash.__listeners = [];
+            Crash.onCollision(fn);
+            
+            expect(Crash.__listeners).to.contain(fn);
+            expect(Crash.__listeners).to.have.length(1);
+        });
+    });
+    
+    describe("offCollision", function() {
+        it("should be defined", function() {
+            expect(Crash.offCollision).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.offCollision).to.be.a("function");
+        });
+        it("should add the listener to __listeners", function() {
+            var fn = function(){};
+            Crash.__listeners = [];
+            Crash.onCollision(fn);
+            Crash.offCollision(fn);
+            
+            expect(Crash.__listeners).to.be.empty();
         });
     });
     

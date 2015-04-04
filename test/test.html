@@ -7,8 +7,8 @@
         <meta name="keywords" content="Crash collisions test" />
         <title>Crash.js Test</title>
         
-        <script type="text/javascript" src="rbush.js"></script>
-        <script type="text/javascript" src="SAT.js"></script>
+        <script type="text/javascript" src="deps/rbush.js"></script>
+        <script type="text/javascript" src="deps/SAT.js"></script>
         <script type="text/javascript" src="../crash.js"></script>
     </head>
     <body>
@@ -141,10 +141,10 @@
         
         <script type="text/javascript">
             Crash.init();
-            Crash.onCollision = function(A, B, res, cancel) {
+            Crash.onCollision(function(A, B, res, cancel) {
                 console.log(A.data + " collided with " + B.data + "; res:", res);
                 A.moveBy(-res.overlapV.x, -res.overlapV.y);
-            }
+            });
             
             var a = new Crash.Box(new Crash.V, 10, 10, "a", true);
             var b = new Crash.Circle(new Crash.V(2,2), 15, "b", true);

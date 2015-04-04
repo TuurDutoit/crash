@@ -71,11 +71,8 @@
         cancel:      cancel,
         maxChecks:   100,
         RESPONSE:    RESPONSE,
-        onCollision: function(a, b, res, cancel) {
-            // Fill in...
-        },
-        
         rbush: null,
+        __listeners: [],
         __notYetInserted: [],
         __moved: []
     }
@@ -164,6 +161,29 @@
         this.updateAABB(collider);
         this.remove(collider);
         this.insert(collider);
+        
+        return this;
+    }
+    
+    exports.onCollision = function(listener) {
+        this.__listeners.push(listener);
+        
+        return this;
+    }
+    
+    exports.offCollision = function(listener) {
+        var index = this.__listeners.indexOf(listener);
+        if(index > -1) {
+            this.__listeners.splice(index, 1);
+        }
+        
+        return this;
+    }
+    
+    exports.__onCollision = function(a, b, res) {
+        for(var i = 0, len = this.__listeners.length; i < len; i++) {
+            this.__listeners[i](a, b, res, cancel);
+        }
         
         return this;
     }
@@ -291,7 +311,7 @@
             if(b !== a && SAT[str](a.sat, b.sat, res)) {
                 // Fix collisions with infinitely small overlaps causing way too many loops
                 if(Math.abs(res.overlap) > .5) {
-                    this.onCollision(a, b, res, cancel);
+                    this.__onCollision(a, b, res);
                     if(BREAK) {
                         break loop;
                     }
