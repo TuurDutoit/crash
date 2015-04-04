@@ -139,6 +139,24 @@ describe("Crash", function() {
         });
     });
     
+    describe("insert", function() {
+        it("should add the collider to __notYetInserted when rbush is not defined", function() {
+            var collider = new Crash.Circle(new Crash.V, 5);
+            Crash.rbush = null;
+            Crash.insert(collider);
+            
+            expect(Crash.__notYetInserted).to.eql([collider]);
+        });
+        it("should add the collider to rbush when it is defined", function() {
+            var collider = new Crash.Circle(new Crash.V, 5);
+            Crash.__notYetInserted = [];
+            Crash.init();
+            Crash.insert(collider);
+            
+            expect(Crash.rbush.all()).to.eql([collider]);
+        });
+    });
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();

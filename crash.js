@@ -87,7 +87,7 @@
         this.rbush = new RBush((maxEntries || 9), [".aabb.x1", ".aabb.y1", ".aabb.x2", ".aabb.y2"]);
         
         for(var i = 0, len = this.__notYetInserted.length; i < len; i++) {
-            this.rbush.insert(this.__notYetInserted[i]);
+            this.rbush.insert(this.__notYetInserted.pop());
         }
         
         return this;
