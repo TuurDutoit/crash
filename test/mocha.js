@@ -346,26 +346,26 @@ describe("Crash", function() {
         it("should call rbush.remove", function() {
             Crash.init();
             var collider = new Crash.Point(new Crash.V);
-            sinon.spy(Crash.rbush, "remove");
+            sinon.spy(Crash, "remove");
             Crash.update(collider);
             
-            expect(Crash.rbush.remove.called).to.be.ok();
-            expect(Crash.rbush.remove.callCount).to.be(1);
-            expect(Crash.rbush.remove.calledWith(collider)).to.be.ok();
+            expect(Crash.remove.called).to.be.ok();
+            expect(Crash.remove.callCount).to.be(1);
+            expect(Crash.remove.calledWith(collider)).to.be.ok();
             
-            Crash.rbush.remove.restore();
+            Crash.remove.restore();
         });
         it("should call rbush.insert", function() {
             Crash.init();
             var collider = new Crash.Point(new Crash.V);
-            sinon.spy(Crash.rbush, "insert");
+            sinon.spy(Crash, "insert");
             Crash.update(collider);
             
-            expect(Crash.rbush.insert.called).to.be.ok();
-            expect(Crash.rbush.insert.callCount).to.be(1);
-            expect(Crash.rbush.insert.calledWith(collider)).to.be.ok();
+            expect(Crash.insert.called).to.be.ok();
+            expect(Crash.insert.callCount).to.be(1);
+            expect(Crash.insert.calledWith(collider)).to.be.ok();
             
-            Crash.rbush.insert.restore();
+            Crash.insert.restore();
         });
     });
     

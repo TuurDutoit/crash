@@ -161,9 +161,9 @@
     }
     
     exports.update = function(collider) {
-        exports.updateAABB(collider);
-        this.rbush.remove(collider);
-        this.rbush.insert(collider);
+        this.updateAABB(collider);
+        this.remove(collider);
+        this.insert(collider);
         
         return this;
     }
