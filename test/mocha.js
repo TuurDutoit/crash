@@ -367,6 +367,15 @@ describe("Crash", function() {
             
             Crash.insert.restore();
         });
+        it("should not crash when rbush is not defined", function() {
+            Crash.rbush = null;
+            var collider = new Crash.Point(new Crash.V);
+            var fn = function() {
+                Crash.update(collider);
+            }
+            
+            expect(fn).to.not.throwError();
+        });
     });
     
     describe("updateAABB", function() {
