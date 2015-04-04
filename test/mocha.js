@@ -590,7 +590,7 @@ describe("Crash", function() {
         it("should be a function", function() {
             expect(Crash.test).to.be.a("function");
         });
-        it("should retrun true when the colliders collide", function() {
+        it("should return true when the colliders collide", function() {
             var a = new Crash.Circle(new Crash.V, 5);
             var b = new Crash.Point(new Crash.V(1,0));
             
@@ -622,5 +622,14 @@ describe("Crash", function() {
             expect(res.b).to.be(b.sat);
             expect(res.overlap).to.be(4);
         });
-    })
+    });
+
+    describe("testAll", function() {
+        it("should be defined", function() {
+            expect(Crash.testAll).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.testAll).to.be.a("function");
+        });
+    });
 });
