@@ -199,6 +199,47 @@ describe("Crash", function() {
         });
     });
     
+    describe("search", function() {
+        it("should return all the possibly colliding colliders", function() {
+            Crash.init();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 1), true);
+            var c3 = new Crash.Box(new Crash.V(-5, -5), 10, 10, true);
+            var c4 = new Crash.Circle(new Crash.V(0, 6), 3, true);
+            var res = Crash.search(c1);
+            
+            expect(res).to.contain(c2);
+            expect(res).to.contain(c3);
+            expect(res).to.contain(c4);
+        });
+        it("should not return colliders that could not possibly be colliding", function() {
+            Crash.init(4);
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            
+            // colliding with c1
+            var c2 = new Crash.Point(new Crash.V(1, 1), true);
+            var c3 = new Crash.Box(new Crash.V(-5, -5), 10, 10, true);
+            var c4 = new Crash.Circle(new Crash.V(0, 6), 3, true);
+            
+            // not colliding with c1
+            var c5 = new Crash.Point(new Crash.V(50, 50), true);
+            var c6 = new Crash.Box((new Crash.V(100, 100), 5, 5, true));
+            var c7 = new Crash.Circle(new Crash.V(-75, 0), 3);
+            
+            var res = Crash.search(c1);
+            
+            expect(res).to.not.contain(c5);
+            expect(res).to.not.contain(c6);
+            expect(res).to.not.contain(c7);
+        });
+        it("should not return the collider you searched for", function() {
+            Crash.init();
+            var collider = new Crash.Circle(new Crash.V, 5, true);
+            
+            expect(Crash.search(collider)).to.not.contain(collider);
+        });
+    });
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();
