@@ -7,6 +7,15 @@ if(typeof require === "function") {
 
 
 describe("Crash", function() {
+    
+    
+    
+    
+    
+    /**************
+     * ATTRIBUTES *
+     **************/
+    
 
     describe("RBush", function() {
         it("should be defined", function() {
@@ -116,6 +125,26 @@ describe("Crash", function() {
             expect(Crash.__moved).to.be.an("array");
         });
     });
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /***********
+     * METHODS *
+     ***********/
+    
     
     describe("init", function() {
         it("should be defined", function() {
@@ -378,6 +407,22 @@ describe("Crash", function() {
         });
     });
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /****************
+     * AABB UPDATES *
+     ****************/
+    
+    
     describe("updateAABB", function() {
         it("should be defined", function() {
             expect(Crash.updateAABB).to.be.ok();
@@ -486,4 +531,23 @@ describe("Crash", function() {
             expect(collider.aabb).to.eql({x1:0, y1:0, x2:5, y2: 2});
         });
     });
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*********
+     * TESTS *
+     *********/
+    
+    
+    
 });
