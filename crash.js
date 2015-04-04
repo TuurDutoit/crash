@@ -127,10 +127,18 @@
         // search() usually takes an array of AABB coordinates.
         // I have opened an issue to ask for a way to search for items:
         // https://github.com/mourner/rbush/issues/32
-        // In the meantime, this will not work (it returns an empty array)
+        // In the meantime, we're translating to the correct format (creating a new Array for every call!)
         
         //return this.rbush.search(collider);
-        return this.rbush.search([collider.aabb.x1, collider.aabb.y1, collider.aabb.x2, collider.aabb.y2]);
+        if(this.rbush) {
+            var res = this.rbush.search([collider.aabb.x1, collider.aabb.y1, collider.aabb.x2, collider.aabb.y2]);
+            var index = res.indexOf(collider);
+            if(index > -1) {
+                res.splice(index, 1);
+            }
+            
+            return res;
+        }
     }
     
     exports.clear = function() {
@@ -320,7 +328,7 @@
      * CLASSES *
      ***********/
     
-    var Collider = exports.Collider = function Collider(type, sat, data, insert) {
+    var Collider = exports.Collider = function Collider(type, sat, insert, data) {
         this.type = type;
         this.sat = sat;
         this.data = data;
@@ -401,9 +409,9 @@
     
     
     
-    var Polygon = exports.Polygon = function Polygon(pos, points, data, insert) {
+    var Polygon = exports.Polygon = function Polygon(pos, points, insert, data) {
         var sat = new SAT.Polygon(pos, points);
-        Collider.call(this, "polygon", sat, data, insert);
+        Collider.call(this, "polygon", sat, insert, data);
         
         return this;
     }
@@ -441,9 +449,9 @@
     
     
     
-    var Circle = exports.Circle = function Circle(pos, r, data, insert) {
+    var Circle = exports.Circle = function Circle(pos, r, insert, data) {
         var sat = new SAT.Circle(pos, r);
-        Collider.call(this, "circle", sat, data, insert);
+        Collider.call(this, "circle", sat, insert, data);
         
         return this;
     }
@@ -454,9 +462,9 @@
     
     
     
-    var Point = exports.Point = function Point(pos, data, insert) {
+    var Point = exports.Point = function Point(pos, insert, data) {
         var sat = (new SAT.Box(pos, 1, 1)).toPolygon();
-        Collider.call(this, "point", sat, data, insert);
+        Collider.call(this, "point", sat, insert, data);
         
         return this;
     }
@@ -467,9 +475,9 @@
     
     
     
-    var Box = exports.Box = function Box(pos, w, h, data, insert) {
+    var Box = exports.Box = function Box(pos, w, h, insert, data) {
         var sat = (new SAT.Box(pos, w, h)).toPolygon();
-        Collider.call(this, "box", sat, data, insert);
+        Collider.call(this, "box", sat, insert, data);
         
         return this;
     }
