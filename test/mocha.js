@@ -262,9 +262,24 @@ describe("Crash", function() {
             
             expect(Crash.search(collider)).to.not.contain(collider);
         });
+        it("should not crash if rbush is not defined", function() {
+            Crash.rbush = null;
+            var c1 = new Crash.Point(new Crash.V);
+            var fn = function() {
+                Crash.search(c1);
+            }
+            
+            expect(fn).to.not.throwError();
+        });
     });
     
     describe("clear", function() {
+        it("should be defined", function() {
+            expect(Crash.clear).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.clear).to.be.a("function");
+        });
         it("should clear everything", function() {
             Crash.init();
             Crash.insert(new Crash.Point(new Crash.V));
