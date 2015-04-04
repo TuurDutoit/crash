@@ -508,10 +508,10 @@ describe("Crash", function() {
     
     describe("updateAABBPolygon", function() {
         it("should be defined", function() {
-            expect(Crash.updateAABB).to.be.ok();
+            expect(Crash.updateAABBPolygon).to.be.ok();
         });
         it("should be a function", function() {
-            expect(Crash.updateAABB).to.be.a("function");
+            expect(Crash.updateAABBPolygon).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
             var collider = new Crash.Polygon(new Crash.V, [new Crash.V(0,0), new Crash.V(5,0), new Crash.V(3,2)]);
@@ -523,10 +523,10 @@ describe("Crash", function() {
 
     describe("updateAABBCircle", function() {
         it("should be defined", function() {
-            expect(Crash.updateAABB).to.be.ok();
+            expect(Crash.updateAABBCircle).to.be.ok();
         });
         it("should be a function", function() {
-            expect(Crash.updateAABB).to.be.a("function");
+            expect(Crash.updateAABBCircle).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
@@ -538,10 +538,10 @@ describe("Crash", function() {
 
     describe("updateAABBPoint", function() {
         it("should be defined", function() {
-            expect(Crash.updateAABB).to.be.ok();
+            expect(Crash.updateAABBPoint).to.be.ok();
         });
         it("should be a function", function() {
-            expect(Crash.updateAABB).to.be.a("function");
+            expect(Crash.updateAABBPoint).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
             var collider = new Crash.Point(new Crash.V);
@@ -553,10 +553,10 @@ describe("Crash", function() {
 
     describe("updateAABBBox", function() {
         it("should be defined", function() {
-            expect(Crash.updateAABB).to.be.ok();
+            expect(Crash.updateAABBBox).to.be.ok();
         });
         it("should be a function", function() {
-            expect(Crash.updateAABB).to.be.a("function");
+            expect(Crash.updateAABBBox).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
             var collider = new Crash.Box(new Crash.V, 5, 2);
