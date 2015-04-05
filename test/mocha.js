@@ -62,15 +62,6 @@ describe("Crash", function() {
         });
     });
 
-    describe("cancel", function() {
-        it("should be defined", function() {
-            expect(Crash.cancel).to.be.ok();
-        });
-        it("should be a function", function() {
-            expect(Crash.cancel).to.be.a("function");
-        });
-    });
-
     describe("maxChecks", function() {
         it("should be defined", function() {
             expect(Crash.maxChecks).to.be.ok();
@@ -82,7 +73,12 @@ describe("Crash", function() {
             expect(Crash.maxChecks).to.equal(100);
         });
     });
-
+    
+    describe("rbush", function() {
+        it("should be null (default)", function() {
+            expect(Crash.rbush).to.be(null);
+        }); 
+    });
 
     describe("RESPONSE", function() {
         it("should be defined", function() {
@@ -92,18 +88,18 @@ describe("Crash", function() {
             expect(Crash.RESPONSE).to.be.a(Crash.Response);
         });
     });
-
-    describe("rbush", function() {
-        it("should be null (default)", function() {
-            expect(Crash.rbush).to.be(null);
-        }); 
+    
+    describe("BREAK", function() {
+        it("should be false by default", function() {
+            expect(Crash.BREAK).to.be(false);
+        });
     });
     
     describe("__listeners", function() {
-        it("should expose onCollision", function() {
+        it("should expose __listeners", function() {
             expect(Crash.__listeners).to.be.ok();
         });
-        it("should be a function", function() {
+        it("should be an array", function() {
             expect(Crash.__listeners).to.eql([]);
         });
     });
@@ -125,6 +121,109 @@ describe("Crash", function() {
             expect(Crash.__moved).to.be.an("array");
         });
     });
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*************
+     * UTILITIES *
+     *************/
+    
+    
+    describe("extend", function() {
+        it("should be defined", function() {
+            expect(Crash.extend).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.extend).to.be.a("function");
+        });
+        it("should extend the prototype chain", function() {
+            var Base = function() {};
+            var child = function(){};
+            Crash.extend(child, Base);
+            
+            expect(new child).to.be.a(Base);
+        });
+    });
+    
+    describe("onCollision", function() {
+        it("should be defined", function() {
+            expect(Crash.onCollision).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.onCollision).to.be.a("function");
+        });
+        it("should add the listener to __listeners", function() {
+            var fn = function(){};
+            Crash.__listeners = [];
+            Crash.onCollision(fn);
+            
+            expect(Crash.__listeners).to.contain(fn);
+            expect(Crash.__listeners).to.have.length(1);
+        });
+    });
+    
+    describe("offCollision", function() {
+        it("should be defined", function() {
+            expect(Crash.offCollision).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.offCollision).to.be.a("function");
+        });
+        it("should add the listener to __listeners", function() {
+            var fn = function(){};
+            Crash.__listeners = [];
+            Crash.onCollision(fn);
+            Crash.offCollision(fn);
+            
+            expect(Crash.__listeners).to.be.empty();
+        });
+    });
+    
+    describe("__onCollision", function() {
+        it("should be defined", function() {
+            expect(Crash.__onCollision).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.__onCollision).to.be.a("function");
+        });
+        it("should call all the listeners with the right arguments", function() {
+            var c1 = new Crash.Point(new Crash.V);
+            var c2 = new Crash.Point(new Crash.V);
+            var res = new Crash.Response();
+            var fn1 = sinon.spy();
+            var fn2 = sinon.spy();
+            Crash.__listeners = [fn1, fn2];
+            Crash.__onCollision(c1, c2, res);
+            
+            expect(fn1.called).to.be.ok();
+            expect(fn1.callCount).to.be(1);
+            expect(fn1.calledWith(c1, c2, res, Crash.cancel)).to.be.ok();
+            expect(fn2.called).to.be.ok();
+            expect(fn2.callCount).to.be(1);
+            expect(fn2.calledWith(c1, c2, res, Crash.cancel)).to.be.ok();
+            expect(fn2.calledAfter(fn1)).to.be.ok();
+        });
+    });
+    
+    describe("cancel", function() {
+        it("should be defined", function() {
+            expect(Crash.cancel).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.cancel).to.be.a("function");
+        });
+    });
+
     
     
     
@@ -407,39 +506,7 @@ describe("Crash", function() {
         });
     });
     
-    describe("onCollision", function() {
-        it("should be defined", function() {
-            expect(Crash.onCollision).to.be.ok();
-        });
-        it("should be a function", function() {
-            expect(Crash.onCollision).to.be.a("function");
-        });
-        it("should add the listener to __listeners", function() {
-            var fn = function(){};
-            Crash.__listeners = [];
-            Crash.onCollision(fn);
-            
-            expect(Crash.__listeners).to.contain(fn);
-            expect(Crash.__listeners).to.have.length(1);
-        });
-    });
     
-    describe("offCollision", function() {
-        it("should be defined", function() {
-            expect(Crash.offCollision).to.be.ok();
-        });
-        it("should be a function", function() {
-            expect(Crash.offCollision).to.be.a("function");
-        });
-        it("should add the listener to __listeners", function() {
-            var fn = function(){};
-            Crash.__listeners = [];
-            Crash.onCollision(fn);
-            Crash.offCollision(fn);
-            
-            expect(Crash.__listeners).to.be.empty();
-        });
-    });
     
     
     

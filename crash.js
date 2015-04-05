@@ -14,6 +14,7 @@
 }(function(RBush, SAT) {
     "use strict";
     
+
     
     
     
@@ -22,19 +23,63 @@
     
     
     /*************
-     * VARIABLES *
+     * EXPORTS   *
      * UTILITIES *
      *************/
     
     
-    var RESPONSE = new SAT.Response();
-    var BREAK = false;
+    var exports = {
+        RBush:       RBush,
+        SAT:         SAT,
+        Vector:      SAT.Vector,
+        V:           SAT.Vector,
+        Response:    SAT.Response,
+        maxChecks:   100,
+        rbush:       null,
+        RESPONSE:    new SAT.Response(),
+        BREAK:       false,
+        __listeners: [],
+        __notYetInserted: [],
+        __moved: []
+    }
     
-    var extend = function(child, Base) {
+    
+    
+    
+    
+    exports.extend = function(child, Base) {
         child.prototype = new Base();
     }
     
-    var getTestString = function(type1, type2) {
+    exports.onCollision = function(listener) {
+        this.__listeners.push(listener);
+        
+        return this;
+    }
+    
+    exports.offCollision = function(listener) {
+        var index = this.__listeners.indexOf(listener);
+        if(index > -1) {
+            this.__listeners.splice(index, 1);
+        }
+        
+        return this;
+    }
+    
+    exports.__onCollision = function(a, b, res) {
+        for(var i = 0, len = this.__listeners.length; i < len; i++) {
+            this.__listeners[i](a, b, res, this.cancel);
+        }
+        
+        return this;
+    }
+    
+    exports.cancel = function() {
+        this.BREAK = true;
+        return false;
+    }
+    
+    exports.getTestString = function(type1, type2) {
         return type1 === "circle" ? (
             type2 === "circle" ? "testCircleCircle" : "testCirclePolygon"
         ) : (
@@ -42,14 +87,12 @@
         )
     }
     
-    var cancel = function() {
-        BREAK = true;
-        return false;
-    }
     
     
     
-
+    
+    
+    
     
     
     
@@ -59,25 +102,8 @@
     
     /***********
      * EXPORTS *
+     * METHODS *
      ***********/
-    
-    
-    var exports = {
-        RBush:       RBush,
-        SAT:         SAT,
-        Vector:      SAT.Vector,
-        V:           SAT.Vector,
-        Response:    SAT.Response,
-        cancel:      cancel,
-        maxChecks:   100,
-        RESPONSE:    RESPONSE,
-        rbush: null,
-        __listeners: [],
-        __notYetInserted: [],
-        __moved: []
-    }
-    
-    
     
     
     exports.init = function(maxEntries) {
@@ -167,29 +193,9 @@
         
         return this;
     }
+
     
-    exports.onCollision = function(listener) {
-        this.__listeners.push(listener);
-        
-        return this;
-    }
     
-    exports.offCollision = function(listener) {
-        var index = this.__listeners.indexOf(listener);
-        if(index > -1) {
-            this.__listeners.splice(index, 1);
-        }
-        
-        return this;
-    }
-    
-    exports.__onCollision = function(a, b, res) {
-        for(var i = 0, len = this.__listeners.length; i < len; i++) {
-            this.__listeners[i](a, b, res, cancel);
-        }
-        
-        return this;
-    }
     
     
     
@@ -292,8 +298,8 @@
      *********/
     
     exports.test = function(a, b, res) {
-        var res = res || RESPONSE;
-        var str = getTestString(a.type, b.type);
+        var res = res || this.RESPONSE;
+        var str = this.getTestString(a.type, b.type);
         
         res.clear();
         return SAT[str](a.sat, b.sat, res);
@@ -301,21 +307,21 @@
     
     
     exports.testAll = function(a, res) {
-        var res = res || RESPONSE;
+        var res = res || this.RESPONSE;
         var possible = this.search(a);
         this.update(a);
         
         loop:
         for(var i = 0, len = possible.length; i < len; i++) {
             var b = possible[i];
-            var str = getTestString(a.type, b.type);
+            var str = this.getTestString(a.type, b.type);
             res.clear();
             
             if(b !== a && SAT[str](a.sat, b.sat, res)) {
                 // Fix collisions with infinitely small overlaps causing way too many loops
                 if(Math.abs(res.overlap) > .5) {
                     this.__onCollision(a, b, res);
-                    if(BREAK) {
+                    if(this.BREAK) {
                         break loop;
                     }
                 }
@@ -325,7 +331,7 @@
         a.lastPos.x = a.sat.pos.x;
         a.lastPos.y = a.sat.pos.y;
         
-        BREAK = false;
+        this.BREAK = false;
         
         return this;
     }
@@ -451,7 +457,7 @@
         return this;
     }
     
-    extend(Polygon, Collider);
+    exports.extend(Polygon, Collider);
     
     Polygon.prototype.setPoints = function(points) {
         this.sat.setPoints(points);
@@ -491,7 +497,7 @@
         return this;
     }
     
-    extend(Circle, Collider);
+    exports.extend(Circle, Collider);
     
     
     
@@ -504,7 +510,7 @@
         return this;
     }
     
-    extend(Point, Collider);
+    exports.extend(Point, Collider);
     
     
     
@@ -517,7 +523,7 @@
         return this;
     }
     
-    extend(Box, Collider);
+    exports.extend(Box, Collider);
     
     
     
