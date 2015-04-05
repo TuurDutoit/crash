@@ -7,6 +7,23 @@ It's most obvious use-case is in game engines, but it's flexible enough to be us
 Crash is perfectly happy in the browser and on Node.js.
 
 
+## Contents
+* [Contents](#contents)
+* [Installation](#installation)
+  * [Node.js](#nodejs)
+  * [Browser](#browser)
+  * [Require.js](#requirejs)
+* [Getting Started](#getting-started)
+  * [Adding Colliders](#adding-colliders)
+  * [Testing for collisions](#testing-for-collisions)
+  * [Unleashing the power of Crash](#unleashing-the-power-of-crash)
+  * [What kind of sorcery is this !?](#what-kind-of-sorcery-is-this-)
+  * [But what's up with that `moved()`?](#but-whats-up-with-that-moved)
+* [API](#api)
+* [Contributing](#contributing)
+* [License](#License)
+
+
 ## Installation
 At the moment, package managers are not yet set up. Just download the `crash.js` file from this repo and load it in your project.  
 When you have installed Crash, head over to the [Getting Started section][getting-started].
