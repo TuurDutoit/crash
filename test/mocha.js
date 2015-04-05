@@ -917,9 +917,9 @@ describe("Crash", function() {
 
 
 
-/*************
- * COLLIDERS *
- *************/
+/************
+ * COLLIDER *
+ ************/
 
 
 describe("Collider", function() {
@@ -1306,9 +1306,12 @@ describe("Polygon", function() {
             var pos = new Crash.V;
             var polygon = new Crash.Polygon(pos, [new Crash.V, new Crash.V(5,0), new Crash.V(2,3)], true, "Second Polygon");
             
+            expect(polygon.type).to.be("polygon");
             expect(polygon.pos).to.be(pos);
-            expect(Crash.insert.called).to.be.ok();
             expect(polygon.data).to.be("Second Polygon");
+            expect(Crash.insert.called).to.be.ok();
+            expect(Crash.insert.callCount).to.be(1);
+            expect(Crash.insert.calledWith(polygon)).to.be.ok();
             
             Crash.insert.restore();
         });
@@ -1444,6 +1447,123 @@ describe("Polygon", function() {
             Crash.moved.restore();
             Polygon.rotate(-20);
         });
+    });
+    
+});
+
+
+
+
+
+
+
+
+
+
+/**********
+ * CIRCLE *
+ **********/
+
+
+describe("Circle", function() {
+    
+    it("should inherit from Collider", function() {
+        var circle = new Crash.Circle(new Crash.V, 5);
+        expect(circle).to.be.a(Crash.Collider);
+    });
+    it("s constructor should call Collider", function() {
+        sinon.spy(Crash, "insert");
+        var pos = new Crash.V;
+        var circle = new Crash.Circle(pos, 5, true, "First Circle");
+
+        expect(circle.type).to.be("circle");
+        expect(circle.pos).to.eql(pos);
+        expect(circle.data).to.be("First Circle");
+        expect(Crash.insert.called).to.be.ok();
+        expect(Crash.insert.callCount).to.be(1);
+        expect(Crash.insert.calledWith(circle)).to.be.ok();
+
+        Crash.insert.restore();
+    });
+    
+});
+
+
+
+
+
+
+
+
+
+
+
+/*********
+ * POINT *
+ *********/
+
+
+
+describe("Point", function() {
+    
+    it("should inherit from Collider", function() {
+        var point = new Crash.Point(new Crash.V);
+        expect(point).to.be.a(Crash.Collider);
+    });
+    it("s constructor should call Collider", function() {
+        sinon.spy(Crash, "insert");
+        var pos = new Crash.V;
+        var point = new Crash.Point(pos, true, "First Point");
+
+        expect(point.type).to.be("point");
+        expect(point.pos).to.eql(pos);
+        expect(point.data).to.be("First Point");
+        expect(Crash.insert.called).to.be.ok();
+        expect(Crash.insert.callCount).to.be(1);
+        expect(Crash.insert.calledWith(point)).to.be.ok();
+
+        Crash.insert.restore();
+    });
+    
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*******
+ * BOX *
+ *******/
+
+
+describe("Box", function() {
+    
+    it("should inherit from Collider", function() {
+        var box = new Crash.Box(new Crash.V, 5, 5);
+        expect(box).to.be.a(Crash.Collider);
+    });
+    it("s constructor should call Collider", function() {
+        sinon.spy(Crash, "insert");
+        var pos = new Crash.V;
+        var box = new Crash.Box(pos, 5, 5, true, "First Box");
+
+        expect(box.type).to.be("box");
+        expect(box.pos).to.eql(pos);
+        expect(box.data).to.be("First Box");
+        expect(Crash.insert.called).to.be.ok();
+        expect(Crash.insert.callCount).to.be(1);
+        expect(Crash.insert.calledWith(box)).to.be.ok();
+
+        Crash.insert.restore();
     });
     
 });
