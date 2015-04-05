@@ -220,8 +220,56 @@ All the built-in methods (like `moveTo`, `setOffset` and `rotate`) already call 
 
 ## API
 
-API docs are under construction.  
+> API docs are under construction.  
 In the meantime, you can waste some time looking at the [source code]; it's only 500 lines of nice, fluffy code!
+
+### Crash
+This is the main object, returned by `require()`, injected by `defined()` or set as `window.Crash`. Anything related to Crash sits in this namespace.
+
+### Crash.RBush : function
+The RBush constructor, as returned by the rbush module.
+
+### Crash.SAT : object
+The SAT object, as returned by the SAT.js module.
+
+### Crash.Vector : constructor
+Represents a vector, used by the Colliders to define their positions and corners, and by SAT to perform its calculations.  
+I refer to the [SAT docs][sat-docs] for the API definition.
+
+### Crash.V : constructor
+Alias for [Crash.Vector].
+
+### Crash.Response : constructor
+Provides information about a collision, like overlap distance and direction.  
+I refer to the [SAT docs][sat-docs] for the API definition.
+
+### Crash.maxChecks : number
+The maximum amount of times to run [Crash.testAll()] during [Crash.check()]. See [Crash.check()] for more info.
+
+### Crash.rbush : RBush
+The RBush instance that holds the colliders. This is (mostly) used internally to optimize collision checks.  
+For further documentation, please see the [RBush docs][rbush-docs].
+
+### Crash.RESPONSE : Response
+Used by the testing functions. When no Response has been passed to them, they use this instead.
+
+### Crash.BREAK : boolean
+Whether to stop the currently running check loop. This is set to `true` by [Crash.cancel()]. See [Crash.testAll()] for more info.
+
+### Crash.__listeners : Array.<function>
+*Private*  
+An array of functions to call when a collision occurs. You can add to this with [Crash.onCollision()].
+
+### Crash.__notYetInserted : Array.<Collider>
+*Private*  
+When [Crash.init()] has not yet been called, and thus when [Crash.rbush] isn't defined yet, Colliders that are [Crash.insert()]ed are pushed to this array, to be inserted into [Crash.rbush] when [Crash.init()] is called.
+
+### Crash.__moved : Array.<Collider>
+*Private*  
+An array of colliders that have moved since the last [Crash.check()]. This is used internally by [Crash.check()] to optimize collision checks. For more info, see [Crash.check()].
+
+### Crash.extend (function child, function base) - .
+Extends the prototype chain of `base` to `child`, so child inherits from base. This is used to make the collider classes inherit from `Collider`.
 
 
 
@@ -281,3 +329,17 @@ THE SOFTWARE.
 [API]: https://github.com/TuurDutoit/crash#api
 [source code]: https://github.com/TuurDutoit/crash/blob/master/crash.js
 [issue tracker]: https://github.com/TuurDutoit/crash/issues
+
+
+[Crash.RBush]: #crashrbush--function
+[Crash.SAT]: #crashsat--object
+[Crash.Vector]: #crashvector--constructor
+[Crash.V]: #crashv--constructor
+[Crash.Response]: #crashresponse--constructor
+[Crash.maxChecks]: #crashmaxchecks--number
+[Crash.rbush]: #crashrbush--rbush
+[Crash.RESPONSE]: #crashresponse--response
+[Crash.BREAK]: #crashbreak--boolean
+[Crash.__listeners]: #crash__listeners--arrayfunction
+[Crash.__notYetInserted]: #crash__notyetinserted--arraycollider
+[Crash.__moved]: #crash__moved--arraycollider
