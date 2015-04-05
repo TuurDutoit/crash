@@ -886,3 +886,390 @@ describe("Crash", function() {
         });
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************
+ * COLLIDERS *
+ *************/
+
+
+describe("Collider", function() {
+    var Collider, SatCollider;
+    
+    before(function() {
+        Crash.reset();
+        SatCollider = new Crash.SAT.Circle(new Crash.V, 5);
+        Collider = new Crash.Collider("circle", SatCollider, true, "First Circle");
+    });
+    
+    
+    
+    
+    
+    /***************
+     * CONSTRUCTOR *
+     ***************/
+    
+    
+    describe("constructor", function() {
+        
+        it("should call updateAABB", function() {
+            sinon.spy(Crash, "updateAABB");
+            var collider = new Crash.Collider("circle", SatCollider);
+            
+            expect(Crash.updateAABB.called).to.be.ok();
+            expect(Crash.updateAABB.callCount).to.be(1);
+            expect(Crash.updateAABB.calledWith(collider)).to.be.ok();
+            
+            Crash.updateAABB.restore();
+        });
+        
+        it("should insert the collider when insert is truthy", function() {
+            sinon.spy(Crash, "insert");
+            var c1 = new Crash.Collider("circle", SatCollider, true);
+            var c2 = new Crash.Collider("circle", SatCollider, 1);
+            
+            expect(Crash.insert.called).to.be.ok();
+            expect(Crash.insert.callCount).to.be(2);
+            expect(Crash.insert.calledWith(c1)).to.be.ok();
+            expect(Crash.insert.calledWith(c2)).to.be.ok();
+            
+            Crash.insert.restore();
+        });
+        
+        it("should not insert the collider when insert is falsy", function() {
+            sinon.spy(Crash, "insert");
+            var c1 = new Crash.Collider("circle", SatCollider, false);
+            var c2 = new Crash.Collider("circle", SatCollider, 0);
+            
+            expect(Crash.insert.called).to.not.be.ok();
+            expect(Crash.insert.calledWith(c1)).to.not.be.ok();
+            expect(Crash.insert.calledWith(c2)).to.not.be.ok();
+            
+            Crash.insert.restore();
+        });
+        
+        
+        describe("type", function() {
+            it("should be defined", function() {
+                expect(Collider.type).to.be.ok();
+            });
+            it("should be a string", function() {
+                expect(Collider.type).to.be.a("string");
+            });
+            it("should equal the type argument", function() {
+                expect(Collider.type).to.be("circle");
+            });
+        });
+
+        describe("sat", function() {
+            it("should be defined", function() {
+                expect(Collider.sat).to.be.ok();
+            });
+            it("should be a SAT Collider", function() {
+                expect(Collider.sat).to.have.key("pos");
+                expect(Collider.sat.pos).to.be.a(Crash.Vector);
+            });
+            it("should equal the sat argument", function() {
+                expect(Collider.sat).to.be(SatCollider);
+            });
+        });
+
+        describe("data", function() {
+            it("should equal the data argument", function() {
+                expect(Collider.data).to.be("First Circle");
+            });
+        });
+
+        describe("pos", function() {
+            it("should be defined", function() {
+                expect(Collider.pos).to.be.ok();
+            });
+            it("should be a Vector", function() {
+                expect(Collider.pos).to.be.a(Crash.Vector);
+            });
+            it("should equal sat.pos", function() {
+                expect(Collider.pos).to.be(Collider.sat.pos);
+            });
+        });
+
+        describe("lastPos", function() {
+            it("should be defined", function() {
+                expect(Collider.lastPos).to.be.ok();
+            });
+            it("should be a Vector", function() {
+                expect(Collider.lastPos).to.be.a(Crash.Vector);
+            });
+            it("should a clone of pos", function() {
+                expect(Collider.lastPos).to.eql(Collider.pos);
+            });
+        });
+
+        describe("lastCheckedPos", function() {
+            it("should be defined", function() {
+                expect(Collider.lastCheckedPos).to.be.ok();
+            });
+            it("should be a Vector", function() {
+                expect(Collider.lastCheckedPos).to.be.a(Crash.Vector);
+            });
+            it("should a clone of pos", function() {
+                expect(Collider.lastCheckedPos).to.eql(Collider.pos);
+            });
+        });
+
+        describe("aabb", function() {
+            it("should be defined", function() {
+                expect(Collider.aabb).to.be.ok();
+            });
+            it("should be a Vector", function() {
+                expect(Collider.aabb).to.be.an("object");
+            });
+            it("should be set correctly", function() {
+                expect(Collider.aabb).to.eql({x1:-5, y1:-5, x2:5, y2:5});
+            });
+        });
+    });
+    
+    
+    
+    
+    
+    
+    
+    /*************
+     * PROTOTYPE *
+     *************/
+    
+    
+    describe("insert", function() {
+        it("should be defined", function() {
+            expect(Collider.insert).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.insert).to.be.a("function");
+        });
+        it("should call Crash.insert", function() {
+            sinon.spy(Crash, "insert");
+            Collider.insert();
+            
+            expect(Crash.insert.called).to.be.ok();
+            expect(Crash.insert.callCount).to.be(1);
+            expect(Crash.insert.calledWith(Collider)).to.be.ok();
+            
+            Crash.insert.restore();
+        });
+    });
+    
+    describe("remove", function() {
+        it("should be defined", function() {
+            expect(Collider.remove).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.remove).to.be.a("function");
+        });
+        it("should call Crash.remove", function() {
+            sinon.spy(Crash, "remove");
+            Collider.remove();
+            
+            expect(Crash.remove.called).to.be.ok();
+            expect(Crash.remove.callCount).to.be(1);
+            expect(Crash.remove.calledWith(Collider)).to.be.ok();
+            
+            Crash.remove.restore();
+        });
+    });
+    
+    describe("update", function() {
+        it("should be defined", function() {
+            expect(Collider.update).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.update).to.be.a("function");
+        });
+        it("should call Crash.update", function() {
+            sinon.spy(Crash, "update");
+            Collider.update();
+            
+            expect(Crash.update.called).to.be.ok();
+            expect(Crash.update.callCount).to.be(1);
+            expect(Crash.update.calledWith(Collider)).to.be.ok();
+            
+            Crash.update.restore();
+        });
+    });
+    
+    describe("updateAABB", function() {
+        it("should be defined", function() {
+            expect(Collider.updateAABB).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.updateAABB).to.be.a("function");
+        });
+        it("should call Crash.updateAABB", function() {
+            sinon.spy(Crash, "updateAABB");
+            Collider.updateAABB();
+            
+            expect(Crash.updateAABB.called).to.be.ok();
+            expect(Crash.updateAABB.callCount).to.be(1);
+            expect(Crash.updateAABB.calledWith(Collider)).to.be.ok();
+            
+            Crash.updateAABB.restore();
+        });
+    });
+    
+    describe("moved", function() {
+        it("should be defined", function() {
+            expect(Collider.moved).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.moved).to.be.a("function");
+        });
+        it("should call Crash.moved", function() {
+            sinon.spy(Crash, "moved");
+            Collider.moved();
+            
+            expect(Crash.moved.called).to.be.ok();
+            expect(Crash.moved.callCount).to.be(1);
+            expect(Crash.moved.calledWith(Collider)).to.be.ok();
+            
+            Crash.moved.restore();
+        });
+    });
+    
+    describe("search", function() {
+        it("should be defined", function() {
+            expect(Collider.search).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.search).to.be.a("function");
+        });
+        it("should call Crash.search", function() {
+            sinon.spy(Crash, "search");
+            Collider.search();
+            
+            expect(Crash.search.called).to.be.ok();
+            expect(Crash.search.callCount).to.be(1);
+            expect(Crash.search.calledWith(Collider)).to.be.ok();
+            
+            Crash.search.restore();
+        });
+    });
+    
+    describe("setData", function() {
+        it("should be defined", function() {
+            expect(Collider.setData).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.setData).to.be.a("function");
+        });
+        it("should set the data attribute", function() {
+            var old = Collider.data;
+            Collider.setData("new data");
+            
+            expect(Collider.data).to.be("new data");
+            
+            Collider.data = old;
+        });
+    });
+    
+    describe("getData", function() {
+        it("should be defined", function() {
+            expect(Collider.getData).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.getData).to.be.a("function");
+        });
+        it("should return the data attribute", function() {
+            expect(Collider.getData()).to.be(Collider.data);
+        });
+    });
+    
+    describe("moveTo", function() {
+        it("should be defined", function() {
+            expect(Collider.moveTo).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.moveTo).to.be.a("function");
+        });
+        it("should update the position correctly", function() {
+            var oldPos = Collider.pos.clone();
+            Collider.moveTo(100, 100);
+            
+            expect(Collider.pos.x).to.be(100);
+            expect(Collider.pos.y).to.be(100);
+            
+            Collider.moveTo(oldPos.x, oldPos.y);
+        });
+        it("should call moved", function() {
+            sinon.spy(Crash, "moved");
+            var oldPos = Collider.pos.clone();
+            Collider.moveTo(100, 100);
+            
+            expect(Crash.moved.called).to.be.ok();
+            expect(Crash.moved.callCount).to.be(1);
+            expect(Crash.moved.calledWith(Collider)).to.be.ok();
+            
+            Crash.moved.restore();
+            Collider.moveTo(oldPos.x, oldPos.y);
+        });
+    });
+    
+    describe("moveBy", function() {
+        it("should be defined", function() {
+            expect(Collider.moveBy).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Collider.moveBy).to.be.a("function");
+        });
+        it("should update the position correctly", function() {
+            var oldPos = Collider.pos.clone();
+            Collider.moveBy(100, 100);
+            
+            expect(Collider.pos.x).to.be(100);
+            expect(Collider.pos.y).to.be(100);
+            
+            Collider.moveTo(oldPos.x, oldPos.y);
+        });
+        it("should call moved", function() {
+            sinon.spy(Crash, "moved");
+            var oldPos = Collider.pos.clone();
+            Collider.moveBy(100, 100);
+            
+            expect(Crash.moved.called).to.be.ok();
+            expect(Crash.moved.callCount).to.be(1);
+            expect(Crash.moved.calledWith(Collider)).to.be.ok();
+            
+            Crash.moved.restore();
+            Collider.moveTo(oldPos.x, oldPos.y);
+        });
+    });
+});
