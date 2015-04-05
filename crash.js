@@ -1,3 +1,17 @@
+// Crash
+// Version 1.0.0 - Copyright 2015 - Tuur Dutoit <me@tuurdutoit.be>
+//
+// Released under the MIT License - https://github.com/TuurDutoit/crash
+//
+// Crash performs optimized 2D collisions, powered by RBush and SAT.js, written in javascript.
+
+
+// Create a UMD wrapper for Crash. Works in:
+//
+//  - Plain browser via global Crash variable
+//  - AMD loader (like require.js)
+//  - Node.js
+
 (function(factory) {
     "use strict";
     

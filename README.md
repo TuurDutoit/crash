@@ -1,5 +1,6 @@
 Crash
 =====
+v.1.0.0
 
 Crash performs optimized 2D collisions, powered by [RBush] and [SAT.js], written in javascript.  
 It's most obvious use-case is in game engines, but it's flexible enough to be used anywhere.  
