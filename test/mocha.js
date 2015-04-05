@@ -734,6 +734,9 @@ describe("Crash", function() {
             Crash.testAll(collider);
             
             expect(Crash.update.calledBefore(Crash.rbush.search)).to.be.ok();
+            
+            Crash.update.restore();
+            Crash.rbush.search.restore();
         });
         it("should update the Response correctly", function() {
             Crash.reset();
@@ -754,6 +757,8 @@ describe("Crash", function() {
             Crash.testAll(c1);
             
             expect(Crash.__onCollision.called).to.be(false);
+            
+            Crash.__onCollision.restore();
         });
         it("should break the loop if BREAK is true", function() {
             Crash.reset();
@@ -795,6 +800,55 @@ describe("Crash", function() {
             expect(c1.lastPos).to.be.an("object");
             expect(c1.lastPos).to.have.property("x", -4);
             expect(c1.lastPos).to.have.property("y", 0);
+        });
+    });
+    
+    describe("check", function() {
+        it("should be defined", function() {
+            expect(Crash.check).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.check).to.be.a("function");
+        });
+        it("should call testAll as long as there are colliders in __moved", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true).moved();
+            var c2 = new Crash.Point(new Crash.V(1, 0), true).moved();
+            var res = new Crash.Response();
+            var spy = sinon.spy(function(a, b, res, cancel) {
+                a.sat.pos.x -= res.overlapV.x;
+                a.sat.pos.y -= res.overlapV.y;
+                a.moved();
+            });
+            Crash.onCollision(spy);
+            sinon.spy(Crash, "testAll");
+            Crash.check(res);
+            
+            expect(Crash.testAll.called).to.be.ok();
+            expect(Crash.testAll.callCount).to.be(3);
+            expect(Crash.testAll.getCall(0).args).to.eql([c2, res]);
+            expect(Crash.testAll.getCall(1).args).to.eql([c2, res]);
+            expect(Crash.testAll.getCall(2).args).to.eql([c1, res]);
+            
+            expect(spy.called).to.be.ok();
+            expect(spy.callCount).to.be(1);
+            expect(spy.calledWith(c2, c1, res, Crash.cancel)).to.be.ok();
+            
+            Crash.testAll.restore();
+        });
+        it("should not do more checks than prescribed by maxChecks", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true).moved();
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            Crash.onCollision(function(a, b, res, cancel) {
+                //causes an endless loop, if not stopped by maxChecks
+                a.moved();
+            });
+            var spy = sinon.spy(Crash, "testAll");
+            Crash.maxChecks = 5;
+            Crash.check();
+            
+            expect(Crash.testAll.callCount).to.be(5);
         });
     });
 });
