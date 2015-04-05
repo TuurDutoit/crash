@@ -1273,3 +1273,177 @@ describe("Collider", function() {
         });
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+/***********
+ * POLYGON *
+ ***********/
+
+
+describe("Polygon", function() {
+    var Polygon;
+    
+    before(function() {
+        Crash.reset();
+        Polygon = new Crash.Polygon(new Crash.V, [new Crash.V, new Crash.V(5,0), new Crash.V(2,3)], false, "First Polygon");
+    });
+    
+    describe("constructor", function() {
+        it("should inherit from Collider", function() {
+            expect(Polygon).to.be.a(Crash.Collider);
+        });
+        it("should call Collider", function() {
+            sinon.spy(Crash, "insert");
+            var pos = new Crash.V;
+            var polygon = new Crash.Polygon(pos, [new Crash.V, new Crash.V(5,0), new Crash.V(2,3)], true, "Second Polygon");
+            
+            expect(polygon.pos).to.be(pos);
+            expect(Crash.insert.called).to.be.ok();
+            expect(polygon.data).to.be("Second Polygon");
+            
+            Crash.insert.restore();
+        });
+    });
+    
+    describe("setPoints", function() {
+        it("should be defined", function() {
+            expect(Polygon.setPoints).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Polygon.setPoints).to.be.a("function");
+        });
+        it("should call sat.setPoints", function() {
+            var old = Polygon.sat.points;
+            var points = [new Crash.V(1,1), new Crash.V(5,3), new Crash.V(10,4), new Crash.V(2,2)];
+            sinon.spy(Polygon.sat, "setPoints");
+            Polygon.setPoints(points);
+            
+            expect(Polygon.sat.setPoints.called).to.be.ok();
+            expect(Polygon.sat.setPoints.callCount).to.be(1);
+            expect(Polygon.sat.setPoints.calledWith(points)).to.be.ok();
+            
+            Polygon.sat.setPoints.restore();
+            Polygon.setPoints(old);
+        });
+        it("should call moved", function() {
+            var old = Polygon.sat.points;
+            var points = [new Crash.V(1,1), new Crash.V(5,3), new Crash.V(10,4), new Crash.V(2,2)];
+            sinon.spy(Crash, "moved");
+            Polygon.setPoints(points);
+            
+            expect(Crash.moved.called).to.be.ok();
+            expect(Crash.moved.callCount).to.be(1);
+            expect(Crash.moved.calledWith(Polygon)).to.be.ok();
+            
+            Crash.moved.restore();
+            Polygon.setPoints(old);
+        });
+    });
+    
+    describe("setAngle", function() {
+        it("should be defined", function() {
+            expect(Polygon.setAngle).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Polygon.setAngle).to.be.a("function");
+        });
+        it("should call sat.setAngle", function() {
+            var old = Polygon.sat.angle;
+            sinon.spy(Polygon.sat, "setAngle");
+            Polygon.setAngle(20);
+            
+            expect(Polygon.sat.setAngle.called).to.be.ok();
+            expect(Polygon.sat.setAngle.callCount).to.be(1);
+            expect(Polygon.sat.setAngle.calledWith(20)).to.be.ok();
+            
+            Polygon.sat.setAngle.restore();
+            Polygon.setAngle(old);
+        });
+        it("should call moved", function() {
+            var old = Polygon.sat.angle;
+            sinon.spy(Crash, "moved");
+            Polygon.setAngle(20);
+            
+            expect(Crash.moved.called).to.be.ok();
+            expect(Crash.moved.callCount).to.be(1);
+            expect(Crash.moved.calledWith(Polygon)).to.be.ok();
+            
+            Crash.moved.restore();
+            Polygon.setAngle(old);
+        });
+    });
+    
+    describe("setOffset", function() {
+        it("should be defined", function() {
+            expect(Polygon.setOffset).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Polygon.setOffset).to.be.a("function");
+        });
+        it("should call sat.setOffset", function() {
+            var old = Polygon.sat.offset;
+            sinon.spy(Polygon.sat, "setOffset");
+            Polygon.setOffset(20);
+            
+            expect(Polygon.sat.setOffset.called).to.be.ok();
+            expect(Polygon.sat.setOffset.callCount).to.be(1);
+            expect(Polygon.sat.setOffset.calledWith(20)).to.be.ok();
+            
+            Polygon.sat.setOffset.restore();
+            Polygon.setOffset(old);
+        });
+        it("should call moved", function() {
+            var old = Polygon.sat.offset;
+            sinon.spy(Crash, "moved");
+            Polygon.setOffset(20);
+            
+            expect(Crash.moved.called).to.be.ok();
+            expect(Crash.moved.callCount).to.be(1);
+            expect(Crash.moved.calledWith(Polygon)).to.be.ok();
+            
+            Crash.moved.restore();
+            Polygon.setOffset(old);
+        });
+    });
+    
+    describe("rotate", function() {
+        it("should be defined", function() {
+            expect(Polygon.rotate).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Polygon.rotate).to.be.a("function");
+        });
+        it("should call sat.rotate", function() {
+            sinon.spy(Polygon.sat, "rotate");
+            Polygon.rotate(20);
+            
+            expect(Polygon.sat.rotate.called).to.be.ok();
+            expect(Polygon.sat.rotate.callCount).to.be(1);
+            expect(Polygon.sat.rotate.calledWith(20)).to.be.ok();
+            
+            Polygon.sat.rotate.restore();
+            Polygon.rotate(-20);
+        });
+        it("should call moved", function() {
+            sinon.spy(Crash, "moved");
+            Polygon.rotate(20);
+            
+            expect(Crash.moved.called).to.be.ok();
+            expect(Crash.moved.callCount).to.be(1);
+            expect(Crash.moved.calledWith(Polygon)).to.be.ok();
+            
+            Crash.moved.restore();
+            Polygon.rotate(-20);
+        });
+    });
+    
+});
