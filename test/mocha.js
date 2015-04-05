@@ -849,6 +849,40 @@ describe("Crash", function() {
             Crash.check();
             
             expect(Crash.testAll.callCount).to.be(5);
+            
+            Crash.testAll.restore();
+        });
+    });
+    
+    describe("checkAll", function() {
+        it("should be defined", function() {
+            expect(Crash.checkAll).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.checkAll).to.be.a("function");
+        });
+        it("should call testAll for all colliders", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            sinon.spy(Crash, "testAll");
+            Crash.checkAll();
+            
+            expect(Crash.testAll.callCount).to.be(2);
+            
+            Crash.testAll.restore();
+        });
+        it("should call check", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            sinon.spy(Crash, "check");
+            Crash.checkAll();
+            
+            expect(Crash.check.called).to.be.ok();
+            expect(Crash.check.callCount).to.be(1);
+            
+            Crash.check.restore();
         });
     });
 });

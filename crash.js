@@ -47,8 +47,15 @@
     
     
     
-    exports.extend = function(child, Base) {
-        child.prototype = new Base();
+    exports.extend = function(child, base) {
+        child.prototype = Object.create(base.prototype, {
+            constructor: {
+                value: child,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+      });
     }
     
     exports.reset = function(maxEntries) {
@@ -384,7 +391,9 @@
         this.type = type;
         this.sat = sat;
         this.data = data;
-        this.lastPos = new SAT.Vector();
+        this.pos = this.sat.pos;
+        this.lastPos = this.pos.clone();
+        this.lastCheckedPos = this.pos.clone();
         this.aabb = {};
         
         exports.updateAABB(this);
