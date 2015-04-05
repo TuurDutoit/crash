@@ -277,6 +277,7 @@ describe("Crash", function() {
         it("should add the collider to __notYetInserted when rbush is not defined", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
             Crash.rbush = null;
+            Crash.__notYetInserted = [];
             Crash.insert(collider);
             
             expect(Crash.__notYetInserted).to.eql([collider]);
@@ -284,7 +285,7 @@ describe("Crash", function() {
         it("should add the collider to rbush when it is defined", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
             Crash.__notYetInserted = [];
-            Crash.init();
+            Crash.reset();
             Crash.insert(collider);
             
             expect(Crash.rbush.all()).to.eql([collider]);
@@ -300,7 +301,7 @@ describe("Crash", function() {
         });
         it("should remove the collider from rbush if it is defined", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
-            Crash.init();
+            Crash.reset();
             Crash.insert(collider);
             Crash.remove(collider);
             
@@ -339,7 +340,7 @@ describe("Crash", function() {
             expect(Crash.all()).to.be(Crash.__notYetInserted);
         });
         it("should return rbush.all() if rbush is defined", function() {
-            Crash.init();
+            Crash.reset();
             
             expect(Crash.all()).to.eql(Crash.rbush.all());
         });
@@ -353,7 +354,7 @@ describe("Crash", function() {
             expect(Crash.search).to.be.a("function");
         });
         it("should return all the possibly colliding colliders", function() {
-            Crash.init();
+            Crash.reset();
             var c1 = new Crash.Circle(new Crash.V, 5, true);
             var c2 = new Crash.Point(new Crash.V(1, 1), true);
             var c3 = new Crash.Box(new Crash.V(-5, -5), 10, 10, true);
@@ -365,7 +366,7 @@ describe("Crash", function() {
             expect(res).to.contain(c4);
         });
         it("should not return colliders that could not possibly be colliding", function() {
-            Crash.init(4);
+            Crash.reset();
             var c1 = new Crash.Circle(new Crash.V, 5, true);
             
             // colliding with c1
@@ -385,7 +386,7 @@ describe("Crash", function() {
             expect(res).to.not.contain(c7);
         });
         it("should not return the collider you searched for", function() {
-            Crash.init();
+            Crash.reset();
             var collider = new Crash.Circle(new Crash.V, 5, true);
             
             expect(Crash.search(collider)).to.not.contain(collider);
@@ -409,7 +410,7 @@ describe("Crash", function() {
             expect(Crash.clear).to.be.a("function");
         });
         it("should clear everything", function() {
-            Crash.init();
+            Crash.reset();
             Crash.insert(new Crash.Point(new Crash.V));
             Crash.__moved = ["content"];
             Crash.__notYetInserted = ["content"];
@@ -460,7 +461,7 @@ describe("Crash", function() {
             expect(Crash.update).to.be.a("function");
         });
         it("should call updateAABB", function() {
-            Crash.init();
+            Crash.reset();
             var collider = new Crash.Point(new Crash.V);
             sinon.spy(Crash, "updateAABB");
             Crash.update(collider);
@@ -472,7 +473,7 @@ describe("Crash", function() {
             Crash.updateAABB.restore();
         });
         it("should call rbush.remove", function() {
-            Crash.init();
+            Crash.reset();
             var collider = new Crash.Point(new Crash.V);
             sinon.spy(Crash, "remove");
             Crash.update(collider);
@@ -484,7 +485,7 @@ describe("Crash", function() {
             Crash.remove.restore();
         });
         it("should call rbush.insert", function() {
-            Crash.init();
+            Crash.reset();
             var collider = new Crash.Point(new Crash.V);
             sinon.spy(Crash, "insert");
             Crash.update(collider);
@@ -697,6 +698,103 @@ describe("Crash", function() {
         });
         it("should be a function", function() {
             expect(Crash.testAll).to.be.a("function");
+        });
+        it("should call __onCollision for all collisions", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true, "c1");
+            var c2 = new Crash.Box(new Crash.V(2,0), 10, 10, true, "c2");
+            var c3 = new Crash.Point(new Crash.V(0, 4), true, "c3");
+            var res = new Crash.Response();
+            var spy = sinon.spy(Crash, "__onCollision");
+            Crash.testAll(c1, res);
+            
+            expect(spy.called).to.be.ok();
+            expect(spy.callCount).to.be(2);
+            expect(spy.calledWith(c1, c2, res)).to.be.ok();
+            expect(spy.calledWith(c1, c3, res)).to.be.ok();
+            
+            Crash.__onCollision.restore();
+        });
+        it("should update the collider", function() {
+            Crash.reset();
+            var collider = new Crash.Point(new Crash.V, true);
+            sinon.spy(Crash, "update");
+            Crash.testAll(collider);
+            
+            expect(Crash.update.called).to.be.ok();
+            expect(Crash.update.callCount).to.be(1);
+            
+            Crash.update.restore();
+        });
+        it("should call update before search", function() {
+            Crash.reset();
+            var collider = new Crash.Point(new Crash.V, true);
+            sinon.spy(Crash, "update");
+            sinon.spy(Crash.rbush, "search");
+            Crash.testAll(collider);
+            
+            expect(Crash.update.calledBefore(Crash.rbush.search)).to.be.ok();
+        });
+        it("should update the Response correctly", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            var res = new Crash.Response();
+            Crash.testAll(c1, res);
+            
+            expect(res.a).to.be(c1.sat);
+            expect(res.b).to.be(c2.sat);
+            expect(res.overlap).to.be(4);
+        });
+        it("should not call __onCollision if the overlap is too small", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Box(new Crash.V(4.9, 0), 5, 5, true);
+            sinon.spy(Crash, "__onCollision");
+            Crash.testAll(c1);
+            
+            expect(Crash.__onCollision.called).to.be(false);
+        });
+        it("should break the loop if BREAK is true", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            var c3 = new Crash.Box(new Crash.V(1, 1), 5, 5, true);
+            var listener = function() {
+                Crash.BREAK = true;
+            }
+            var spy = sinon.spy(listener);
+            Crash.onCollision(spy);
+            Crash.testAll(c1);
+            
+            expect(spy.called).to.be.ok();
+            expect(spy.callCount).to.be(1);
+        });
+        it("should set BREAK to true when finished", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            Crash.onCollision(function() {
+                Crash.BREAK = true;
+            });
+            Crash.testAll(c1);
+            
+            expect(Crash.BREAK).to.be(false);
+        });
+        it("should set lastPos on the collider", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            Crash.onCollision(function(a, b, res, cancel) {
+                a.sat.pos.x -= res.overlapV.x;
+                a.sat.pos.y -= res.overlapV.y;
+            });
+            Crash.testAll(c1);
+            
+            expect(c1.lastPos).to.be.ok();
+            expect(c1.lastPos).to.be.an("object");
+            expect(c1.lastPos).to.have.property("x", -4);
+            expect(c1.lastPos).to.have.property("y", 0);
         });
     });
 });

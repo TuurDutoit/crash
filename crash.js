@@ -51,6 +51,17 @@
         child.prototype = new Base();
     }
     
+    exports.reset = function(maxEntries) {
+        this.clear();
+        this.__listeners = [];
+        this.BREAK = false;
+        this.maxChecks = 100;
+        this.RESPONSE.clear();
+        this.init(maxEntries);
+        
+        return this;
+    }
+    
     exports.onCollision = function(listener) {
         this.__listeners.push(listener);
         
@@ -308,8 +319,8 @@
     
     exports.testAll = function(a, res) {
         var res = res || this.RESPONSE;
-        var possible = this.search(a);
         this.update(a);
+        var possible = this.search(a);
         
         loop:
         for(var i = 0, len = possible.length; i < len; i++) {
@@ -317,7 +328,7 @@
             var str = this.getTestString(a.type, b.type);
             res.clear();
             
-            if(b !== a && SAT[str](a.sat, b.sat, res)) {
+            if(SAT[str](a.sat, b.sat, res)) {
                 // Fix collisions with infinitely small overlaps causing way too many loops
                 if(Math.abs(res.overlap) > .5) {
                     this.__onCollision(a, b, res);
