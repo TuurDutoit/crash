@@ -286,10 +286,10 @@ An array of colliders that have moved since the last [Crash.check()]. This is us
 
 
 ### Crash.init ([number maxEntries:9]) - .
-__maxEntries:__ *number|optional; Default: 9*. The maximum amount of [Crash.Collider]s in a Node. See the [RBush docs][rbush-docs] for more info.  
+__maxEntries:__ *number|optional. Default: 9*. The maximum amount of [Crash.Collider]s in a Node. See the [RBush docs][rbush-docs] for more info.  
 __*return:*__ *Crash*. For chaining.
 
-Initializes Crash, and more specifically RBush. It creates [Crash.rbush], with `maxEntries` and aabb coordinate names `.aabb.x1`, `aabb.y1`, etc. Then, it [Crash.insert()]s all the [Crash.Collider]s in [Crash.__notYetInserted].  
+Initializes Crash, and more specifically RBush. It creates [Crash.rbush], with `maxEntries` and aabb coordinate names `.aabb.x1`, `.aabb.y1`, etc. Then, it inserts all the [Crash.Collider]s from [Crash.__notYetInserted] in [Crash.rbush].  
 You should be able to use all the APIs safely without calling [Crash.init()], but some may not work correctly (specifically those that need RBush). It is a good habit, though, to call [Crash.init()] before you do anything else.
 
 ```javascript
@@ -297,6 +297,36 @@ Crash.init(16);
 
 Crash.insert(...);
 Crash.search(...);
+```
+
+
+### Crash.insert (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] to insert.  
+__*return:*__ *Crash*. For chaining.
+
+Inserts [Crash.Collider]s in [Crash.rbush], or in [Crash.__notYetInserted] if the former is not defined.  
+Before [Crash.Collider]s turn up in [Crash.search()]s or in collision checks (performed by [Crash.testAll()]), you must [Crash.insert()] them.  
+You can use [Crash.remove()] to get them out.
+
+```javascript
+var circle = new Crash.Circle(new Crash.V(0,0), 5);
+// circle won't turn up in searches and collision checks
+Crash.insert(circle);
+// Now it will!
+```
+
+
+### Crash.remove (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] to remove.  
+__*return:*__ *Crash*. For chaining.
+
+Removes [Crash.Collider]s from [Crash.rbush], or from [Crash.__notYetInserted] if the former is not defined.
+
+```javascript
+Crash.insert(collider);
+// collider will turn up in searches and collision checks
+Crash.remove(collider);
+// now, it won't, anymore
 ```
 
 
@@ -483,6 +513,8 @@ THE SOFTWARE.
 [Crash.__notYetInserted]: #crash__notyetinserted--array
 [Crash.__moved]: #crash__moved--array
 [Crash.init()]: #crashinit-number-maxentries9---
+[Crash.insert()]: #crashinsert-collider-collider---
+[Crash.remove()]: #crashremove-collider-collider---
 [Crash.reset()]: #crashreset-number-maxentries---
 [Crash.cancel()]: #crashcancel----false
 [Crash.getTestString()]: #crashgetteststring-string-type1-string-type2---string
