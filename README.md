@@ -413,3 +413,8 @@ THE SOFTWARE.
 [Crash.__notYetInserted]: #crash__notyetinserted--arraycollider
 [Crash.__moved]: #crash__moved--arraycollider
 [Crash.extend()]: #crashextend-function-child-function-base--undefined
+[Crash.reset()]: #crashreset-number-maxEntries--
+[Crash.onCollision()]: #crashoncollision-function-listener--
+[Crash.offCollision()]: #crashoffcollision-function-listener--
+[Crash.__onCollision()]: #crash__oncollision-collider-a-collider-b-response-res--
+[Listener]: #listener
