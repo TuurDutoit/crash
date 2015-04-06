@@ -268,19 +268,6 @@ When [Crash.init()] has not yet been called, and thus when [Crash.rbush] isn't d
 *Private*  
 An array of colliders that have moved since the last [Crash.check()]. This is used internally by [Crash.check()] to optimize collision checks. For more info, see [Crash.check()].
 
-### Crash.extend (function child, function base) - *undefined*
-__child:__ *function*. This constructor that inherits from `parent`.  
-__base:__ *function*. The constructor that is the parent of `child`.  
-__*return:*__ *undefined*.
-
-Extends the prototype chain of `base` to `child`, so child inherits from base. This is used to make the collider classes inherit from `Collider`.
-
-```javascript
-var Child = function(){}
-var Parent = function(){}
-Crash.extend(Child, Parent);
-```
-
 
 ### Crash.reset ([number maxEntries]) - .
 __maxEntries:__ *number|optional*. See [Crash.init()].  
@@ -288,6 +275,43 @@ __*return:*__ *Crash*. For chaining.
 
 Resets Crash to a default, empty state. This basically calls [Crash.clear()] and [Crash.init()], and resets some variables.  
 This method is primarily used by the test suite.
+
+
+### Crash.cancel () - *false*
+__*return:*__ *false*. Makes it easy to stop event propagation in some EventEmitters.
+
+This method cancels the current check loop. When you call [Crash.check()], a loop will start, which calls [Crash.testAll()] for every collider that has moved since the last [Crash.check()]. Then, [Crash.testAll()] will do a [Crash.search()] and perform all the necessary checks, calling [Crash.__onCollision()] for every collision. Now, if you move a collider during the [Crash.testAll()] loop (i.e. in a [Listener]), it will be added to [Crash.__moved] and all the following collision checks become unnecessary, because they will run again in the next iteration of the [Crash.check()] loop.  
+That's where [Crash.cancel()] comes in. When you move a collider inside a [Listener], call [Crash.cancel()] (or the fourth argument of the listener, which is the exact same function) to cancel all further (unnecessary) collision checks.
+
+```javascript
+Crash.onCollision(function(a, b, res, cancel) {
+    a.moveBy(-res.overlapV.x, -res.overlapV.y);
+    cancel();
+});
+```
+
+> __Important Note:__ all the above is only valid for the *first* collider (named `a`), because that's the one that collision checks are run for. If yo move `b`, nothing has to be done.
+
+```javascript
+Crash.onCollision(function(a, b, res, cancel) {
+    b.moveBy(res.overlapV.x, res.overlapV.y);
+});
+```
+
+
+### Crash.getTestString (string type1, string type2) - *string*
+__type1:__ *string*. The type of the first [Crash.Collider].  
+__type2:__ *string*. The type of the second [Crash.Collider].  
+__*return:*__ *string*. The appropriate SAT testing string.
+
+Gives you the right SAT method name to test for a collision between two [Crash.Collider]s.
+
+```javascript
+var circle = new Crash.Circle(new Crash.Vector(0,0), 10);
+var box = new Crash.Box(new Crash.Vector(5,5), 7, 15);
+
+var string = Crash.getTestString(circle.type, box.type); // 'testCirclePolygon'
+```
 
 
 ### Crash.onCollision (function listener) - .
@@ -325,6 +349,20 @@ __*return:*__ *Crash*. For chaining.
 
 Calls all the [Listener]s when a `collision` event occurs. It takes three arguments: the two [Crash.Collider]s that are colliding and the [Crash.Response] for this collision. It will take care of injecting [Crash.cancel()] by itself.  
 Intended for private use.
+
+
+### Crash.extend (function child, function base) - *undefined*
+__child:__ *function*. This constructor that inherits from `parent`.  
+__base:__ *function*. The constructor that is the parent of `child`.  
+__*return:*__ *undefined*.
+
+Extends the prototype chain of `base` to `child`, so child inherits from base. This is used to make the collider classes inherit from `Collider`.
+
+```javascript
+var Child = function(){}
+var Parent = function(){}
+Crash.extend(Child, Parent);
+```
 
 
 
