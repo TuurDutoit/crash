@@ -268,8 +268,77 @@ When [Crash.init()] has not yet been called, and thus when [Crash.rbush] isn't d
 *Private*  
 An array of colliders that have moved since the last [Crash.check()]. This is used internally by [Crash.check()] to optimize collision checks. For more info, see [Crash.check()].
 
-### Crash.extend (function child, function base) - .
+### Crash.extend (function child, function base) - *undefined*
+__child:__ *function*. This constructor that inherits from `parent`.  
+__base:__ *function*. The constructor that is the parent of `child`.  
+__*return:*__ *undefined*.
+
 Extends the prototype chain of `base` to `child`, so child inherits from base. This is used to make the collider classes inherit from `Collider`.
+
+```javascript
+var Child = function(){}
+var Parent = function(){}
+Crash.extend(Child, Parent);
+```
+
+
+### Crash.reset ([number maxEntries]) - .
+__maxEntries:__ *number|optional*. See [Crash.init()].  
+__*return:*__ *Crash*. For chaining.
+
+Resets Crash to a default, empty state. This basically calls [Crash.clear()] and [Crash.init()], and resets some variables.  
+This method is primarily used by the test suite.
+
+
+### Crash.onCollision (function listener) - .
+__listener:__ *function*. The [Listener] to add to the `collision` event. See [Listener] for more info.  
+__*return:*__ *Crash*. For chaining.
+
+Adds a [Listener] to [Crash.__listeners] and will be called every time a collision occurs. See [Listener] for more info.
+
+```javascript
+var listener = function(a, b, res, cancel) {
+    alert("Oh my, there is a collision!");
+    a.moveBy(-res.overlapV.x, -res.overlapV.y);
+}
+Crash.onCollision(listener);
+```
+
+
+### Crash.offCollision (function listener) - .
+__listener:__ *function*. The [Listener] to remove.
+__*return:*__ *Crash*. For chaining.
+
+Removes a [Listener] from the `collision` event. So, this is the opposite of [Crash.onCollision()].
+
+```javascript
+Crash.offCollision(listener);
+```
+
+
+### Crash.__onCollision (Collider a, Collider b, Response res) - .
+*Private*  
+__a:__ *Collider*. The [Crash.Collider] that collides with `b`.  
+__b:__ *Collider*. The [Crash.Collider] that collides with `a`.  
+__res:__ *Response*. The [Crash.Response] for thsi collision.  
+__*return:*__ *Crash*. For chaining.
+
+Calls all the [Listener]s when a `collision` event occurs. It takes three arguments: the two [Crash.Collider]s that are colliding and the [Crash.Response] for this collision. It will take care of injecting [Crash.cancel()] by itself.  
+Intended for private use.
+
+
+
+
+
+
+### Listener (Collider a, Collider b, Response res, function cancel) : function
+__a:__ *Collider*. The [Crash.Collider] that collides with `b`.  
+__b:__ *Collider*. The [Crash.Collider] that collides with `a`.  
+__res:__ *Response*. The [Crash.Response] for this collision.  
+__cancel:__ *function*. Cancels the current check loop. See [Crash.testAll()] for more info.
+
+A listener is a function that is called every time a collision is detected by [Crash.testAll()], [Crash.check()] or [Crash.checkAll()] and will be passed four arguments: the two [Crash.Collider]s that are colliding, the [Crash.Response] for this collision and [Crash.cancel()], which cancels the current check loop. See [Crash.testAll()] for more info about this.  
+You can add a listener with [Crash.onCollision()] and you can remove them with [Crash.offCollision()]. All listeners are stored in [Crash.__listeners], which is intended for private use.
 
 
 
@@ -325,10 +394,10 @@ THE SOFTWARE.
 [SAT.js]: https://github.com/jriecken/sat-js
 [sat-docs]: https://github.com/jriecken/sat-js/blob/master/README.md
 [require.js]: http://requirejs.org
-[getting-started]: https://github.com/TuurDutoit/crash#getting-started
-[API]: https://github.com/TuurDutoit/crash#api
 [source code]: https://github.com/TuurDutoit/crash/blob/master/crash.js
 [issue tracker]: https://github.com/TuurDutoit/crash/issues
+[getting-started]: #getting-started
+[API]: #api
 
 
 [Crash.RBush]: #crashrbush--function
@@ -343,3 +412,4 @@ THE SOFTWARE.
 [Crash.__listeners]: #crash__listeners--arrayfunction
 [Crash.__notYetInserted]: #crash__notyetinserted--arraycollider
 [Crash.__moved]: #crash__moved--arraycollider
+[Crash.extend()]: #crashextend-function-child-function-base--undefined
