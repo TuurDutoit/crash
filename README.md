@@ -330,6 +330,16 @@ Crash.remove(collider);
 ```
 
 
+### Crash.all () - Collider[]
+__*return:*__ *Array.\<Collider\>*. An array containing all the [Crash.Collider]s that have been [Crash.insert()]ed.
+
+Returns all the [Crash.Collider]s that have been [Crash.insert()]ed.
+
+```javascript
+var allColliders = Crash.all();
+```
+
+
 ### Crash.reset ([number maxEntries]) - .
 __maxEntries:__ *number|optional*. See [Crash.init()].  
 __*return:*__ *Crash*. For chaining.
@@ -515,6 +525,7 @@ THE SOFTWARE.
 [Crash.init()]: #crashinit-number-maxentries9---
 [Crash.insert()]: #crashinsert-collider-collider---
 [Crash.remove()]: #crashremove-collider-collider---
+[Crash.all()]: #crashall----collider
 [Crash.reset()]: #crashreset-number-maxentries---
 [Crash.cancel()]: #crashcancel----false
 [Crash.getTestString()]: #crashgetteststring-string-type1-string-type2---string
