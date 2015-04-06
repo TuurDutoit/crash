@@ -340,6 +340,20 @@ var allColliders = Crash.all();
 ```
 
 
+### Crash.search (Collider collider) - Collider[]
+__collider:__ *Collider*. The [Crash.Collider] to base the search on.  
+__*return:*__ *Array.\<Collider\>*. An array of colliders that may be colliding with `collider`.
+
+Runs `rbush.search()` based on a [Crash.Collider], which will look for all [Crash.Collider]s that have (nearly) colliding axis-aligned bounding boxes (AABBs). This search is optimized by an RTree (that's a special algorithm, designed for this), implemented by RBush.
+
+RBush usually requires an array of AABB coordinates to perform a search, so [Crash.search()] translates the [Crash.collider]'s `aabb` coordinates to the correct array.
+
+```javascript
+var possibleCollisions = Crash.search(collider);
+// returns an array containing closeByCollider, but not veryFarAwayCollider
+```
+
+
 ### Crash.reset ([number maxEntries]) - .
 __maxEntries:__ *number|optional*. See [Crash.init()].  
 __*return:*__ *Crash*. For chaining.
