@@ -218,6 +218,18 @@ All the built-in methods (like `moveTo`, `setOffset` and `rotate`) already call 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 ## API
 
 > API docs are under construction.  
@@ -267,6 +279,25 @@ When [Crash.init()] has not yet been called, and thus when [Crash.rbush] isn't d
 ### Crash.__moved : Array.<Collider>
 *Private*  
 An array of colliders that have moved since the last [Crash.check()]. This is used internally by [Crash.check()] to optimize collision checks. For more info, see [Crash.check()].
+
+
+
+
+
+
+### Crash.init ([number maxEntries:9]) - .
+__maxEntries:__ *number|optional; Default: 9*. The maximum amount of [Crash.Collider]s in a Node. See the [RBush docs][rbush-docs] for more info.  
+__*return:*__ *Crash*. For chaining.
+
+Initializes Crash, and more specifically RBush. It creates [Crash.rbush], with `maxEntries` and aabb coordinate names `.aabb.x1`, `aabb.y1`, etc. Then, it [Crash.insert()]s all the [Crash.Collider]s in [Crash.__notYetInserted].  
+You should be able to use all the APIs safely without calling [Crash.init()], but some may not work correctly (specifically those that need RBush). It is a good habit, though, to call [Crash.init()] before you do anything else.
+
+```javascript
+Crash.init(16);
+
+Crash.insert(...);
+Crash.search(...);
+```
 
 
 ### Crash.reset ([number maxEntries]) - .
@@ -451,9 +482,12 @@ THE SOFTWARE.
 [Crash.__listeners]: #crash__listeners--array
 [Crash.__notYetInserted]: #crash__notyetinserted--array
 [Crash.__moved]: #crash__moved--array
-[Crash.extend()]: #crashextend-function-child-function-base---undefined
+[Crash.init()]: #crashinit-number-maxentries9---
 [Crash.reset()]: #crashreset-number-maxentries---
+[Crash.cancel()]: #crashcancel----false
+[Crash.getTestString()]: #crashgetteststring-string-type1-string-type2---string
 [Crash.onCollision()]: #crashoncollision-function-listener---
 [Crash.offCollision()]: #crashoffcollision-function-listener---
 [Crash.__onCollision()]: #crash__oncollision-collider-a-collider-b-response-res---
+[Crash.extend()]: #crashextend-function-child-function-base---undefined
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
