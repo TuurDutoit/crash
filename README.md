@@ -400,6 +400,7 @@ THE SOFTWARE.
 [API]: #api
 
 
+[Crash]: #crash-1
 [Crash.RBush]: #crashrbush--function
 [Crash.SAT]: #crashsat--object
 [Crash.Vector]: #crashvector--constructor
@@ -409,12 +410,12 @@ THE SOFTWARE.
 [Crash.rbush]: #crashrbush--rbush
 [Crash.RESPONSE]: #crashresponse--response
 [Crash.BREAK]: #crashbreak--boolean
-[Crash.__listeners]: #crash__listeners--arrayfunction
-[Crash.__notYetInserted]: #crash__notyetinserted--arraycollider
-[Crash.__moved]: #crash__moved--arraycollider
-[Crash.extend()]: #crashextend-function-child-function-base--undefined
-[Crash.reset()]: #crashreset-number-maxEntries--
-[Crash.onCollision()]: #crashoncollision-function-listener--
-[Crash.offCollision()]: #crashoffcollision-function-listener--
-[Crash.__onCollision()]: #crash__oncollision-collider-a-collider-b-response-res--
-[Listener]: #listener
+[Crash.__listeners]: #crash__listeners--array
+[Crash.__notYetInserted]: #crash__notyetinserted--array
+[Crash.__moved]: #crash__moved--array
+[Crash.extend()]: #crashextend-function-child-function-base---undefined
+[Crash.reset()]: #crashreset-number-maxentries---
+[Crash.onCollision()]: #crashoncollision-function-listener---
+[Crash.offCollision()]: #crashoffcollision-function-listener---
+[Crash.__onCollision()]: #crash__oncollision-collider-a-collider-b-response-res---
+[Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
