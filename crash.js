@@ -178,15 +178,14 @@
         return this.rbush ? this.rbush.all() : this.__notYetInserted;
     }
     
+    var SEARCH_ARRAY = [];
     exports.search = function(collider) {
-        // search() usually takes an array of AABB coordinates.
-        // I have opened an issue to ask for a way to search for items:
-        // https://github.com/mourner/rbush/issues/32
-        // In the meantime, we're translating to the correct format (creating a new Array for every call!)
-        
-        //return this.rbush.search(collider);
         if(this.rbush) {
-            var res = this.rbush.search([collider.aabb.x1, collider.aabb.y1, collider.aabb.x2, collider.aabb.y2]);
+            SEARCH_ARRAY[0] = collider.aabb.x1;
+            SEARCH_ARRAY[1] = collider.aabb.y1;
+            SEARCH_ARRAY[2] = collider.aabb.x2;
+            SEARCH_ARRAY[3] = collider.aabb.y2;
+            var res = this.rbush.search(SEARCH_ARRAY);
             var index = res.indexOf(collider);
             if(index > -1) {
                 res.splice(index, 1);
