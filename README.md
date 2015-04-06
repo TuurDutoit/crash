@@ -25,7 +25,10 @@ Crash is perfectly happy in the browser and on Node.js.
 
 
 ## Installation
-At the moment, package managers are not yet set up. Just download the `crash.js` file from this repo and load it in your project.  
+At the moment, package managers are not yet set up. Just download one of the following files from this repo and load it in your project.
+1. [crash.js]: full source, with comments and all (12.8kB).
+2. [crash.min.js]: minified, ready to be used in production (5.3kB or 1.7kB gzipped).
+
 When you have installed Crash, head over to the [Getting Started section][getting-started].
 
 ### Node.js
@@ -511,7 +514,8 @@ THE SOFTWARE.
 
 
 
-
+[crash.js]: https://raw.githubusercontent.com/TuurDutoit/crash/master/crash.js
+[crash.min.js]: https://raw.githubusercontent.com/TuurDutoit/crash/master/crash.min.js
 [RBush]: https://github.com/mourner/rbush
 [rbush-docs]: https://github.com/mourner/rbush/blob/master/README.md
 [SAT.js]: https://github.com/jriecken/sat-js
