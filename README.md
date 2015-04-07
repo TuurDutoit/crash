@@ -633,7 +633,24 @@ Crash.test(c2);
 
 Crash.test(c3);
 // the listener will not be called.
-``` 
+```
+
+
+### Crash.check () - .
+__*return:*__ *Crash*. For chaining.
+
+Calls [Crash.testAll()] for every [Crash.Collider] in [Crash.__moved]. This means that it performs collision checks for all the [Crash.Collider]s that have moved since the last [Crash.check()], which makes it the perfect function to handle collisions after everything was moved to new positions by physics. This integrates neatly in game loops: just do your updates, and then call [Crash.check()] to handle collisions.
+
+Important to note is that Colliders may be moved inside [Listener]s: they will be added to [Crash.__moved] and checked in further iterations of the (current) [Crash.check()] loop.  
+To prevent infinite loops (a collider is moved, checked in the following iteration, moved again, etc.), the loop will be forced to stop after [Crash.MAX_CHECKS] loops, which is `100` by default.
+
+```javascript
+// apply updates to colliders ...
+// things may be colliding!
+Crash.check();
+// nothing is colliding anymore!
+// if the right listeners have been added, that is.
+```
 
 
 
