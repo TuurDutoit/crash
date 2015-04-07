@@ -19,6 +19,7 @@ Crash is perfectly happy in the browser and on Node.js.
   * [Unleashing the power of Crash](#unleashing-the-power-of-crash)
   * [What kind of sorcery is this !?](#what-kind-of-sorcery-is-this-)
   * [But what's up with that `moved()`?](#but-whats-up-with-that-moved)
+* [Contributing](#contributing)
 * [Overview](#overview)
 * [API](#api)
   * [Crash]
@@ -26,7 +27,6 @@ Crash is perfectly happy in the browser and on Node.js.
   * [Collision testing][Crash.test()]
   * [Colliders][Crash.Collider]
   * [Other][Listener]
-* [Contributing](#contributing)
 * [License](#License)
 
 
@@ -98,12 +98,10 @@ Wow, what's all that!? Let's clarify this step by step.
 5. These constructors also take two more (optional) arguments:
  * insert: a boolean indicating whether the collider should be inserted into RBush. More info on this is following in the next few steps.
  * data: some data to add to the collider. This can be anything you want and doesn't do anything for Crash; it's just there for your convenience.
- 
-> __Fun Fact:__ the position of a Box isn't necessarily the bottom-left corner, it can actually be any corner, as long as you use it consistently. The bottom-left corner is the most obvious choice, though.
+
+> __Fun Fact:__ the unit you use for the numbers is completely up to you. Crash only stores the numbers, you can interpret them as you wish, so you can use pixels, millimeters or even some game-specific unit you invented!
  
 > __Important Fun Fact:__ there is a very important difference between Point and Vector: a Point is a Collider, so it can be used for collision checks. A Vector, on the other hand, is just a thing that defines positions in Colliders, like the center of a Circle or the corners of a Polygon.
-
-> __Yet Another Fun Fact:__ the unit you use for the numbers is completely up to you. Crash only stores the numbers, you can interpret them as you wish, so you can use pixels, millimeters or even some game-specific unit you invented!
 
 
 ### Testing for collisions
@@ -221,6 +219,15 @@ All the built-in methods (like `moveTo`, `setOffset` and `rotate`) already call 
 
 
 
+## Contributing
+
+All contributions are very welcome!  
+Typos, bug fixes, code cleanup, documentation, tests, a website, you name it!
+
+Questions and feature requests belong in the [issue tracker], __with the right tags__.
+
+
+
 
 
 
@@ -259,8 +266,7 @@ All the built-in methods (like `moveTo`, `setOffset` and `rotate`) already call 
 
 ## API
 
-> API docs are under construction.  
-In the meantime, you can waste some time looking at the [source code]; it's only 500 lines of nice, fluffy code!
+
 
 ### Crash
 This is the main object, returned by `require()`, injected by `defined()` or set as `window.Crash`. Anything related to Crash sits in this namespace.
@@ -272,10 +278,12 @@ The RBush constructor, as returned by the rbush module.
 The SAT object, as returned by the SAT.js module.
 
 ### Crash.Vector : *constructor*
+*Alias:* [Crash.V]  
 Represents a vector, used by the Colliders to define their positions and corners, and by SAT to perform its calculations.  
 I refer to the [SAT docs][sat-docs] for the API definition.
 
 ### Crash.V : *constructor*
+*Alias:* [Crash.Vector]  
 Alias for [Crash.Vector].
 
 ### Crash.Response : *constructor*
@@ -694,6 +702,222 @@ Crash.checkAll();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Crash.Collider (string type, SAT.Polygon|SAT.Circle satCollider, [boolean insert:false], [any data]) : *constructor*
+__type:__ *string*. The type of collider this is. Valid values: `polygon`, `box`, `point`, `circle`.  
+__satCollider:__ *SAT.Polygon or SAT.Circle*. The SAT Collider to use for collision checks.  
+__insert:__ *boolean|optional*. Whether to [Crash.insert()] this Collider.  
+__data:__ *any|optional*. Some data to store in [Collider.data].  
+__*return:*__ *Collider*. The new Collider.
+
+This is the main Collider constructor, which provides some housekeeping methods, like `moveBy`, `update`, etc. All the other constructors ([Crash.Polygon], [Crash.Box], [Crash.Point] and [Crash.Circle]) inherit from this class. They pass their type and a custom SAT Collider to [Crash.Collider], and pass through `insert` and `data`. This way, they inherit the housekeeping functions from Collider's prototype and they can add their own on their own prototype.
+
+
+### Collider.type : *string*
+The type of collider this is. Valid values: `polygon`, `box`, `point`, `circle`.  
+This attribute is used by [Crash.updateAABB()] to determine how to update the [Collider.aabb] attribute.
+
+
+### Collider.sat : *SAT.Polygon|SAT.Circle*
+The actual SAT collider used to do the collision checking. For [Crash.Polygon]s, [Crash.Box]es and [Crash.Point]s, this is a SAT.Polygon, for [Crash.Circle]s, this is a SAT.Circle.  
+For further documentation, I refer to the [SAT.js docs][sat-docs].
+
+
+### Collider.data : *any*
+Some data that has to be carried around with the [Crash.Collider]. It can be of any type, and doesn't mean anything to Crash; it's just for your convenience.
+
+
+### Collider.pos : *Vector*
+This is the same [Crash.Vector] as [Collider.sat]`.pos` (so `collider.pos === collider.sat.pos` is `true`).  
+This position is not garanteed to be 'safe', i.e. the [Crash.Collider] may still be colliding with something. [Collider.pos] is the [Crash.Vector] that is moved by [Collider.moveTo()] and [Collider.moveBy()], and is therefore always the most up-to-date, but not always collision checked.
+
+
+### Collider.lastPos : *Vector*
+This is a [Crash.Vector] keeping track of the last position as it was at the end of the [Crash.testAll()] loop. So, during a [Crash.check()] loop, the [Collider.lastPos] attribute as it is inside the [Listener]s, is a copy of [Collider.pos] at the end of the previous iteration.
+
+
+### Collider.lastCheckedPos : *Vector*
+This is a [Crash.Vector] keeping track of the last fully collision checked position of the [Crash.Collider], i.e. a copy of [Collider.pos] at the end of the [Crash.check()] loop.
+
+
+### Collider.aabb : *object*
+An Object with `x1`, `y1`, `x2` and `y2` attributes, that keeps track of the [Crash.Collider]'s axis-aligned bounding box (AABB). It is used to perform [Crash.search()]es.  
+When you move a [Crash.Collider], don't forget to update this attribute, with [Crash.updateAABB()]. Note that the built-in move methods (`moveBy`, `rotate`, etc.) already do this for you.
+
+
+### Collider.insert () - .
+__*return:*__ *Collider*. For chaining.
+
+Shortcut for [Crash.insert()].
+
+
+### Collider.remove () - .
+__*return:*__ *Collider*. For chaining.
+
+Shortcut for [Crash.remove()].
+
+
+### Collider.update () - .
+__*return:*__ *Collider*. For chaining.
+
+Shortcut for [Crash.update()].
+
+
+### Collider.updateAABB () - .
+__*return:*__ *Collider*. For chaining.
+
+Shortcut for [Crash.updateAABB()].
+
+
+### Collider.moved () - .
+__*return:*__ *Collider*. For chaining.
+
+Shortcut for [Crash.moved()].
+
+
+### Collider.search () - *Collider[]*
+__*return:*__ *Array.\<Collider\>*. An array of [Crash.Collider]s that may be colliding with `this`.
+
+Shortcut for [Crash.search()].
+
+
+### Collider.setData (any data) - .
+__data:__ *any*. The data to set as the new [Collider.data].  
+__*return:*__ *Collider*. For chaining.
+
+Sets the `data` attribute ([Collider.data]) to any value that's passed as the first argument. See [Collider.data] for more info.
+
+
+### Collider.getData () - *any*
+__*return:*__ *any*. The value of the `data` attribute ([Collider.data]).
+
+Returns the value of the `data` attribute ([Collider.data]). See [Collider.data] for more info.
+
+
+### Collider.moveTo (number x, number y) - .
+__x:__ *number*. The x-coordinate to move to.  
+__y:__ *number*. The y-coordinate to move to.  
+__*return:*__ *Collider*. For chaining.
+
+This moves the [Crash.Collider]'s `pos` ([Collider.pos]) and `sat.pos` attributes __to__ (`x`, `y`). This calls [Collider.moved()] for you.
+
+
+### Collider.moveBy (number x, number y) - .
+*Alias:* [Collider.move()]  
+__x:__ *number*. The distance in x direction to move by.  
+__y:__ *number*. The distance in y direction to move by.  
+__*return:*__ *Collider*. For chaining.
+
+This moves the [Crash.Collider]'s `pos` ([Collider.pos]) and `sat.pos` attributes __by__ (`x`, `y`). This calls [Collider.moved()] for you.
+
+
+### Collider.move (number x, number y) - .
+*Alias:* [Collider.moveBy()]  
+__x:__ *number*. The distance in x direction to move by.  
+__y:__ *number*. The distance in y direction to move by.  
+__*return:*__ *Collider*. For chaining.
+
+Alias of [Collider.moveBy()].
+
+
+### Crash.Polygon (Vector pos, Vector[] points, [boolean insert:false], [any data]) ~ [Crash.Collider]
+*Inherits from:* [Crash.Collider]  
+__pos:__ *Vector*. The base position of the Polygon.  
+__points:__ *Array.\<Vector\>*. The points/corners of the Polygon.  
+__insert:__ *boolean|optional*. Whether to insert the Polygon.  
+__data:__ *any|optional*. Any data to set as [Collider.data].  
+__*return:*__ *Polygon*.
+
+A Polygon is a [Crash.Collider] with a base position ([Collider.pos]) and a few points/corners. The points are defined by an array of [Crash.Vector]s, relative to the base position ([Collider.pos]), in counter-clockwise order.  
+For the `insert` and `data` arguments, see [Crash.Collider].
+
+
+### Polygon.setPoints (Vector[] points) - .
+__points:__ *Array.\<Vector\>*. The points/corners of the Polygon.  
+__*return:*__ *Polygon*. For chaining.
+
+A shortcut for [Collider.sat]`.setPoints()`, which calls [Collider.moved()] for you.
+ 
+ 
+### Polygon.setAngle (number angle) - .
+__angle:__ *number*. The angle by which to rotate the Polygon (in radians).  
+__*return:*__ *Polygon*. For chaining.
+
+A shortcut for [Collider.sat]`.setAngle()`, which calls [Collider.moved()] for you.
+ 
+ 
+### Polygon.setOffset (number offset) - .
+__offset:__ *number*. The offset by which to translate the points of the Polygon.  
+__*return:*__ *Polygon*. For chaining.
+
+A shortcut for [Collider.sat]`.setOffset()`, which calls [Collider.moved()] for you.
+ 
+ 
+### Polygon.rotate (number angle) - .
+__angle:__ *number*. The angle by which to rotate the points of the Polygon.  
+__*return:*__ *Polygon*. For chaining.
+
+A shortcut for [Collider.sat]`.rotate()`, which calls [Collider.moved()] for you.
+ 
+ 
+### Crash.Circle (Vector center, number radius, [boolean insert:false], [any data]) ~ [Crash.Collider]
+__center:__ *Vector*. The position of the center of the Circle.  
+__radius:__ *number*. The radius of the Circle.  
+__insert:__ *boolean|optional*. Whether to insert the Circle.  
+__data:__ *any|optional*. Any data to set as [Collider.data].
+__*return:*__ *Circle*
+
+A Circle is a [Crash.Collider], with a center and radius.  
+For the `insert` and `data` arguments, see [Crash.Collider].
+
+
+### Crash.Point (Vector position, [boolean insert:false], [any data]) ~ [Crash.Collider]
+__position:__ *Vector*. The position of the Point.  
+__insert:__ *boolean|optional*. Whether to insert the Point.  
+__data:__ *any|optional*. Any data to set as [Collider.data].
+__*return:*__ *Point*
+
+A Point is a [Crash.Collider] with just a position. It doesn't have a size.  
+For the `insert` and `data` arguments, see [Crash.Collider].
+
+
+### Crash.Box (Vector position, number width, number height, [boolean insert:false], [any data]) ~ [Crash.Collider]
+__position:__ *Vector*. The position of the Box.  
+__width:__ *number*. The width of the Box.  
+__height:__ *number*. The height of the Box.  
+__insert:__ *boolean|optional*. Whether to insert the Box.  
+__data:__ *any|optional*. Any data to set as [Collider.data].
+__*return:*__ *Box*
+
+A Box is a [Crash.Collider] in a rectangular shape with a position (the bottom-left corner), a width and a height.  
+For the `insert` and `data` arguments, see [Crash.Collider].
+
+
+
+
+
+
+
+
+
+
+
+
 ### Listener (Collider a, Collider b, Response res, function cancel) : *function*
 __a:__ *Collider*. The [Crash.Collider] that collides with `b`.  
 __b:__ *Collider*. The [Crash.Collider] that collides with `a`.  
@@ -704,14 +928,6 @@ A listener is a function that is called every time a collision is detected by [C
 The context of the listener (`this`) will be set to `Crash`.  
 You can add a listener with [Crash.onCollision()] and you can remove them with [Crash.offCollision()]. All listeners are stored in [Crash.__listeners], which is intended for private use.
 
-
-
-## Contributing
-
-All contributions are very welcome!  
-Typos, bug fixes, code cleanup, documentation, tests, a website, you name it!
-
-Questions and feature requests belong in the [issue tracker], __with the right tags__.
 
 
 
@@ -783,6 +999,7 @@ THE SOFTWARE.
 [Crash.insert()]: #crashinsert-collider-collider---
 [Crash.remove()]: #crashremove-collider-collider---
 [Crash.all()]: #crashall----collider
+[Crash.search()]: #crashsearch-collider-collider---collider
 [Crash.clear()]: #crashclear---
 [Crash.addToMoved()]: #crashaddtomoved-collider-collider---
 [Crash.update()]: #crashupdate-collider-collider---
@@ -803,4 +1020,31 @@ THE SOFTWARE.
 [Crash.testAll()]: #crashtestall-collider-collider-response-res---boolean
 [Crash.check()]: #crashcheck----
 [Crash.checkAll()]: #crashcheckall----
+[Crash.Collider]: #crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor
+[Collider.type]: #collidertype--string
+[Collider.sat]: #collidersat--satpolygonsatcircle
+[Collider.data]: #colliderdata--any
+[Collider.pos]: #colliderpos--vector
+[Collider.lastPos]: #colliderlastpos--vector
+[Collider.lastCheckedPos]: #colliderlastcheckedpos--vector
+[Collider.aabb]: #collideraabb--object
+[Collider.insert()]: #colliderinsert----
+[Collider.remove()]: #colliderremove----
+[Collider.update()]: #colliderupdate----
+[Collider.updateAABB()]: #colliderupdateaabb----
+[Collider.moved()]: #collidermoved----
+[Collider.search()]: #collidersearch----collider
+[Collider.setData()]: #collidersetdata-any-data---
+[Collider.getData()]: #collidergetdata----any
+[Collider.moveTo()]: #collidermoveto-number-x-number-y---
+[Collider.moveBy()]: #collidermoveby-number-x-number-y---
+[Collider.move()]: #collidermove-number-x-number-y---
+[Crash.Polygon]: #crashpolygon-vector-pos-vector-points-boolean-insertfalse-any-data--crashcollider
+[Polygon.setPoints()]: #polygonsetpoints-vector-points---
+[Polygon.setAngle()]: #polygonsetangle-number-angle---
+[Polygon.setOffset()]: #polygonsetoffset-number-offset---
+[Polygon.rotate()]: #polygonrotate-number-angle---
+[Crash.Circle]: #crashcircle-vector-center-number-radius-boolean-insertfalse-any-data--crashcollider
+[Crash.Point]: #crashpoint-vector-position-boolean-insertfalse-any-data--crashcollider
+[Crash.Box]: #crashbox-vector-position-number-width-number-height-boolean-insertfalse-any-data--crashcollider
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
