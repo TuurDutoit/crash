@@ -598,13 +598,16 @@ You can stop this loop (the one that checks for collisions) simply by calling [C
 Stopping the loop comes in handy when you move `collider` in any of the [Listener]s, because all consequent collision checks become unnecessary: you will have to run `testAll()` again for the new position.  
 The value returned by `testAll()` indicates whether the loop was cancelled: if it was, `false` is returned, otherwise, it returns `true`.
 
-You probably don't want to use this method extensively, because [Crash.check()] is more convenient in most situations.
+You probably don't want to use this method, because it isn't really intended to be used publicly (but rather by [Crash.check()] internally), and [Crash.check()] is more convenient in most situations anyway. 
 
-Finally, I would like to note three things:
+Finally, I would like to note a few things:
 
 1. `res` is optional: if you don't pass it, [Crash.RESPONSE] will be used instead.
 2. this method doesn't really provide direct feedback, like [Crash.test()] does: it rather calls the attached [Listener]s. This means `res` (or [Crash.RESPONSE]) will be passed to the [Listener]s, and will only hold info about the last collision when the call is finished.
 3. if this method returns `false`, the loop was cancelled, so you probably want to run it again.
+4. `testAll` will not run [Crash.__onCollision()] when the overlap is smaller than `0.5`.
+5. `testAll` won't call [Crash.update()] on `collider`, so make sure it's updated.
+6. `testAll` is not really intended to be used publicly, but rather by [Crash.check()] internally.
 
 
 
