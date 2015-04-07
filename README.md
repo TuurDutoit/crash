@@ -1,6 +1,6 @@
 Crash
 =====
-v.1.0.0
+v.1.1.0
 
 Crash performs optimized 2D collisions, powered by [RBush] and [SAT.js], written in javascript.  
 It's most obvious use-case is in game engines, but it's flexible enough to be used anywhere.  
@@ -33,8 +33,8 @@ Crash is perfectly happy in the browser and on Node.js.
 ## Installation
 At the moment, package managers are not yet set up. Just download one of the following files from this repo and load it in your project.
 
-1. [crash.js]: full source, with comments and all (12.8kB).
-2. [crash.min.js]: minified, ready to be used in production (5.3kB or 1.7kB gzipped).
+1. [crash.js]: full source, with comments and all (13.6kB).
+2. [crash.min.js]: minified, ready to be used in production (5.6kB or 1.8kB gzipped).
 
 When you have installed Crash, head over to the [Getting Started section][getting-started].
 
