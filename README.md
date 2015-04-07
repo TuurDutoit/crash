@@ -20,6 +20,11 @@ Crash is perfectly happy in the browser and on Node.js.
   * [What kind of sorcery is this !?](#what-kind-of-sorcery-is-this-)
   * [But what's up with that `moved()`?](#but-whats-up-with-that-moved)
 * [API](#api)
+  * [Crash]
+  * [AABB updates][Crash.updateAABB()]
+  * [Collision testing][Crash.test()]
+  * [Colliders][Crash.Collider]
+  * [Other][Listener]
 * [Contributing](#contributing)
 * [License](#License)
 
@@ -242,45 +247,48 @@ In the meantime, you can waste some time looking at the [source code]; it's only
 ### Crash
 This is the main object, returned by `require()`, injected by `defined()` or set as `window.Crash`. Anything related to Crash sits in this namespace.
 
-### Crash.RBush : function
+### Crash.RBush : *function*
 The RBush constructor, as returned by the rbush module.
 
-### Crash.SAT : object
+### Crash.SAT : *object*
 The SAT object, as returned by the SAT.js module.
 
-### Crash.Vector : constructor
+### Crash.Vector : *constructor*
 Represents a vector, used by the Colliders to define their positions and corners, and by SAT to perform its calculations.  
 I refer to the [SAT docs][sat-docs] for the API definition.
 
-### Crash.V : constructor
+### Crash.V : *constructor*
 Alias for [Crash.Vector].
 
-### Crash.Response : constructor
+### Crash.Response : *constructor*
 Provides information about a collision, like overlap distance and direction.  
 I refer to the [SAT docs][sat-docs] for the API definition.
 
-### Crash.maxChecks : number
-The maximum amount of times to run [Crash.testAll()] during [Crash.check()]. See [Crash.check()] for more info.
-
-### Crash.rbush : RBush
+### Crash.rbush : *RBush*
 The RBush instance that holds the colliders. This is (mostly) used internally to optimize collision checks.  
 For further documentation, please see the [RBush docs][rbush-docs].
 
-### Crash.RESPONSE : Response
+### Crash.RESPONSE : *Response*
 Used by the testing functions. When no Response has been passed to them, they use this instead.
 
-### Crash.BREAK : boolean
+### Crash.BREAK : *boolean*
 Whether to stop the currently running check loop. This is set to `true` by [Crash.cancel()]. See [Crash.testAll()] for more info.
 
-### Crash.__listeners : Array.<function>
+### Crash.MAX_CHECKS : *number*
+The maximum amount of times to run [Crash.testAll()] during [Crash.check()]. See [Crash.check()] for more info.
+
+### Crash.OVERLAP_LIMIT : *number*
+The minimum amount two [Crash.Collider]s should overlap to call the [Listener]s. If falsy, `OVERLAP_LIMIT` will not be taken into account. See [Crash.testAll()] for more info.
+
+### Crash.__listeners : *Array.\<function\>*
 *Private*  
 An array of functions to call when a collision occurs. You can add to this with [Crash.onCollision()].
 
-### Crash.__notYetInserted : Array.<Collider>
+### Crash.__notYetInserted : *Array.\<Collider\>*
 *Private*  
 When [Crash.init()] has not yet been called, and thus when [Crash.rbush] isn't defined yet, Colliders that are [Crash.insert()]ed are pushed to this array, to be inserted into [Crash.rbush] when [Crash.init()] is called.
 
-### Crash.__moved : Array.<Collider>
+### Crash.__moved : *Array.\<Collider\>*
 *Private*  
 An array of colliders that have moved since the last [Crash.check()]. This is used internally by [Crash.check()] to optimize collision checks. For more info, see [Crash.check()].
 
@@ -334,7 +342,7 @@ Crash.remove(collider);
 ```
 
 
-### Crash.all () - Collider[]
+### Crash.all () - *Collider[]*
 __*return:*__ *Array.\<Collider\>*. An array containing all the [Crash.Collider]s that have been [Crash.insert()]ed.
 
 Returns all the [Crash.Collider]s that have been [Crash.insert()]ed.
@@ -344,7 +352,7 @@ var allColliders = Crash.all();
 ```
 
 
-### Crash.search (Collider collider) - Collider[]
+### Crash.search (Collider collider) - *Collider[]*
 __collider:__ *Collider*. The [Crash.Collider] to base the search on.  
 __*return:*__ *Array.\<Collider\>*. An array of colliders that may be colliding with `collider`.
 
@@ -364,12 +372,12 @@ __*return:*__ *Crash*. For chaining.
 Clears Crash from all [Crash.Collider]s. This calls `rbush.clear()`, and clears [Crash.__notYetInserted] and [Crash.__moved].
 
 
-### Crash.moved (Collider collider) - .
-__collider:__ *Collider*. The [Crash.Collider] that has moved.  
+### Crash.addToMoved (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] that should be added to [Crash.__moved].  
 __*return:*__ *Crash*. For chaining.
 
-Notifies Crash that a [Crash.Collider] has moved. This adds the Collider to [Crash.__moved], and will thus be checked for collisions during the next [Crash.check()] round.  
-Note that this is already taken care of for you when using the built-in move methods of the Colliders.
+Adds a [Crash.Collider] to [Crash.__moved], so it gets collision checked during the next [Crash.check()] round. This does not update the Collider's AABB! If you want to do both, use [Crash.moved()] instead.  
+Note that the built-in move methods of Colliders (`moveBy`, `rotate`,...) already call [Crash.moved()] \(which calls `addToMoved()`\) for you.
 
 ```javascript
 collider.pos.x += 5;
@@ -381,7 +389,7 @@ Crash.moved(collider);
 
 ```javascript
 collider.moveBy(5,0);
-// Crash.move(collider) has already been called for you
+// Crash.moved(collider), and thus Crash.addToMoved(collider), has already been called for you
 ```
 
 
@@ -389,7 +397,30 @@ collider.moveBy(5,0);
 __collider:__ *Collider*. The [Crash.Collider] that should be updated.  
 __*return:*__ *Crash*. For chaining.
 
-Updates the `aabb` of the [Crash.Collider] and updates its position in RBush.
+Updates the `aabb` of the [Crash.Collider] \(using [Crash.updateAABB()]\) and updates its position in RBush.
+
+
+### Crash.moved (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] that has moved.  
+__*return:*__ *Crash*. For chaining.
+
+Notifies Crash that a [Crash.Collider] has moved. This calls [Crash.update()] and [Crash.addToMoved()], so all the housekeeping is done in one function call.
+Note that this is already taken care of for you when using the built-in move methods of the Colliders (`moveBy`, `rotate`,...).
+
+```javascript
+collider.pos.x += 5;
+// Is not taken into account in the next check() round
+// and the aabb is not updated
+
+Crash.moved(collider);
+// Now it will
+// and its aabb is updated
+```
+
+```javascript
+collider.moveBy(5,0);
+// Crash.move(collider) has already been called for you
+```
 
 
 ### Crash.reset ([number maxEntries]) - .
@@ -427,7 +458,7 @@ __type1:__ *string*. The type of the first [Crash.Collider].
 __type2:__ *string*. The type of the second [Crash.Collider].  
 __*return:*__ *string*. The appropriate SAT testing string.
 
-Gives you the right SAT method name to test for a collision between two [Crash.Collider]s.
+Gives you the right SAT method name to test for a collision between two [Crash.Collider]s. Be sure to pass [Collider.type], ans not a [Crash.Collider]!
 
 ```javascript
 var circle = new Crash.Circle(new Crash.Vector(0,0), 10);
@@ -492,7 +523,160 @@ Crash.extend(Child, Parent);
 
 
 
-### Listener (Collider a, Collider b, Response res, function cancel) : function
+
+
+### Crash.updateAABB (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Calls [Crash.updateAABBPolygon()], [Crash.updateAABBBox()], [Crash.updateAABBCircle()] or [Crash.updateAABBPoint()] based on `collider`'s `type`.
+
+
+### Crash.updateAABBPolygon (Polygon collider) - .
+__collider:__ *Polygon*. The [Crash.Polygon] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Polygon]'s `aabb` attribute ([Collider.aabb]), based on its position and size.
+
+
+### Crash.updateAABBBox (Box collider) - .
+__collider:__ *Box*. The [Crash.Box] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Box]'s `aabb` attribute ([Collider.aabb]), based on its position and size.
+
+
+### Crash.updateAABBCircle (Circle collider) - .
+__collider:__ *Circle*. The [Crash.Circle] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Circle]'s `aabb` attribute ([Collider.aabb]), based on its position and size.
+
+
+### Crash.updateAABBPoint (Point collider) - .
+__collider:__ *Point*. The [Crash.Point] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Point]'s `aabb` attribute ([Collider.aabb]), based on its position.
+
+
+
+
+
+
+
+
+
+
+### Crash.test (Collider a, Collider b, [Response res]) - *boolean*
+__a:__ *Collider*. The first [Crash.Collider] to test for.  
+__b:__ *Collider*. The second [Crash.Collider] to test for.  
+__res:__ *Response|optional*. The optional [Crash.Response] to use.  
+__*return:*__ *boolean*. Indicates whether there is a collision between `a`and `b`.
+
+Tests for a collision between `a` and `b`, using SAT. The boolean return value indicates whether `a` and `b` are colliding: `true` if there is a collision, `false` otherwise.  
+You can optionally pass in a [Crash.Response] to get some information about the collision (if there is one). If you don't, [Crash.RESPONSE] will be used instead.
+
+```javascript
+var c1 = new Crash.Circle(new Crash.V(0,0), 5);
+var c2 = new Crash.Point(new Crash.V(3,0));
+var c3 = new Crash.Box(new Crash.V(15,20), 10, 10);
+var res = new Crash.Response();
+
+Crash.test(c1, c2, res);
+// true, info in 'res'
+
+Crash.test(c1, c3);
+//false, info in Crash.RESPONSE
+```
+
+
+### Crash.testAll (Collider collider, [Response res]) - *boolean*
+__collider:__ *Collider*. The [Crash.Collider] to test collisions for.  
+__res:__ *Response|optional*. The optional [Crash.Response] to use.  
+__*return:*__ *boolean*. Whether the loop was stopped.
+
+Tests for collisions between `collider` and any [Crash.Collider] that has been [Crash.insert()]ed in [Crash.rbush]. This will [Crash.search()] for `collider`, do a collision check for every [Crash.Collider] returned by that search and finally call [Crash.__onCollision()] for every collision.  
+You can stop this loop (the one that checks for collisions) simply by calling [Crash.cancel()]. This sets [Crash.BREAK] to `true` (which is what `testAll` actually looks for). In [Listener]s, the recommended way is to call their `cancel` argument, which is the exact same function as [Crash.cancel()].  
+Stopping the loop comes in handy when you move `collider` in any of the [Listener]s, because all consequent collision checks become unnecessary: you will have to run `testAll()` again for the new position.  
+The value returned by `testAll()` indicates whether the loop was cancelled: if it was, `false` is returned, otherwise, it returns `true`.
+
+You probably don't want to use this method, because it isn't really intended to be used publicly (but rather by [Crash.check()] internally), and [Crash.check()] is more convenient in most situations anyway. 
+
+Finally, I would like to note a few things:
+
+1. `res` is optional: if you don't pass it, [Crash.RESPONSE] will be used instead.
+2. this method doesn't really provide direct feedback, like [Crash.test()] does: it rather calls the attached [Listener]s. This means `res` (or [Crash.RESPONSE]) will be passed to the [Listener]s, and will only hold info about the last collision when the call is finished.
+3. if this method returns `false`, the loop was cancelled, so you probably want to run it again.
+4. `testAll` will not run [Crash.\_\_onCollision()] when the overlap is smaller than [Crash.OVERLAP\_LIMIT]. If [Crash.OVERLAP\_LIMIT] is falsy, [Crash.\_\_onCollision] will always be called.
+5. `testAll` won't call [Crash.update()] on `collider`, so make sure it's updated.
+6. `testAll` is not really intended to be used publicly, but rather by [Crash.check()] internally.
+
+
+
+```javascript
+var c1 = new Crash.Circle(new Crash.V(0,0), 5, true);
+var c2 = new Crash.Point(new Crash.V(3,0), true);
+var c3 = new Crash.Box(new Crash.V(15,20), 10, 10, true);
+var res = new Crash.Response();
+Crash.onCollision(function(a, b, res, cancel){
+    alert("Oh my, there is a collision!");
+});
+
+Crash.testAll(c1, res);
+// calls the listener for (c1, c2), but not for (c1, c3).
+// the response passed to the listener is 'res'.
+
+Crash.test(c2);
+// calls the listener for (c2, c1), but not for (c2, c3).
+// the response passed to the listener is Crash.RESPONSE.
+
+Crash.test(c3);
+// the listener will not be called.
+```
+
+
+### Crash.check () - .
+__*return:*__ *Crash*. For chaining.
+
+Calls [Crash.testAll()] for every [Crash.Collider] in [Crash.__moved]. This means that it performs collision checks for all the [Crash.Collider]s that have moved since the last [Crash.check()], which makes it the perfect function to handle collisions after everything was moved to new positions by physics. This integrates neatly in game loops: just do your updates, and then call [Crash.check()] to handle collisions.
+
+Important to note is that Colliders may be moved inside [Listener]s: they will be added to [Crash.__moved] and checked in further iterations of the (current) [Crash.check()] loop.  
+To prevent infinite loops (a collider is moved, checked in the following iteration, moved again, etc.), the loop will be forced to stop after [Crash.MAX_CHECKS] loops, which is `100` by default.
+
+For a [Crash.Collider] to be checked, Crash must be notified it has moved (i.e. it must be pushed to [Crash.__moved]. You can use [Crash.moved()] or [Crash.addToMoved()] to achieve this.
+
+```javascript
+// apply updates to colliders ...
+// things may be colliding!
+Crash.check();
+// nothing is colliding anymore!
+// if the right listeners have been added, that is.
+```
+
+
+### Crash.checkAll () - .
+__*return:*__ *Crash*. For chaining.
+
+This does the same as [Crash.check()], with one difference: it doesn't check [Crash.Collider]s in [Crash.__moved], but rather all [Crash.Collider]s (as returned by [Crash.all()]). This is especially handy when you just loaded you [Crash.Collider]s and you don't know which ones are colliding and/or have moved.
+
+```javascript
+// I have no idea what's up with my Colliders:
+// I haven't moved any yet, but I don't know if any are colliding!
+Crash.checkAll();
+// Ahh, that's better! Everything is sorted out!
+```
+
+
+
+
+
+
+
+
+
+
+### Listener (Collider a, Collider b, Response res, function cancel) : *function*
 __a:__ *Collider*. The [Crash.Collider] that collides with `b`.  
 __b:__ *Collider*. The [Crash.Collider] that collides with `a`.  
 __res:__ *Response*. The [Crash.Response] for this collision.  
@@ -568,10 +752,11 @@ THE SOFTWARE.
 [Crash.Vector]: #crashvector--constructor
 [Crash.V]: #crashv--constructor
 [Crash.Response]: #crashresponse--constructor
-[Crash.maxChecks]: #crashmaxchecks--number
 [Crash.rbush]: #crashrbush--rbush
 [Crash.RESPONSE]: #crashresponse--response
 [Crash.BREAK]: #crashbreak--boolean
+[Crash.MAX_CHECKS]: #crashmax_checks--number
+[Crash.OVERLAP_LIMIT]: #crashoverlap_limit--number
 [Crash.__listeners]: #crash__listeners--array
 [Crash.__notYetInserted]: #crash__notyetinserted--array
 [Crash.__moved]: #crash__moved--array
@@ -579,6 +764,10 @@ THE SOFTWARE.
 [Crash.insert()]: #crashinsert-collider-collider---
 [Crash.remove()]: #crashremove-collider-collider---
 [Crash.all()]: #crashall----collider
+[Crash.clear()]: #crashclear---
+[Crash.addToMoved()]: #crashaddtomoved-collider-collider---
+[Crash.update()]: #crashupdate-collider-collider---
+[Crash.moved()]: #crashmoved-collider-collider---
 [Crash.reset()]: #crashreset-number-maxentries---
 [Crash.cancel()]: #crashcancel----false
 [Crash.getTestString()]: #crashgetteststring-string-type1-string-type2---string
@@ -586,4 +775,13 @@ THE SOFTWARE.
 [Crash.offCollision()]: #crashoffcollision-function-listener---
 [Crash.__onCollision()]: #crash__oncollision-collider-a-collider-b-response-res---
 [Crash.extend()]: #crashextend-function-child-function-base---undefined
+[Crash.updateAABB()]: #crashupdateaabb-collider-collider---
+[Crash.updateAABBPolygon()]: #crashupdateaabbpolygon-polygon-collider---
+[Crash.updateAABBBox()]: #crashupdateaabbbox-box-collider---
+[Crash.updateAABBCircle()]: #crashupdateaabbcircle-circle-collider---
+[Crash.updateAABBPoint()]: #crashupdateaabbpoint-point-collider---
+[Crash.test()]: #crashtest-collider-a-collider-b-response-res---boolean
+[Crash.testAll()]: #crashtestall-collider-collider-response-res---boolean
+[Crash.check()]: #crashcheck----
+[Crash.checkAll()]: #crashcheckall----
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
