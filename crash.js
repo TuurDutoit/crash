@@ -6,6 +6,10 @@
 // Crash performs optimized 2D collisions, powered by RBush and SAT.js, written in javascript.
 
 
+// TODO: document concepts: check()/testAll()/moved()/listeners; SAT; RBush;
+// TODO: set lastCheckedPos in check()
+
+
 // Create a UMD wrapper for Crash. Works in:
 //
 //  - Plain browser via global Crash variable
@@ -48,10 +52,11 @@
         Vector:      SAT.Vector,
         V:           SAT.Vector,
         Response:    SAT.Response,
-        maxChecks:   100,
         rbush:       null,
         RESPONSE:    new SAT.Response(),
         BREAK:       false,
+        MAX_CHECKS:   100,
+        OVERLAP_LIMIT: 0.5,
         __listeners: [],
         __notYetInserted: [],
         __moved: []
@@ -69,14 +74,15 @@
                 writable: true,
                 configurable: true
             }
-      });
+        });
     }
     
     exports.reset = function(maxEntries) {
         this.clear();
         this.__listeners = [];
         this.BREAK = false;
-        this.maxChecks = 100;
+        this.MAX_CHECKS = 100;
+        this.OVERLAP_LIMIT = 0.5;
         this.RESPONSE.clear();
         this.init(maxEntries);
         
@@ -100,7 +106,7 @@
     
     exports.__onCollision = function(a, b, res) {
         for(var i = 0, len = this.__listeners.length; i < len; i++) {
-            this.__listeners[i](a, b, res, this.cancel);
+            this.__listeners[i].call(this, a, b, res, this.cancel);
         }
         
         return this;
@@ -346,7 +352,6 @@
     
     exports.testAll = function(a, res) {
         var res = res || this.RESPONSE;
-        this.update(a);
         var possible = this.search(a);
         
         loop:
@@ -357,7 +362,7 @@
             
             if(SAT[str](a.sat, b.sat, res)) {
                 // Fix collisions with infinitely small overlaps causing way too many loops
-                if(Math.abs(res.overlap) > .5) {
+                if( (this.OVERLAP_LIMIT && Math.abs(res.overlap) > this.OVERLAP_LIMIT) || !this.OVERLAP_LIMIT) {
                     this.__onCollision(a, b, res);
                     if(this.BREAK) {
                         break loop;
@@ -366,18 +371,18 @@
             }
         }
         
-        a.lastPos.x = a.sat.pos.x;
-        a.lastPos.y = a.sat.pos.y;
+        a.lastPos.copy(a.pos);
         
+        var cancelled = this.BREAK;
         this.BREAK = false;
         
-        return this;
+        return !cancelled;
     }
     
     
     exports.check = function(res) {
         var i = 0;
-        while(this.__moved.length && i < this.maxChecks) {
+        while(this.__moved.length && i < this.MAX_CHECKS) {
             var collider = this.__moved.pop();
             this.testAll(collider, res);
             i++;

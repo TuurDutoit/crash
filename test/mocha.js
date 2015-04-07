@@ -61,18 +61,6 @@ describe("Crash", function() {
             expect(Crash.Response).to.equal(Crash.SAT.Response);
         });
     });
-
-    describe("maxChecks", function() {
-        it("should be defined", function() {
-            expect(Crash.maxChecks).to.be.ok();
-        });
-        it("should be a number", function() {
-            expect(Crash.maxChecks).to.be.a("number");
-        });
-        it("should equal 100 (default)", function() {
-            expect(Crash.maxChecks).to.equal(100);
-        });
-    });
     
     describe("rbush", function() {
         it("should be null (default)", function() {
@@ -92,6 +80,27 @@ describe("Crash", function() {
     describe("BREAK", function() {
         it("should be false by default", function() {
             expect(Crash.BREAK).to.be(false);
+        });
+    });
+    
+    describe("MAX_CHECKS", function() {
+        it("should be defined", function() {
+            expect(Crash.MAX_CHECKS).to.be.ok();
+        });
+        it("should be a number", function() {
+            expect(Crash.MAX_CHECKS).to.be.a("number");
+        });
+        it("should equal 100 (default)", function() {
+            expect(Crash.MAX_CHECKS).to.equal(100);
+        });
+    });
+    
+    describe("OVERLAP_LIMIT", function() {
+        it("should be defined", function() {
+            expect(Crash.OVERLAP_LIMIT).to.be.ok();
+        });
+        it("should be 0.5 by default", function() {
+            expect(Crash.OVERLAP_LIMIT).to.be(0.5);
         });
     });
     
@@ -152,6 +161,67 @@ describe("Crash", function() {
             Crash.extend(child, Base);
             
             expect(new child).to.be.a(Base);
+        });
+    });
+    
+    describe("reset", function() {
+        it("should be defined", function() {
+            expect(Crash.reset).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.reset).to.be.a("function");
+        });
+        it("should call clear", function() {
+            sinon.spy(Crash, "clear");
+            Crash.reset();
+            
+            expect(Crash.clear.called).to.be.ok();
+            expect(Crash.clear.callCount).to.be(1);
+            
+            Crash.clear.restore();
+        });
+        it("should reset __listeners", function() {
+            Crash.onCollision(function(){});
+            Crash.reset();
+            
+            expect(Crash.__listeners).to.eql([]);
+        });
+        it("should reset BREAK", function() {
+            Crash.BREAK = true;
+            Crash.reset();
+            
+            expect(Crash.BREAK).to.be(false);
+        });
+        it("should reset MAX_CHECKS", function() {
+            Crash.MAX_CHECKS = 500;
+            Crash.reset();
+            
+            expect(Crash.MAX_CHECKS).to.be(100);
+        });
+        it("should reset OVERLAP_LIMIT", function() {
+            Crash.OVERLAP_LIMIT = 0.01;
+            Crash.reset();
+            
+            expect(Crash.OVERLAP_LIMIT).to.be(0.5);
+        });
+        it("should call RESPONSE.clear", function() {
+            sinon.spy(Crash.RESPONSE, "clear");
+            Crash.reset();
+            
+            expect(Crash.RESPONSE.clear.called).to.be.ok();
+            expect(Crash.RESPONSE.clear.callCount).to.be(1);
+            
+            Crash.RESPONSE.clear.restore();
+        });
+        it("should call init", function() {
+            sinon.spy(Crash, "init");
+            Crash.reset(5);
+            
+            expect(Crash.init.called).to.be.ok();
+            expect(Crash.init.callCount).to.be(1);
+            expect(Crash.init.calledWith(5)).to.be.ok();
+            
+            Crash.init.restore();
         });
     });
     
@@ -221,6 +291,46 @@ describe("Crash", function() {
         });
         it("should be a function", function() {
             expect(Crash.cancel).to.be.a("function");
+        });
+        it("should set BREAK to true", function() {
+            Crash.BREAK = false;
+            Crash.cancel();
+            
+            expect(Crash.BREAK).to.be(true);
+            
+            Crash.BREAK = false;
+        });
+        it("should return false", function() {
+            expect(Crash.cancel()).to.be(false);
+            
+            Crash.BREAK =false;
+        });
+    });
+    
+    describe("getTestString", function() {
+        it("should be defined", function() {
+            expect(Crash.cancel).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.cancel).to.be.a("function");
+        });
+        it("should return the right test strings", function() {
+            expect(Crash.getTestString("polygon","polygon")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("polygon","box")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("polygon","point")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("polygon","circle")).to.be("testPolygonCircle");
+            expect(Crash.getTestString("box","polygon")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("box","box")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("box","point")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("box","circle")).to.be("testPolygonCircle");
+            expect(Crash.getTestString("point","polygon")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("point","box")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("point","point")).to.be("testPolygonPolygon");
+            expect(Crash.getTestString("point","circle")).to.be("testPolygonCircle");
+            expect(Crash.getTestString("circle","polygon")).to.be("testCirclePolygon");
+            expect(Crash.getTestString("circle","box")).to.be("testCirclePolygon");
+            expect(Crash.getTestString("circle","point")).to.be("testCirclePolygon");
+            expect(Crash.getTestString("circle","circle")).to.be("testCircleCircle");
         });
     });
 
@@ -746,29 +856,6 @@ describe("Crash", function() {
             
             Crash.__onCollision.restore();
         });
-        it("should update the collider", function() {
-            Crash.reset();
-            var collider = new Crash.Point(new Crash.V, true);
-            sinon.spy(Crash, "update");
-            Crash.testAll(collider);
-            
-            expect(Crash.update.called).to.be.ok();
-            expect(Crash.update.callCount).to.be(1);
-            
-            Crash.update.restore();
-        });
-        it("should call update before search", function() {
-            Crash.reset();
-            var collider = new Crash.Point(new Crash.V, true);
-            sinon.spy(Crash, "update");
-            sinon.spy(Crash.rbush, "search");
-            Crash.testAll(collider);
-            
-            expect(Crash.update.calledBefore(Crash.rbush.search)).to.be.ok();
-            
-            Crash.update.restore();
-            Crash.rbush.search.restore();
-        });
         it("should update the Response correctly", function() {
             Crash.reset();
             var c1 = new Crash.Circle(new Crash.V, 5, true);
@@ -780,7 +867,7 @@ describe("Crash", function() {
             expect(res.b).to.be(c2.sat);
             expect(res.overlap).to.be(4);
         });
-        it("should not call __onCollision if the overlap is too small", function() {
+        it("should not call __onCollision if the overlap is smaller than OVERLAP_LIMIT", function() {
             Crash.reset();
             var c1 = new Crash.Circle(new Crash.V, 5, true);
             var c2 = new Crash.Box(new Crash.V(4.9, 0), 5, 5, true);
@@ -788,6 +875,18 @@ describe("Crash", function() {
             Crash.testAll(c1);
             
             expect(Crash.__onCollision.called).to.be(false);
+            
+            Crash.__onCollision.restore();
+        });
+        it("should call __onCollision if OVERLAP_LIMIT is falsy", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Box(new Crash.V(4.9, 0), 5, 5, true);
+            Crash.OVERLAP_LIMIT = false;
+            sinon.spy(Crash, "__onCollision");
+            Crash.testAll(c1);
+            
+            expect(Crash.__onCollision.called).to.be(true);
             
             Crash.__onCollision.restore();
         });
@@ -832,6 +931,22 @@ describe("Crash", function() {
             expect(c1.lastPos).to.have.property("x", -4);
             expect(c1.lastPos).to.have.property("y", 0);
         });
+        it("should return true in normal circumstances", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            
+            expect(Crash.testAll(c1)).to.be(true);
+        });
+        it("should return false when the loop has been stopped", function() {
+            Crash.reset();
+            var c1 = new Crash.Circle(new Crash.V, 5, true);
+            var c2 = new Crash.Point(new Crash.V(1, 0), true);
+            Crash.onCollision(function() {
+                Crash.BREAK = true;
+            });
+            
+            expect(Crash.testAll(c1)).to.be(false);
+        });
     });
     
     describe("check", function() {
@@ -867,16 +982,16 @@ describe("Crash", function() {
             
             Crash.testAll.restore();
         });
-        it("should not do more checks than prescribed by maxChecks", function() {
+        it("should not do more checks than prescribed by MAX_CHECKS", function() {
             Crash.reset();
             var c1 = new Crash.Circle(new Crash.V, 5, true).moved();
             var c2 = new Crash.Point(new Crash.V(1, 0), true);
             Crash.onCollision(function(a, b, res, cancel) {
-                //causes an endless loop, if not stopped by maxChecks
+                //causes an endless loop, if not stopped by MAX_CHECKS
                 a.moved();
             });
             var spy = sinon.spy(Crash, "testAll");
-            Crash.maxChecks = 5;
+            Crash.MAX_CHECKS = 5;
             Crash.check();
             
             expect(Crash.testAll.callCount).to.be(5);
