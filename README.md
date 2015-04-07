@@ -644,12 +644,27 @@ Calls [Crash.testAll()] for every [Crash.Collider] in [Crash.__moved]. This mean
 Important to note is that Colliders may be moved inside [Listener]s: they will be added to [Crash.__moved] and checked in further iterations of the (current) [Crash.check()] loop.  
 To prevent infinite loops (a collider is moved, checked in the following iteration, moved again, etc.), the loop will be forced to stop after [Crash.MAX_CHECKS] loops, which is `100` by default.
 
+For a [Crash.Collider] to be checked, Crash must be notified it has moved (i.e. it must be pushed to [Crash.__moved]. You can use [Crash.moved()] or [Crash.addToMoved()] to achieve this.
+
 ```javascript
 // apply updates to colliders ...
 // things may be colliding!
 Crash.check();
 // nothing is colliding anymore!
 // if the right listeners have been added, that is.
+```
+
+
+### Crash.checkAll () - .
+__*return:*__ *Crash*. For chaining.
+
+This does the same as [Crash.check()], with one difference: it doesn't check [Crash.Collider]s in [Crash.__moved], but rather all [Crash.Collider]s (as returned by [Crash.all()]). This is especially handy when you just loaded you [Crash.Collider]s and you don't know which ones are colliding and/or have moved.
+
+```javascript
+// I have no idea what's up with my Colliders:
+// I haven't moved any yet, but I don't know if any are colliding!
+Crash.checkAll();
+// Ahh, that's better! Everything is sorted out!
 ```
 
 
@@ -767,4 +782,6 @@ THE SOFTWARE.
 [Crash.updateAABBPoint()]: #crashupdateaabbpoint-point-collider---
 [Crash.test()]: #crashtest-collider-a-collider-b-response-res---boolean
 [Crash.testAll()]: #crashtestall-collider-collider-response-res---boolean
+[Crash.check()]: #crashcheck----
+[Crash.checkAll()]: #crashcheckall----
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
