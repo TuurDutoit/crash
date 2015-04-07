@@ -19,6 +19,7 @@ Crash is perfectly happy in the browser and on Node.js.
   * [Unleashing the power of Crash](#unleashing-the-power-of-crash)
   * [What kind of sorcery is this !?](#what-kind-of-sorcery-is-this-)
   * [But what's up with that `moved()`?](#but-whats-up-with-that-moved)
+* [Overview](#overview)
 * [API](#api)
   * [Crash]
   * [AABB updates][Crash.updateAABB()]
@@ -217,6 +218,23 @@ And it's done. All checks have run, our colliders are where they should be. With
 
 #### But what's up with that `moved()`?
 All the built-in methods (like `moveTo`, `setOffset` and `rotate`) already call this for you, so you don't have to worry about this. You should only worry when you insert a collider for the first time. Normally, when designing your game (or anything else), you would make sure your colliders aren't already colliding when you load them. When this is the case, though, you can call `Crash.checkAll()` just after you loaded your colliders. This will do the same as `check()`, but for all colliders, not just the ones that moved. Neat, isn't it?
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Overview
+> The overview section is currently under construction. Please come back later.
+
+> In this section, I'll explain the basics of Crash, how it works, how the methods fit together and what the basic workflow is.
 
 
 
