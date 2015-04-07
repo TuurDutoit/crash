@@ -576,7 +576,7 @@ You can optionally pass in a [Crash.Response] to get some information about the 
 
 ```javascript
 var c1 = new Crash.Circle(new Crash.V(0,0), 5);
-var c2 = new Crash.Point(new Crash.V(3,0);
+var c2 = new Crash.Point(new Crash.V(3,0));
 var c3 = new Crash.Box(new Crash.V(15,20), 10, 10);
 var res = new Crash.Response();
 
@@ -584,8 +584,50 @@ Crash.test(c1, c2, res);
 // true, info in 'res'
 
 Crash.test(c1, c3);
-//false, info iin Crash.RESPONSE
+//false, info in Crash.RESPONSE
 ```
+
+
+### Crash.testAll (Collider collider, [Response res]) - boolean
+__collider:__ *Collider*. The [Crash.Collider] to test collisions for.  
+__res:__ *Response|optional*. The optional [Crash.Response] to use.  
+__*return:*__ *boolean*. Whether the loop was stopped.
+
+Tests for collisions between `collider` and any [Crash.Collider] that has been [Crash.insert()]ed in [Crash.rbush]. This will [Crash.search()] for `collider`, do a collision check for every [Crash.Collider] returned by that search and finally call [Crash.__onCollision()] for every collision.  
+You can stop this loop (the one that checks for collisions) simply by calling [Crash.cancel()]. This sets [Crash.BREAK] to `true` (which is what `testAll` actually looks for). In [Listener]s, the recommended way is to call their `cancel` argument, which is the exact same function as [Crash.cancel()].  
+Stopping the loop comes in handy when you move `collider` in any of the [Listener]s, because all consequent collision checks become unnecessary: you will have to run `testAll()` again for the new position.  
+The value returned by `testAll()` indicates whether the loop was cancelled: if it was, `false` is returned, otherwise, it returns `true`.
+
+You probably don't want to use this method extensively, because [Crash.check()] is more convenient in most situations.
+
+Finally, I would like to note three things:
+
+1. `res` is optional: if you don't pass it, [Crash.RESPONSE] will be used instead.
+2. this method doesn't really provide direct feedback, like [Crash.test()] does: it rather calls the attached [Listener]s. This means `res` (or [Crash.RESPONSE]) will be passed to the [Listener]s, and will only hold info about the last collision when the call is finished.
+3. if this method returns `false`, the loop was cancelled, so you probably want to run it again.
+
+
+
+```javascript
+var c1 = new Crash.Circle(new Crash.V(0,0), 5, true);
+var c2 = new Crash.Point(new Crash.V(3,0), true);
+var c3 = new Crash.Box(new Crash.V(15,20), 10, 10, true);
+var res = new Crash.Response();
+Crash.onCollision(function(a, b, res, cancel){
+    alert("Oh my, there is a collision!");
+});
+
+Crash.testAll(c1, res);
+// calls the listener for (c1, c2), but not for (c1, c3).
+// the response passed to the listener is 'res'.
+
+Crash.test(c2);
+// calls the listener for (c2, c1), but not for (c2, c3).
+// the response passed to the listener is Crash.RESPONSE.
+
+Crash.test(c3);
+// the listener will not be called.
+``` 
 
 
 
@@ -700,4 +742,5 @@ THE SOFTWARE.
 [Crash.updateAABBCircle()]: #crashupdateaabbcircle-circle-collider---
 [Crash.updateAABBPoint()]: #crashupdateaabbpoint-point-collider---
 [Crash.test()]: #crashtest-collider-a-collider-b-response-res---boolean
+[Crash.testAll()]: #crashtestall-collider-collider-response-res---
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
