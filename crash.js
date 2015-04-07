@@ -6,10 +6,6 @@
 // Crash performs optimized 2D collisions, powered by RBush and SAT.js, written in javascript.
 
 
-// TODO: document concepts: check()/testAll()/moved()/listeners; SAT; RBush;
-// TODO: set lastCheckedPos in check()
-
-
 // Create a UMD wrapper for Crash. Works in:
 //
 //  - Plain browser via global Crash variable
@@ -380,13 +376,24 @@
     }
     
     
+    var ALL_MOVED = []; // holds all the colliders that have moved during check(), so we can set their lastCheckedPos
     exports.check = function(res) {
         var i = 0;
         while(this.__moved.length && i < this.MAX_CHECKS) {
             var collider = this.__moved.pop();
+            var index = ALL_MOVED.indexOf(collider);
+            if(index === -1) {
+                ALL_MOVED.push(collider);
+            }
+            
             this.testAll(collider, res);
             i++;
         }
+        
+        for(var i = 0, len = ALL_MOVED.length; i < len; i++) {
+            ALL_MOVED[i].lastCheckedPos.copy(ALL_MOVED[i].pos);
+        }
+        ALL_MOVED.splice(0, ALL_MOVED.length);
         
         return this;
     }

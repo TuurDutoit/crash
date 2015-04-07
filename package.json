@@ -1,5 +1,5 @@
 {
-    "name": "crash",
+    "name": "crash-colliders",
     "version": "1.0.0",
     "description": "Crash performs optimized 2D collisions, powered by RBush and SAT.js, written in javascript.",
     "main": "crash.js",
