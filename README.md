@@ -358,6 +358,40 @@ var possibleCollisions = Crash.search(collider);
 ```
 
 
+### Crash.clear() - .
+__*return:*__ *Crash*. For chaining.
+
+Clears Crash from all [Crash.Collider]s. This calls `rbush.clear()`, and clears [Crash.__notYetInserted] and [Crash.__moved].
+
+
+### Crash.moved (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] that has moved.  
+__*return:*__ *Crash*. For chaining.
+
+Notifies Crash that a [Crash.Collider] has moved. This adds the Collider to [Crash.__moved], and will thus be checked for collisions during the next [Crash.check()] round.  
+Note that this is already taken care of for you when using the built-in move methods of the Colliders.
+
+```javascript
+collider.pos.x += 5;
+// Is not taken into account in the next check() round
+
+Crash.moved(collider);
+// Now it will
+```
+
+```javascript
+collider.moveBy(5,0);
+// Crash.move(collider) has already been called for you
+```
+
+
+### Crash.update (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] that should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates the `aabb` of the [Crash.Collider] and updates its position in RBush.
+
+
 ### Crash.reset ([number maxEntries]) - .
 __maxEntries:__ *number|optional*. See [Crash.init()].  
 __*return:*__ *Crash*. For chaining.
