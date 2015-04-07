@@ -430,24 +430,24 @@ describe("Crash", function() {
         });
     });
     
-    describe("moved", function() {
+    describe("addToMoved", function() {
         it("should be defined", function() {
-            expect(Crash.moved).to.be.ok();
+            expect(Crash.addToMoved).to.be.ok();
         });
         it("should be a function", function() {
-            expect(Crash.moved).to.be.a("function");
+            expect(Crash.addToMoved).to.be.a("function");
         });
         it("should add the collider to __moved", function() {
             var collider = new Crash.Point(new Crash.V);
-            Crash.moved(collider);
+            Crash.addToMoved(collider);
             
             expect(Crash.__moved).to.contain(collider);
         });
         it("should not add the collider twice", function() {
             var collider = new Crash.Point(new Crash.V);
             Crash.__moved = [];
-            Crash.moved(collider);
-            Crash.moved(collider);
+            Crash.addToMoved(collider);
+            Crash.addToMoved(collider);
             
             expect(Crash.__moved).to.have.length(1);
         });
@@ -504,6 +504,37 @@ describe("Crash", function() {
             }
             
             expect(fn).to.not.throwError();
+        });
+    });
+    
+    describe("moved", function() {
+        it("should be defined", function() {
+            expect(Crash.moved).to.be.ok();
+        });
+        it("should be a function", function() {
+            expect(Crash.moved).to.be.a("function");
+        });
+        it("should call update", function() {
+            var collider = new Crash.Point(new Crash.V, true);
+            sinon.spy(Crash, "update");
+            Crash.moved(collider);
+            
+            expect(Crash.update.called).to.be.ok();
+            expect(Crash.update.callCount).to.be(1);
+            expect(Crash.update.calledWith(collider)).to.be.ok();
+            
+            Crash.update.restore();
+        });
+        it("should call addToMoved", function() {
+            var collider = new Crash.Point(new Crash.V, true);
+            sinon.spy(Crash, "addToMoved");
+            Crash.moved(collider);
+            
+            expect(Crash.addToMoved.called).to.be.ok();
+            expect(Crash.addToMoved.callCount).to.be(1);
+            expect(Crash.addToMoved.calledWith(collider)).to.be.ok();
+            
+            Crash.addToMoved.restore();
         });
     });
     

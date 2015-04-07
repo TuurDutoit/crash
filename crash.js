@@ -209,7 +209,7 @@
     }
     
     
-    exports.moved = function(collider) {
+    exports.addToMoved = function(collider) {
         if(this.__moved.indexOf(collider) === -1) {
             this.__moved.push(collider);
         }
@@ -221,6 +221,13 @@
         this.updateAABB(collider);
         this.remove(collider);
         this.insert(collider);
+        
+        return this;
+    }
+    
+    exports.moved = function(collider) {
+        this.update(collider);
+        this.addToMoved(collider);
         
         return this;
     }
