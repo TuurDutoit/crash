@@ -247,45 +247,48 @@ In the meantime, you can waste some time looking at the [source code]; it's only
 ### Crash
 This is the main object, returned by `require()`, injected by `defined()` or set as `window.Crash`. Anything related to Crash sits in this namespace.
 
-### Crash.RBush : function
+### Crash.RBush : *function*
 The RBush constructor, as returned by the rbush module.
 
-### Crash.SAT : object
+### Crash.SAT : *object*
 The SAT object, as returned by the SAT.js module.
 
-### Crash.Vector : constructor
+### Crash.Vector : *constructor*
 Represents a vector, used by the Colliders to define their positions and corners, and by SAT to perform its calculations.  
 I refer to the [SAT docs][sat-docs] for the API definition.
 
-### Crash.V : constructor
+### Crash.V : *constructor*
 Alias for [Crash.Vector].
 
-### Crash.Response : constructor
+### Crash.Response : *constructor*
 Provides information about a collision, like overlap distance and direction.  
 I refer to the [SAT docs][sat-docs] for the API definition.
 
-### Crash.maxChecks : number
-The maximum amount of times to run [Crash.testAll()] during [Crash.check()]. See [Crash.check()] for more info.
-
-### Crash.rbush : RBush
+### Crash.rbush : *RBush*
 The RBush instance that holds the colliders. This is (mostly) used internally to optimize collision checks.  
 For further documentation, please see the [RBush docs][rbush-docs].
 
-### Crash.RESPONSE : Response
+### Crash.RESPONSE : *Response*
 Used by the testing functions. When no Response has been passed to them, they use this instead.
 
-### Crash.BREAK : boolean
+### Crash.BREAK : *boolean*
 Whether to stop the currently running check loop. This is set to `true` by [Crash.cancel()]. See [Crash.testAll()] for more info.
 
-### Crash.__listeners : Array.<function>
+### Crash.MAX_CHECKS : *number*
+The maximum amount of times to run [Crash.testAll()] during [Crash.check()]. See [Crash.check()] for more info.
+
+### Crash.OVERLAP_LIMIT : *number*
+The minimum amount two [Crash.Collider]s should overlap to call the [Listener]s. If falsy, `OVERLAP_LIMIT` will not be taken into account. See [Crash.testAll()] for more info.
+
+### Crash.__listeners : *Array.\<function\>*
 *Private*  
 An array of functions to call when a collision occurs. You can add to this with [Crash.onCollision()].
 
-### Crash.__notYetInserted : Array.<Collider>
+### Crash.__notYetInserted : *Array.\<Collider\>*
 *Private*  
 When [Crash.init()] has not yet been called, and thus when [Crash.rbush] isn't defined yet, Colliders that are [Crash.insert()]ed are pushed to this array, to be inserted into [Crash.rbush] when [Crash.init()] is called.
 
-### Crash.__moved : Array.<Collider>
+### Crash.__moved : *Array.\<Collider\>*
 *Private*  
 An array of colliders that have moved since the last [Crash.check()]. This is used internally by [Crash.check()] to optimize collision checks. For more info, see [Crash.check()].
 
@@ -339,7 +342,7 @@ Crash.remove(collider);
 ```
 
 
-### Crash.all () - Collider[]
+### Crash.all () - *Collider[]*
 __*return:*__ *Array.\<Collider\>*. An array containing all the [Crash.Collider]s that have been [Crash.insert()]ed.
 
 Returns all the [Crash.Collider]s that have been [Crash.insert()]ed.
@@ -349,7 +352,7 @@ var allColliders = Crash.all();
 ```
 
 
-### Crash.search (Collider collider) - Collider[]
+### Crash.search (Collider collider) - *Collider[]*
 __collider:__ *Collider*. The [Crash.Collider] to base the search on.  
 __*return:*__ *Array.\<Collider\>*. An array of colliders that may be colliding with `collider`.
 
@@ -455,7 +458,7 @@ __type1:__ *string*. The type of the first [Crash.Collider].
 __type2:__ *string*. The type of the second [Crash.Collider].  
 __*return:*__ *string*. The appropriate SAT testing string.
 
-Gives you the right SAT method name to test for a collision between two [Crash.Collider]s.
+Gives you the right SAT method name to test for a collision between two [Crash.Collider]s. Be sure to pass [Collider.type], ans not a [Crash.Collider]!
 
 ```javascript
 var circle = new Crash.Circle(new Crash.Vector(0,0), 10);
@@ -565,7 +568,7 @@ Updates a [Crash.Point]'s `aabb` attribute ([Collider.aabb]), based on its posit
 
 
 
-### Crash.test (Collider a, Collider b, [Response res]) - boolean
+### Crash.test (Collider a, Collider b, [Response res]) - *boolean*
 __a:__ *Collider*. The first [Crash.Collider] to test for.  
 __b:__ *Collider*. The second [Crash.Collider] to test for.  
 __res:__ *Response|optional*. The optional [Crash.Response] to use.  
@@ -588,7 +591,7 @@ Crash.test(c1, c3);
 ```
 
 
-### Crash.testAll (Collider collider, [Response res]) - boolean
+### Crash.testAll (Collider collider, [Response res]) - *boolean*
 __collider:__ *Collider*. The [Crash.Collider] to test collisions for.  
 __res:__ *Response|optional*. The optional [Crash.Response] to use.  
 __*return:*__ *boolean*. Whether the loop was stopped.
@@ -605,7 +608,7 @@ Finally, I would like to note a few things:
 1. `res` is optional: if you don't pass it, [Crash.RESPONSE] will be used instead.
 2. this method doesn't really provide direct feedback, like [Crash.test()] does: it rather calls the attached [Listener]s. This means `res` (or [Crash.RESPONSE]) will be passed to the [Listener]s, and will only hold info about the last collision when the call is finished.
 3. if this method returns `false`, the loop was cancelled, so you probably want to run it again.
-4. `testAll` will not run [Crash.__onCollision()] when the overlap is smaller than `0.5`.
+4. `testAll` will not run [Crash.\_\_onCollision()] when the overlap is smaller than [Crash.OVERLAP\_LIMIT]. If [Crash.OVERLAP\_LIMIT] is falsy, [Crash.\_\_onCollision] will always be called.
 5. `testAll` won't call [Crash.update()] on `collider`, so make sure it's updated.
 6. `testAll` is not really intended to be used publicly, but rather by [Crash.check()] internally.
 
@@ -641,7 +644,7 @@ Crash.test(c3);
 
 
 
-### Listener (Collider a, Collider b, Response res, function cancel) : function
+### Listener (Collider a, Collider b, Response res, function cancel) : *function*
 __a:__ *Collider*. The [Crash.Collider] that collides with `b`.  
 __b:__ *Collider*. The [Crash.Collider] that collides with `a`.  
 __res:__ *Response*. The [Crash.Response] for this collision.  
@@ -717,10 +720,11 @@ THE SOFTWARE.
 [Crash.Vector]: #crashvector--constructor
 [Crash.V]: #crashv--constructor
 [Crash.Response]: #crashresponse--constructor
-[Crash.maxChecks]: #crashmaxchecks--number
 [Crash.rbush]: #crashrbush--rbush
 [Crash.RESPONSE]: #crashresponse--response
 [Crash.BREAK]: #crashbreak--boolean
+[Crash.MAX_CHECKS]: #crashmax_checks--number
+[Crash.OVERLAP_LIMIT]: #crashoverlap_limit--number
 [Crash.__listeners]: #crash__listeners--array
 [Crash.__notYetInserted]: #crash__notyetinserted--array
 [Crash.__moved]: #crash__moved--array
@@ -745,5 +749,5 @@ THE SOFTWARE.
 [Crash.updateAABBCircle()]: #crashupdateaabbcircle-circle-collider---
 [Crash.updateAABBPoint()]: #crashupdateaabbpoint-point-collider---
 [Crash.test()]: #crashtest-collider-a-collider-b-response-res---boolean
-[Crash.testAll()]: #crashtestall-collider-collider-response-res---
+[Crash.testAll()]: #crashtestall-collider-collider-response-res---boolean
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
