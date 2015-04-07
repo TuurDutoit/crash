@@ -364,12 +364,12 @@ __*return:*__ *Crash*. For chaining.
 Clears Crash from all [Crash.Collider]s. This calls `rbush.clear()`, and clears [Crash.__notYetInserted] and [Crash.__moved].
 
 
-### Crash.moved (Collider collider) - .
-__collider:__ *Collider*. The [Crash.Collider] that has moved.  
+### Crash.addToMoved (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] that should be added to [Crash.__moved].  
 __*return:*__ *Crash*. For chaining.
 
-Notifies Crash that a [Crash.Collider] has moved. This adds the Collider to [Crash.__moved], and will thus be checked for collisions during the next [Crash.check()] round.  
-Note that this is already taken care of for you when using the built-in move methods of the Colliders.
+Adds a [Crash.Collider] to [Crash.__moved], so it gets collision checked during the next [Crash.check()] round. This does not update the Collider's AABB! If you want to do both, use [Crash.moved()] instead.  
+Note that the built-in move methods of Colliders (`moveBy`, `rotate`,...) already call [Crash.moved()] \(which calls `addToMoved()`\) for you.
 
 ```javascript
 collider.pos.x += 5;
@@ -381,7 +381,7 @@ Crash.moved(collider);
 
 ```javascript
 collider.moveBy(5,0);
-// Crash.move(collider) has already been called for you
+// Crash.moved(collider), and thus Crash.addToMoved(collider), has already been called for you
 ```
 
 
@@ -390,6 +390,29 @@ __collider:__ *Collider*. The [Crash.Collider] that should be updated.
 __*return:*__ *Crash*. For chaining.
 
 Updates the `aabb` of the [Crash.Collider] and updates its position in RBush.
+
+
+### Crash.moved (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] that has moved.  
+__*return:*__ *Crash*. For chaining.
+
+Notifies Crash that a [Crash.Collider] has moved. This calls [Crash.update()] and [Crash.addToMoved()], so all the housekeeping is done in one function call.
+Note that this is already taken care of for you when using the built-in move methods of the Colliders (`moveBy`, `rotate`,...).
+
+```javascript
+collider.pos.x += 5;
+// Is not taken into account in the next check() round
+// and the aabb is not updated
+
+Crash.moved(collider);
+// Now it will
+// and its aabb is updated
+```
+
+```javascript
+collider.moveBy(5,0);
+// Crash.move(collider) has already been called for you
+```
 
 
 ### Crash.reset ([number maxEntries]) - .
@@ -580,8 +603,9 @@ THE SOFTWARE.
 [Crash.remove()]: #crashremove-collider-collider---
 [Crash.all()]: #crashall----collider
 [Crash.clear()]: #crashclear---
-[Crash.moved()]: #crashmoved-collider-collider---
+[Crash.addToMoved()]: #crashaddtomoved-collider-collider---
 [Crash.update()]: #crashupdate-collider-collider---
+[Crash.moved()]: #crashmoved-collider-collider---
 [Crash.reset()]: #crashreset-number-maxentries---
 [Crash.cancel()]: #crashcancel----false
 [Crash.getTestString()]: #crashgetteststring-string-type1-string-type2---string
