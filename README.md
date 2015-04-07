@@ -20,6 +20,10 @@ Crash is perfectly happy in the browser and on Node.js.
   * [What kind of sorcery is this !?](#what-kind-of-sorcery-is-this-)
   * [But what's up with that `moved()`?](#but-whats-up-with-that-moved)
 * [API](#api)
+  * [Crash]
+  * [AABB updates][Crash.updateAABB()]
+  * [Collision testing][Crash.test()]
+  * [Colliders][Crash.Collider]
 * [Contributing](#contributing)
 * [License](#License)
 
