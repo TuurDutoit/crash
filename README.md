@@ -24,6 +24,7 @@ Crash is perfectly happy in the browser and on Node.js.
   * [AABB updates][Crash.updateAABB()]
   * [Collision testing][Crash.test()]
   * [Colliders][Crash.Collider]
+  * [Other][Listener]
 * [Contributing](#contributing)
 * [License](#License)
 
@@ -393,7 +394,7 @@ collider.moveBy(5,0);
 __collider:__ *Collider*. The [Crash.Collider] that should be updated.  
 __*return:*__ *Crash*. For chaining.
 
-Updates the `aabb` of the [Crash.Collider] and updates its position in RBush.
+Updates the `aabb` of the [Crash.Collider] \(using [Crash.updateAABB()]\) and updates its position in RBush.
 
 
 ### Crash.moved (Collider collider) - .
@@ -519,6 +520,23 @@ Crash.extend(Child, Parent);
 
 
 
+
+
+### Crash.updateAABB (Collider collider) - .
+__collider:__ *Collider*. The [Crash.Collider] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Calls [Crash.updateAABBPolygon()], [Crash.updateAABBBox()], [Crash.updateAABBCircle()] or [Crash.updateAABBPoint()] based on `collider`'s `type`.
+
+
+
+
+
+
+
+
+
+
 ### Listener (Collider a, Collider b, Response res, function cancel) : function
 __a:__ *Collider*. The [Crash.Collider] that collides with `b`.  
 __b:__ *Collider*. The [Crash.Collider] that collides with `a`.  
@@ -617,4 +635,5 @@ THE SOFTWARE.
 [Crash.offCollision()]: #crashoffcollision-function-listener---
 [Crash.__onCollision()]: #crash__oncollision-collider-a-collider-b-response-res---
 [Crash.extend()]: #crashextend-function-child-function-base---undefined
+[Crash.updateAABB()]: #crashupdateaabb-collider-collider---
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
