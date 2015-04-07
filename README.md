@@ -565,6 +565,37 @@ Updates a [Crash.Point]'s `aabb` attribute ([Collider.aabb]), based on its posit
 
 
 
+### Crash.test (Collider a, Collider b, [Response res]) - boolean
+__a:__ *Collider*. The first [Crash.Collider] to test for.  
+__b:__ *Collider*. The second [Crash.Collider] to test for.  
+__res:__ *Response|optional*. The optional [Crash.Response] to use.  
+__*return:*__ *boolean*. Indicates whether there is a collision between `a`and `b`.
+
+Tests for a collision between `a` and `b`, using SAT. The boolean return value indicates whether `a` and `b` are colliding: `true` if there is a collision, `false` otherwise.  
+You can optionally pass in a [Crash.Response] to get some information about the collision (if there is one). If you don't, [Crash.RESPONSE] will be used instead.
+
+```javascript
+var c1 = new Crash.Circle(new Crash.V(0,0), 5);
+var c2 = new Crash.Point(new Crash.V(3,0);
+var c3 = new Crash.Box(new Crash.V(15,20), 10, 10);
+var res = new Crash.Response();
+
+Crash.test(c1, c2, res);
+// true, info in 'res'
+
+Crash.test(c1, c3);
+//false, info iin Crash.RESPONSE
+```
+
+
+
+
+
+
+
+
+
+
 ### Listener (Collider a, Collider b, Response res, function cancel) : function
 __a:__ *Collider*. The [Crash.Collider] that collides with `b`.  
 __b:__ *Collider*. The [Crash.Collider] that collides with `a`.  
@@ -668,4 +699,5 @@ THE SOFTWARE.
 [Crash.updateAABBBox()]: #crashupdateaabbbox-box-collider---
 [Crash.updateAABBCircle()]: #crashupdateaabbcircle-circle-collider---
 [Crash.updateAABBPoint()]: #crashupdateaabbpoint-point-collider---
+[Crash.test()]: #crashtest-collider-a-collider-b-response-res---boolean
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
