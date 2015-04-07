@@ -529,6 +529,34 @@ __*return:*__ *Crash*. For chaining.
 Calls [Crash.updateAABBPolygon()], [Crash.updateAABBBox()], [Crash.updateAABBCircle()] or [Crash.updateAABBPoint()] based on `collider`'s `type`.
 
 
+### Crash.updateAABBPolygon (Polygon collider) - .
+__collider:__ *Polygon*. The [Crash.Polygon] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Polygon]'s `aabb` attribute ([Collider.aabb]), based on its position and size.
+
+
+### Crash.updateAABBBox (Box collider) - .
+__collider:__ *Box*. The [Crash.Box] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Box]'s `aabb` attribute ([Collider.aabb]), based on its position and size.
+
+
+### Crash.updateAABBCircle (Circle collider) - .
+__collider:__ *Circle*. The [Crash.Circle] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Circle]'s `aabb` attribute ([Collider.aabb]), based on its position and size.
+
+
+### Crash.updateAABBPoint (Point collider) - .
+__collider:__ *Point*. The [Crash.Point] whose AABB should be updated.  
+__*return:*__ *Crash*. For chaining.
+
+Updates a [Crash.Point]'s `aabb` attribute ([Collider.aabb]), based on its position.
+
+
 
 
 
@@ -636,4 +664,8 @@ THE SOFTWARE.
 [Crash.__onCollision()]: #crash__oncollision-collider-a-collider-b-response-res---
 [Crash.extend()]: #crashextend-function-child-function-base---undefined
 [Crash.updateAABB()]: #crashupdateaabb-collider-collider---
+[Crash.updateAABBPolygon()]: #crashupdateaabbpolygon-polygon-collider---
+[Crash.updateAABBBox()]: #crashupdateaabbbox-box-collider---
+[Crash.updateAABBCircle()]: #crashupdateaabbcircle-circle-collider---
+[Crash.updateAABBPoint()]: #crashupdateaabbpoint-point-collider---
 [Listener]: #listener-collider-a-collider-b-response-res-function-cancel--function
