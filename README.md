@@ -683,6 +683,7 @@ __res:__ *Response*. The [Crash.Response] for this collision.
 __cancel:__ *function*. Cancels the current check loop. See [Crash.testAll()] for more info.
 
 A listener is a function that is called every time a collision is detected by [Crash.testAll()], [Crash.check()] or [Crash.checkAll()] and will be passed four arguments: the two [Crash.Collider]s that are colliding, the [Crash.Response] for this collision and [Crash.cancel()], which cancels the current check loop. See [Crash.testAll()] for more info about this.  
+The context of the listener (`this`) will be set to `Crash`.  
 You can add a listener with [Crash.onCollision()] and you can remove them with [Crash.offCollision()]. All listeners are stored in [Crash.__listeners], which is intended for private use.
 
 
