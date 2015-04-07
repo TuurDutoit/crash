@@ -579,6 +579,9 @@ THE SOFTWARE.
 [Crash.insert()]: #crashinsert-collider-collider---
 [Crash.remove()]: #crashremove-collider-collider---
 [Crash.all()]: #crashall----collider
+[Crash.clear()]: #crashclear---
+[Crash.moved()]: #crashmoved-collider-collider---
+[Crash.update()]: #crashupdate-collider-collider---
 [Crash.reset()]: #crashreset-number-maxentries---
 [Crash.cancel()]: #crashcancel----false
 [Crash.getTestString()]: #crashgetteststring-string-type1-string-type2---string
