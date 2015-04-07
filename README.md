@@ -26,6 +26,7 @@ Crash is perfectly happy in the browser and on Node.js.
 
 ## Installation
 At the moment, package managers are not yet set up. Just download one of the following files from this repo and load it in your project.
+
 1. [crash.js]: full source, with comments and all (12.8kB).
 2. [crash.min.js]: minified, ready to be used in production (5.3kB or 1.7kB gzipped).
 
