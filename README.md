@@ -239,9 +239,31 @@ Questions and feature requests belong in the [issue tracker], __with the right t
 
 
 ## Overview
-> The overview section is currently under construction. Please come back later.
+### Or: about the check() loop
 
 > In this section, I'll explain the basics of Crash, how it works, how the methods fit together and what the basic workflow is.
+
+In this section, I'll assume you're using Crash to power a game (engine), because that's probably what the majority will be using it for, and not having to cover all the edge cases makes it easier to explain.
+
+The very heart of Crash is its [Crash.check()] loop: this is where all the magic is happening. During the update cycle of your game (engine), you can move your objects around freely (probably using some physics) and not care about collisions; just move them to where you would like them to be. You can move the Colliders either by using the move functions (`moveBy`, `rotate`,...), which is easiest way, or by setting their `x` and `y` coordinates. If you're using the latter, you have to be cautious.  
+After every move, a few things have to happen:
+
+1. The AABB of the Collider must be updated. Use [Crash.updateAABB()] to achieve this.
+2. The Collider's position in RBush must be updated. Use [Crash.update()] for this, but be aware that this calls [Crash.updateAABB()] also! You could also manually `remove()` and re-`insert()` the collider in `rbush`, just like `update()` is doing.
+3. The Collider must be added to [Crash.__moved] in order for it to be collision checked during the next [Crash.check()]. Use [Crash.addToMoved()] to achieve this. You could also add it manually, but make sure you're no adding it twice.
+
+1\. and 2. can be bundled in one [Crash.update()] call, and all the above can be bundled in one [Crash.moved()] call, which is the method the move functions are calling for you. This is why using the move functions is the easiest: all this is done for you.
+
+When all your Colliders are in place, just call [Crash.check()]. This will iterate over [Crash.__moved] and do the following for every Collider (this happens in [Crash.testAll()]). Let's call this loop A.
+
+First, all the possible collisions are retrieved using RBush, with a [Crash.search()]. Then, for every possibly colliding collider (loop B), Crash will test for a collision using SAT, and if there is, it will call [Crash.\_\_onCollision()], which in turn calls the [Listener]s, passing in the two Colliders and the Response of the collision. If, during this [Crash.\_\_onCollision()], [Crash.BREAK] is set to true, loop B is stopped. This can happen when, for example, the first collider (that will be the one passed from A to B) is moved inside a [Listener]; the Collider will then be added to [Crash.\_\_moved] and thus be checked in the next iteration of loop A, making everything that happens in B useless (it will be done again in the next iteration of A, and the possible collisions may not be accurate anymore). This doesn't happen when the second Collider passed to [Listener]s (the one 'generated' by B) is moved, because it will just be added to [Crash.\_\_moved] to be handled in the next iteration of A, but doesn't render everything happening inside B useless (it's the first Collider that is our focus).  
+At the end of loop B (so, for every iteration of A), the Collider passed from A to B has its `lastPos` set to a copy of its position at that moment.  
+Then, [Crash.testAll()] \(loop B\) returns, and the next iteration of A begins.
+
+At the end of [Crash.check()] \(loop A\), all the Colliders that have been processed have their `lastCheckedPos` set to a copy of their position at that time.
+
+
+I hope this has helped to clarify some of Crash's misty bits. If it hasn't, let me know and take a look at the source: it's not that complex and it's not that much.
 
 
 
