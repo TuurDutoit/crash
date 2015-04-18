@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Crash by TuurDutoit</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Crash</h1>
+        <h2>Bundles RBush and SAT.js for easy 2D collisions.</h2>
+        <a href="https://github.com/TuurDutoit/crash" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="crash" class="anchor" href="#crash" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash</h1>
+
+<p>v.1.1.0</p>
+
+<p>Crash performs optimized 2D collisions, powered by <a href="https://github.com/mourner/rbush">RBush</a> and <a href="https://github.com/jriecken/sat-js">SAT.js</a>, written in javascript.<br>
+It's most obvious use-case is in game engines, but it's flexible enough to be used anywhere.<br>
+Crash is perfectly happy in the browser and on Node.js.</p>
+
+<h2>
+<a id="contents" class="anchor" href="#contents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contents</h2>
+
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li>
+<a href="#installation">Installation</a>
+
+<ul>
+<li><a href="#nodejs">Node.js</a></li>
+<li><a href="#browser">Browser</a></li>
+<li><a href="#requirejs">Require.js</a></li>
+</ul>
+</li>
+<li>
+<a href="#getting-started">Getting Started</a>
+
+<ul>
+<li><a href="#adding-colliders">Adding Colliders</a></li>
+<li><a href="#testing-for-collisions">Testing for collisions</a></li>
+<li><a href="#unleashing-the-power-of-crash">Unleashing the power of Crash</a></li>
+<li><a href="#what-kind-of-sorcery-is-this-">What kind of sorcery is this !?</a></li>
+<li><a href="#but-whats-up-with-that-moved">But what's up with that <code>moved()</code>?</a></li>
+</ul>
+</li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#overview">Overview</a></li>
+<li>
+<a href="#api">API</a>
+
+<ul>
+<li><a href="#crash-1">Crash</a></li>
+<li><a href="#crashupdateaabb-collider-collider---">AABB updates</a></li>
+<li><a href="#crashtest-collider-a-collider-b-response-res---boolean">Collision testing</a></li>
+<li><a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Colliders</a></li>
+<li><a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Other</a></li>
+</ul>
+</li>
+<li><a href="#License">License</a></li>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>At the moment, package managers are not yet set up. Just download one of the following files from this repo and load it in your project.</p>
+
+<ol>
+<li>
+<a href="https://raw.githubusercontent.com/TuurDutoit/crash/master/crash.js">crash.js</a>: full source, with comments and all (13.6kB).</li>
+<li>
+<a href="https://raw.githubusercontent.com/TuurDutoit/crash/master/crash.min.js">crash.min.js</a>: minified, ready to be used in production (5.6kB or 1.8kB gzipped).</li>
+</ol>
+
+<p>When you have installed Crash, head over to the <a href="#getting-started">Getting Started section</a>.</p>
+
+<h3>
+<a id="nodejs" class="anchor" href="#nodejs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Node.js</h3>
+
+<p>Add the following snippet to your code:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> Crash <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">"</span>path/to/crash.js<span class="pl-pds">"</span></span>);</pre></div>
+
+<p>Now, you can use the <a href="#api">API</a> on the <code>Crash</code> variable.</p>
+
+<h3>
+<a id="browser" class="anchor" href="#browser" aria-hidden="true"><span class="octicon octicon-link"></span></a>Browser</h3>
+
+<p>Add the following snippet to your HTML file:</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>path/to/crash.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+<p>Now, you can use the <a href="#api">API</a> on the global <code>Crash</code> variable (<code>window.Crash</code>).</p>
+
+<h3>
+<a id="requirejs" class="anchor" href="#requirejs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Require.js</h3>
+
+<p>If you're using <a href="http://requirejs.org">require.js</a> in your project, use the following snippet to load Crash:</p>
+
+<div class="highlight highlight-javascript"><pre>define([<span class="pl-s"><span class="pl-pds">"</span>path/to/crash<span class="pl-pds">"</span></span>], <span class="pl-k">function</span>(<span class="pl-smi">Crash</span>) {
+    <span class="pl-c">// Your code...</span>
+});</pre></div>
+
+<p>Now, you can use the <a href="#api">API</a> on the <code>Crash</code> variable in your module.</p>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<p>Before you can do anything useful with Crash, you have to initialize it. You can do this easily by calling:</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.init();</pre></div>
+
+<p>This method will make sure that RBush is being initialized correctly, so Colliders can be added.<br>
+<code>Crash.init()</code> accepts one argument, a number called <code>maxEntries</code>. This is specific to RBush, so I refer to their <a href="https://github.com/mourner/rbush/blob/master/README.md">documentation</a>. This argument is not required, though, so just leave it out for now and use the default value.  </p>
+
+<blockquote>
+<p><strong>Fun Fact:</strong> Actually, when <code>Crash.init()</code> has not been called yet, a lot of things just work, and nothing should break. You can use the full API safely, although some things may not work correctly (specifically those that need rbush). Although it should be safe, it's a good habit to call <code>Crash.init()</code> before you do anything.</p>
+</blockquote>
+
+<h3>
+<a id="adding-colliders" class="anchor" href="#adding-colliders" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding Colliders</h3>
+
+<p>Now that everything is ready to roll, let's add some colliders. All colliders in Crash inherit from the <code>Crash.Collider</code> class, which provides some basic methods that perform household tasks, like moving, updating its AABB and testing collisions. That would lead us too far, though, so I refer to the full <a href="#api">API docs</a> for more info.<br>
+All that stuff is awesome, but a <code>Collider</code> on its own is not very useful: it doesn't have a shape. Before you can use a Collider, you have to give it a shape, but, luckily, Crash has some built-in ones for us. Let's try them out!</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> point <span class="pl-k">=</span>   <span class="pl-k">new</span> <span class="pl-en">Crash.Point</span>  (<span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">0</span>,<span class="pl-c1">0</span>));
+<span class="pl-k">var</span> circle <span class="pl-k">=</span>  <span class="pl-k">new</span> <span class="pl-en">Crash.Circle</span> (<span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">5</span>,<span class="pl-c1">2</span>),  <span class="pl-c1">10</span>);
+<span class="pl-k">var</span> box <span class="pl-k">=</span>     <span class="pl-k">new</span> <span class="pl-en">Crash.Box</span>    (<span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-k">-</span><span class="pl-c1">40</span>,<span class="pl-c1">0</span>), <span class="pl-c1">10</span>, <span class="pl-c1">15</span>);
+<span class="pl-k">var</span> polygon <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Polygon</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">3</span>,<span class="pl-c1">7</span>),  [<span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">0</span>,<span class="pl-c1">0</span>), <span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">5</span>,<span class="pl-c1">0</span>), <span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">2</span>,<span class="pl-c1">3</span>)]);</pre></div>
+
+<p>Wow, what's all that!? Let's clarify this step by step.</p>
+
+<ol>
+<li>Each shape has its own constructor, so a point is initialized with <code>Crash.Point</code> etc.</li>
+<li>The first argument to each constructor is a Vector, setting the base position for the Collider. So, for a Point, this would be its position, for a Circle it would be the center and for a Box it would be the bottom-left corner.</li>
+<li>Some constructors take a few extra arguments: 
+
+<ul>
+<li>Circle: the radius</li>
+<li>Box: the width and height</li>
+<li>Polygon: an array of Vectors, relative to the base position</li>
+</ul>
+</li>
+<li>All the above arguments are required.</li>
+<li>These constructors also take two more (optional) arguments:
+
+<ul>
+<li>insert: a boolean indicating whether the collider should be inserted into RBush. More info on this is following in the next few steps.</li>
+<li>data: some data to add to the collider. This can be anything you want and doesn't do anything for Crash; it's just there for your convenience.</li>
+</ul>
+</li>
+</ol>
+
+<blockquote>
+<p><strong>Fun Fact:</strong> the unit you use for the numbers is completely up to you. Crash only stores the numbers, you can interpret them as you wish, so you can use pixels, millimeters or even some game-specific unit you invented!</p>
+
+<p><strong>Important Fun Fact:</strong> there is a very important difference between Point and Vector: a Point is a Collider, so it can be used for collision checks. A Vector, on the other hand, is just a thing that defines positions in Colliders, like the center of a Circle or the corners of a Polygon.</p>
+</blockquote>
+
+<h3>
+<a id="testing-for-collisions" class="anchor" href="#testing-for-collisions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing for collisions</h3>
+
+<p>Now that we have some colliders, we would probably like to know if they are colliding. To do this, we use the <code>Crash.test()</code> method:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">if</span>(Crash.<span class="pl-c1">test</span>(circle, box)) {
+    <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">"</span>Oh my, there is a collision!<span class="pl-pds">"</span></span>);
+}</pre></div>
+
+<p>This is already quite nice, but not very useful: now we know that our colliders are touching, but we don't know how to undo this crash (pun intended)! Enter <code>Response</code>, the all-knowing crash guru.<br>
+First, let's create one:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> res <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Response</span>();</pre></div>
+
+<p>The Response class is copied from SAT, so for further information about the kind of info it provides, I refer to the <a href="https://github.com/jriecken/sat-js/blob/master/README.md">SAT.js docs</a>.</p>
+
+<p>Then, let's do a subtle change to our testing code:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">if</span>(Crash.<span class="pl-c1">test</span>(circle, box, res)) {
+    <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">"</span>Oh my, there is a collision!<span class="pl-pds">"</span></span>);
+}</pre></div>
+
+<p>Now, we can query the Response for some useful information and undo this embarassing crash:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">if</span>(Crash.<span class="pl-c1">test</span>(circle, box, res)) {
+    <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">"</span>Oh my, there is a collision!<span class="pl-pds">"</span></span>);
+    <span class="pl-k">var</span> overlap <span class="pl-k">=</span> res.overlapV;
+    circle.<span class="pl-c1">moveBy</span>(<span class="pl-k">-</span>overlap.<span class="pl-c1">x</span>, <span class="pl-k">-</span>overlap.<span class="pl-c1">y</span>);
+}</pre></div>
+
+<p>And just like that, our colliders aren't touching anymore!</p>
+
+<blockquote>
+<p><strong>Fun Fact:</strong> you could also use circle.test(box, res). This just abstracts <code>Crash.test()</code>, but it's a little more concise.</p>
+</blockquote>
+
+<h3>
+<a id="unleashing-the-power-of-crash" class="anchor" href="#unleashing-the-power-of-crash" aria-hidden="true"><span class="octicon octicon-link"></span></a>Unleashing the power of Crash</h3>
+
+<p>Wasn't that exciting!? Just wait for what's to come!<br>
+I assume you don't want to plow through heaps of loops and complex code to do everything we did in the previous steps for <em>every</em> frame and <em>every</em> collider.<br>
+That's where Crash's real power comes in. Let's <code>insert()</code> our colliders and get to some serious collision checking!</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.insert(point);
+Crash.insert(circle);
+Crash.insert(box);
+Crash.insert(polygon);</pre></div>
+
+<p>You could have achieved the same by passing <code>true</code> for the <code>insert</code> argument of the constructors, like I mentioned at the beginning.</p>
+
+<blockquote>
+<p><strong>Fun Fact:</strong> just like <code>Crash.test()</code>, you could use <code>collider.insert()</code>, as a convenience method.</p>
+</blockquote>
+
+<p>Now that our colliders have been inserted, we can let Crash do all the hard work: it will do all the collision checks for us! And because Crash leverages the power of RBush, only the checks that make sense will actually be performed, causing a huge gain in CPU time.</p>
+
+<p>Before we can let Crash do anything, we would like to make sure it can report to us what it's doing, to let us react to collisions. To do that, we add a listener with <code>Crash.onCollision()</code>. This listener will be called every time a collision occurs.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> <span class="pl-en">listener</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">a</span>, <span class="pl-smi">b</span>, <span class="pl-smi">res</span>, <span class="pl-smi">cancel</span>) {
+    <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">"</span>Oh my, there is a collision!<span class="pl-pds">"</span></span>);
+}
+Crash.onCollision(listener);</pre></div>
+
+<p>Here, <code>a</code> and <code>b</code> are the colliders that are colliding, <code>res</code> is the all-knowing Response, and cancel is a function that cancels all further collision checks for this collider. This may be useful if you move the collider (and all checks become invalid) and/or when you use <code>Crash.check()</code>, which we will cover in the next step.</p>
+
+<blockquote>
+<p><strong>Fun Fact:</strong> you can easily remove a listener with <code>Crash.offCollision(listener)</code>. Just make sure you saved it somewhere when you added it, so you can pass it to <code>offCollision()</code> as an argument!</p>
+</blockquote>
+
+<p>And now, we're ready for some serious stuff:</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.testAll(circle);</pre></div>
+
+<p>This runs collision checks for all inserted colliders that may be colliding with our circle.
+As our circle is colliding with all the other colliders, except our box, the listener we added previously will be called once for <code>point</code> and once for <code>polygon</code>, but not for <code>box</code>. For every call, <code>a</code> equals <code>circle</code>, <code>b</code> the respective collider and <code>res</code> gives us some info about the collision.</p>
+
+<blockquote>
+<p><strong>Fun Fact:</strong> Note that, like with <code>Crash.test()</code>, we can pass in a Response, but we don't have to. If we don't, Crash will make one for us and pass that around to the listeners. How convenient!</p>
+</blockquote>
+
+<h3>
+<a id="what-kind-of-sorcery-is-this-" class="anchor" href="#what-kind-of-sorcery-is-this-" aria-hidden="true"><span class="octicon octicon-link"></span></a>What kind of sorcery is this !?</h3>
+
+<p>We can even go one step further: let's make Crash do <strong>everything</strong>!</p>
+
+<p>For this to work, we need to make sure that we call <code>Crash.moved()</code> on all the colliders that have moved:</p>
+
+<blockquote>
+<p><strong>Fun Fact:</strong> you probably already guessed: you can use <code>collider.moved()</code> instead!</p>
+</blockquote>
+
+<pre><code>Crash.moved(point);
+Crash.moved(circle);
+</code></pre>
+
+<p>This way, Crash will know it only has to call <code>testAll</code> for these colliders, the ones that have moved.</p>
+
+<p>And, now, ladies and gentleman, the holy grail of collision checking:</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.check();</pre></div>
+
+<p>And it's done. All checks have run, our colliders are where they should be. With just one function call. Such wow.</p>
+
+<h4>
+<a id="but-whats-up-with-that-moved" class="anchor" href="#but-whats-up-with-that-moved" aria-hidden="true"><span class="octicon octicon-link"></span></a>But what's up with that <code>moved()</code>?</h4>
+
+<p>All the built-in methods (like <code>moveTo</code>, <code>setOffset</code> and <code>rotate</code>) already call this for you, so you don't have to worry about this. You should only worry when you insert a collider for the first time. Normally, when designing your game (or anything else), you would make sure your colliders aren't already colliding when you load them. When this is the case, though, you can call <code>Crash.checkAll()</code> just after you loaded your colliders. This will do the same as <code>check()</code>, but for all colliders, not just the ones that moved. Neat, isn't it?</p>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>All contributions are very welcome!<br>
+Typos, bug fixes, code cleanup, documentation, tests, a website, you name it!</p>
+
+<p>Questions and feature requests belong in the <a href="https://github.com/TuurDutoit/crash/issues">issue tracker</a>, <strong>with the right tags</strong>.</p>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<h3>
+<a id="or-about-the-check-loop" class="anchor" href="#or-about-the-check-loop" aria-hidden="true"><span class="octicon octicon-link"></span></a>Or: about the check() loop</h3>
+
+<blockquote>
+<p>In this section, I'll explain the basics of Crash, how it works, how the methods fit together and what the basic workflow is.</p>
+</blockquote>
+
+<p>In this section, I'll assume you're using Crash to power a game (engine), because that's probably what the majority will be using it for, and not having to cover all the edge cases makes it easier to explain.</p>
+
+<p>The very heart of Crash is its <a href="#crashcheck----">Crash.check()</a> loop: this is where all the magic is happening. During the update cycle of your game (engine), you can move your objects around freely (probably using some physics) and not care about collisions; just move them to where you would like them to be. You can move the Colliders either by using the move functions (<code>moveBy</code>, <code>rotate</code>,...), which is easiest way, or by setting their <code>x</code> and <code>y</code> coordinates. If you're using the latter, you have to be cautious.<br>
+After every move, a few things have to happen:</p>
+
+<ol>
+<li>The AABB of the Collider must be updated. Use <a href="#crashupdateaabb-collider-collider---">Crash.updateAABB()</a> to achieve this.</li>
+<li>The Collider's position in RBush must be updated. Use <a href="#crashupdate-collider-collider---">Crash.update()</a> for this, but be aware that this calls <a href="#crashupdateaabb-collider-collider---">Crash.updateAABB()</a> also! You could also manually <code>remove()</code> and re-<code>insert()</code> the collider in <code>rbush</code>, just like <code>update()</code> is doing.</li>
+<li>The Collider must be added to <a href="#crash__moved--array">Crash.__moved</a> in order for it to be collision checked during the next <a href="#crashcheck----">Crash.check()</a>. Use <a href="#crashaddtomoved-collider-collider---">Crash.addToMoved()</a> to achieve this. You could also add it manually, but make sure you're no adding it twice.</li>
+</ol>
+
+<p>1. and 2. can be bundled in one <a href="#crashupdate-collider-collider---">Crash.update()</a> call, and all the above can be bundled in one <a href="#crashmoved-collider-collider---">Crash.moved()</a> call, which is the method the move functions are calling for you. This is why using the move functions is the easiest: all this is done for you.</p>
+
+<p>When all your Colliders are in place, just call <a href="#crashcheck----">Crash.check()</a>. This will iterate over <a href="#crash__moved--array">Crash.__moved</a> and do the following for every Collider (this happens in <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a>). Let's call this loop A.</p>
+
+<p>First, all the possible collisions are retrieved using RBush, with a <a href="#crashsearch-collider-collider---collider">Crash.search()</a>. Then, for every possibly colliding collider (loop B), Crash will test for a collision using SAT, and if there is, it will call [Crash.__onCollision()], which in turn calls the <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s, passing in the two Colliders and the Response of the collision. If, during this [Crash.__onCollision()], <a href="#crashbreak--boolean">Crash.BREAK</a> is set to true, loop B is stopped. This can happen when, for example, the first collider (that will be the one passed from A to B) is moved inside a <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>; the Collider will then be added to [Crash.__moved] and thus be checked in the next iteration of loop A, making everything that happens in B useless (it will be done again in the next iteration of A, and the possible collisions may not be accurate anymore). This doesn't happen when the second Collider passed to <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s (the one 'generated' by B) is moved, because it will just be added to [Crash.__moved] to be handled in the next iteration of A, but doesn't render everything happening inside B useless (it's the first Collider that is our focus).<br>
+At the end of loop B (so, for every iteration of A), the Collider passed from A to B has its <code>lastPos</code> set to a copy of its position at that moment.<br>
+Then, <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> (loop B) returns, and the next iteration of A begins.</p>
+
+<p>At the end of <a href="#crashcheck----">Crash.check()</a> (loop A), all the Colliders that have been processed have their <code>lastCheckedPos</code> set to a copy of their position at that time.</p>
+
+<p>I hope this has helped to clarify some of Crash's misty bits. If it hasn't, let me know and take a look at the source: it's not that complex and it's not that much.</p>
+
+<h2>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span class="octicon octicon-link"></span></a>API</h2>
+
+<h3>
+<a id="crash-1" class="anchor" href="#crash-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash</h3>
+
+<p>This is the main object, returned by <code>require()</code>, injected by <code>defined()</code> or set as <code>window.Crash</code>. Anything related to Crash sits in this namespace.</p>
+
+<h3>
+<a id="crashrbush--function" class="anchor" href="#crashrbush--function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.RBush : <em>function</em>
+</h3>
+
+<p>The RBush constructor, as returned by the rbush module.</p>
+
+<h3>
+<a id="crashsat--object" class="anchor" href="#crashsat--object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.SAT : <em>object</em>
+</h3>
+
+<p>The SAT object, as returned by the SAT.js module.</p>
+
+<h3>
+<a id="crashvector--constructor" class="anchor" href="#crashvector--constructor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.Vector : <em>constructor</em>
+</h3>
+
+<p><em>Alias:</em> <a href="#crashv--constructor">Crash.V</a><br>
+Represents a vector, used by the Colliders to define their positions and corners, and by SAT to perform its calculations.<br>
+I refer to the <a href="https://github.com/jriecken/sat-js/blob/master/README.md">SAT docs</a> for the API definition.</p>
+
+<h3>
+<a id="crashv--constructor" class="anchor" href="#crashv--constructor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.V : <em>constructor</em>
+</h3>
+
+<p><em>Alias:</em> <a href="#crashvector--constructor">Crash.Vector</a><br>
+Alias for <a href="#crashvector--constructor">Crash.Vector</a>.</p>
+
+<h3>
+<a id="crashresponse--constructor" class="anchor" href="#crashresponse--constructor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.Response : <em>constructor</em>
+</h3>
+
+<p>Provides information about a collision, like overlap distance and direction.<br>
+I refer to the <a href="https://github.com/jriecken/sat-js/blob/master/README.md">SAT docs</a> for the API definition.</p>
+
+<h3>
+<a id="crashrbush--rbush" class="anchor" href="#crashrbush--rbush" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.rbush : <em>RBush</em>
+</h3>
+
+<p>The RBush instance that holds the colliders. This is (mostly) used internally to optimize collision checks.<br>
+For further documentation, please see the <a href="https://github.com/mourner/rbush/blob/master/README.md">RBush docs</a>.</p>
+
+<h3>
+<a id="crashresponse--response" class="anchor" href="#crashresponse--response" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.RESPONSE : <em>Response</em>
+</h3>
+
+<p>Used by the testing functions. When no Response has been passed to them, they use this instead.</p>
+
+<h3>
+<a id="crashbreak--boolean" class="anchor" href="#crashbreak--boolean" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.BREAK : <em>boolean</em>
+</h3>
+
+<p>Whether to stop the currently running check loop. This is set to <code>true</code> by <a href="#crashcancel----false">Crash.cancel()</a>. See <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> for more info.</p>
+
+<h3>
+<a id="crashmax_checks--number" class="anchor" href="#crashmax_checks--number" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.MAX_CHECKS : <em>number</em>
+</h3>
+
+<p>The maximum amount of times to run <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> during <a href="#crashcheck----">Crash.check()</a>. See <a href="#crashcheck----">Crash.check()</a> for more info.</p>
+
+<h3>
+<a id="crashoverlap_limit--number" class="anchor" href="#crashoverlap_limit--number" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.OVERLAP_LIMIT : <em>number</em>
+</h3>
+
+<p>The minimum amount two <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s should overlap to call the <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s. If falsy, <code>OVERLAP_LIMIT</code> will not be taken into account. See <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> for more info.</p>
+
+<h3>
+<a id="crash__listeners--arrayfunction" class="anchor" href="#crash__listeners--arrayfunction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.__listeners : <em>Array.&lt;function&gt;</em>
+</h3>
+
+<p><em>Private</em><br>
+An array of functions to call when a collision occurs. You can add to this with <a href="#crashoncollision-function-listener---">Crash.onCollision()</a>.</p>
+
+<h3>
+<a id="crash__notyetinserted--arraycollider" class="anchor" href="#crash__notyetinserted--arraycollider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.__notYetInserted : <em>Array.&lt;Collider&gt;</em>
+</h3>
+
+<p><em>Private</em><br>
+When <a href="#crashinit-number-maxentries9---">Crash.init()</a> has not yet been called, and thus when <a href="#crashrbush--rbush">Crash.rbush</a> isn't defined yet, Colliders that are <a href="#crashinsert-collider-collider---">Crash.insert()</a>ed are pushed to this array, to be inserted into <a href="#crashrbush--rbush">Crash.rbush</a> when <a href="#crashinit-number-maxentries9---">Crash.init()</a> is called.</p>
+
+<h3>
+<a id="crash__moved--arraycollider" class="anchor" href="#crash__moved--arraycollider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.__moved : <em>Array.&lt;Collider&gt;</em>
+</h3>
+
+<p><em>Private</em><br>
+An array of colliders that have moved since the last <a href="#crashcheck----">Crash.check()</a>. This is used internally by <a href="#crashcheck----">Crash.check()</a> to optimize collision checks. For more info, see <a href="#crashcheck----">Crash.check()</a>.</p>
+
+<h3>
+<a id="crashinit-number-maxentries9---" class="anchor" href="#crashinit-number-maxentries9---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.init ([number maxEntries:9]) - .</h3>
+
+<p><strong>maxEntries:</strong> <em>number|optional. Default: 9</em>. The maximum amount of <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s in a Node. See the <a href="https://github.com/mourner/rbush/blob/master/README.md">RBush docs</a> for more info.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Initializes Crash, and more specifically RBush. It creates <a href="#crashrbush--rbush">Crash.rbush</a>, with <code>maxEntries</code> and aabb coordinate names <code>.aabb.x1</code>, <code>.aabb.y1</code>, etc. Then, it inserts all the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s from <a href="#crash__notyetinserted--array">Crash.__notYetInserted</a> in <a href="#crashrbush--rbush">Crash.rbush</a>.<br>
+You should be able to use all the APIs safely without calling <a href="#crashinit-number-maxentries9---">Crash.init()</a>, but some may not work correctly (specifically those that need RBush). It is a good habit, though, to call <a href="#crashinit-number-maxentries9---">Crash.init()</a> before you do anything else.</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.init(<span class="pl-c1">16</span>);
+
+Crash.insert(...);
+Crash.<span class="pl-c1">search</span>(...);</pre></div>
+
+<h3>
+<a id="crashinsert-collider-collider---" class="anchor" href="#crashinsert-collider-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.insert (Collider collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to insert.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Inserts <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s in <a href="#crashrbush--rbush">Crash.rbush</a>, or in <a href="#crash__notyetinserted--array">Crash.__notYetInserted</a> if the former is not defined.<br>
+Before <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s turn up in <a href="#crashsearch-collider-collider---collider">Crash.search()</a>s or in collision checks (performed by <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a>), you must <a href="#crashinsert-collider-collider---">Crash.insert()</a> them.<br>
+You can use <a href="#crashremove-collider-collider---">Crash.remove()</a> to get them out.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> circle <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Circle</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.V</span>(<span class="pl-c1">0</span>,<span class="pl-c1">0</span>), <span class="pl-c1">5</span>);
+<span class="pl-c">// circle won't turn up in searches and collision checks</span>
+Crash.insert(circle);
+<span class="pl-c">// Now it will!</span></pre></div>
+
+<h3>
+<a id="crashremove-collider-collider---" class="anchor" href="#crashremove-collider-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.remove (Collider collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to remove.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Removes <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s from <a href="#crashrbush--rbush">Crash.rbush</a>, or from <a href="#crash__notyetinserted--array">Crash.__notYetInserted</a> if the former is not defined.</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.insert(collider);
+<span class="pl-c">// collider will turn up in searches and collision checks</span>
+Crash.<span class="pl-c1">remove</span>(collider);
+<span class="pl-c">// now, it won't, anymore</span></pre></div>
+
+<h3>
+<a id="crashall----collider" class="anchor" href="#crashall----collider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.all () - <em>Collider[]</em>
+</h3>
+
+<p><strong><em>return:</em></strong> <em>Array.&lt;Collider&gt;</em>. An array containing all the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s that have been <a href="#crashinsert-collider-collider---">Crash.insert()</a>ed.</p>
+
+<p>Returns all the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s that have been <a href="#crashinsert-collider-collider---">Crash.insert()</a>ed.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> allColliders <span class="pl-k">=</span> Crash.<span class="pl-c1">all</span>();</pre></div>
+
+<h3>
+<a id="crashsearch-collider-collider---collider" class="anchor" href="#crashsearch-collider-collider---collider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.search (Collider collider) - <em>Collider[]</em>
+</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to base the search on.<br>
+<strong><em>return:</em></strong> <em>Array.&lt;Collider&gt;</em>. An array of colliders that may be colliding with <code>collider</code>.</p>
+
+<p>Runs <code>rbush.search()</code> based on a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>, which will look for all <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s that have (nearly) colliding axis-aligned bounding boxes (AABBs). This search is optimized by an RTree (that's a special algorithm, designed for this), implemented by RBush.</p>
+
+<p>RBush usually requires an array of AABB coordinates to perform a search, so <a href="#crashsearch-collider-collider---collider">Crash.search()</a> translates the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.collider</a>'s <code>aabb</code> coordinates to the correct array.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> possibleCollisions <span class="pl-k">=</span> Crash.<span class="pl-c1">search</span>(collider);
+<span class="pl-c">// returns an array containing closeByCollider, but not veryFarAwayCollider</span></pre></div>
+
+<h3>
+<a id="crashclear---" class="anchor" href="#crashclear---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.clear() - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Clears Crash from all <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s. This calls <code>rbush.clear()</code>, and clears <a href="#crash__notyetinserted--array">Crash.__notYetInserted</a> and <a href="#crash__moved--array">Crash.__moved</a>.</p>
+
+<h3>
+<a id="crashaddtomoved-collider-collider---" class="anchor" href="#crashaddtomoved-collider-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.addToMoved (Collider collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that should be added to <a href="#crash__moved--array">Crash.__moved</a>.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Adds a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to <a href="#crash__moved--array">Crash.__moved</a>, so it gets collision checked during the next <a href="#crashcheck----">Crash.check()</a> round. This does not update the Collider's AABB! If you want to do both, use <a href="#crashmoved-collider-collider---">Crash.moved()</a> instead.<br>
+Note that the built-in move methods of Colliders (<code>moveBy</code>, <code>rotate</code>,...) already call <a href="#crashmoved-collider-collider---">Crash.moved()</a> (which calls <code>addToMoved()</code>) for you.</p>
+
+<div class="highlight highlight-javascript"><pre>collider.pos.<span class="pl-c1">x</span> <span class="pl-k">+=</span> <span class="pl-c1">5</span>;
+<span class="pl-c">// Is not taken into account in the next check() round</span>
+
+Crash.moved(collider);
+<span class="pl-c">// Now it will</span></pre></div>
+
+<div class="highlight highlight-javascript"><pre>collider.<span class="pl-c1">moveBy</span>(<span class="pl-c1">5</span>,<span class="pl-c1">0</span>);
+<span class="pl-c">// Crash.moved(collider), and thus Crash.addToMoved(collider), has already been called for you</span></pre></div>
+
+<h3>
+<a id="crashupdate-collider-collider---" class="anchor" href="#crashupdate-collider-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.update (Collider collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that should be updated.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Updates the <code>aabb</code> of the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> (using <a href="#crashupdateaabb-collider-collider---">Crash.updateAABB()</a>) and updates its position in RBush.</p>
+
+<h3>
+<a id="crashmoved-collider-collider---" class="anchor" href="#crashmoved-collider-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.moved (Collider collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that has moved.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Notifies Crash that a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> has moved. This calls <a href="#crashupdate-collider-collider---">Crash.update()</a> and <a href="#crashaddtomoved-collider-collider---">Crash.addToMoved()</a>, so all the housekeeping is done in one function call.
+Note that this is already taken care of for you when using the built-in move methods of the Colliders (<code>moveBy</code>, <code>rotate</code>,...).</p>
+
+<div class="highlight highlight-javascript"><pre>collider.pos.<span class="pl-c1">x</span> <span class="pl-k">+=</span> <span class="pl-c1">5</span>;
+<span class="pl-c">// Is not taken into account in the next check() round</span>
+<span class="pl-c">// and the aabb is not updated</span>
+
+Crash.moved(collider);
+<span class="pl-c">// Now it will</span>
+<span class="pl-c">// and its aabb is updated</span></pre></div>
+
+<div class="highlight highlight-javascript"><pre>collider.<span class="pl-c1">moveBy</span>(<span class="pl-c1">5</span>,<span class="pl-c1">0</span>);
+<span class="pl-c">// Crash.move(collider) has already been called for you</span></pre></div>
+
+<h3>
+<a id="crashreset-number-maxentries---" class="anchor" href="#crashreset-number-maxentries---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.reset ([number maxEntries]) - .</h3>
+
+<p><strong>maxEntries:</strong> <em>number|optional</em>. See <a href="#crashinit-number-maxentries9---">Crash.init()</a>.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Resets Crash to a default, empty state. This basically calls <a href="#crashclear---">Crash.clear()</a> and <a href="#crashinit-number-maxentries9---">Crash.init()</a>, and resets some variables.<br>
+This method is primarily used by the test suite.</p>
+
+<h3>
+<a id="crashcancel----false" class="anchor" href="#crashcancel----false" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.cancel () - <em>false</em>
+</h3>
+
+<p><strong><em>return:</em></strong> <em>false</em>. Makes it easy to stop event propagation in some EventEmitters.</p>
+
+<p>This method cancels the current check loop. When you call <a href="#crashcheck----">Crash.check()</a>, a loop will start, which calls <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> for every collider that has moved since the last <a href="#crashcheck----">Crash.check()</a>. Then, <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> will do a <a href="#crashsearch-collider-collider---collider">Crash.search()</a> and perform all the necessary checks, calling <a href="#crash__oncollision-collider-a-collider-b-response-res---">Crash.__onCollision()</a> for every collision. Now, if you move a collider during the <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> loop (i.e. in a <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>), it will be added to <a href="#crash__moved--array">Crash.__moved</a> and all the following collision checks become unnecessary, because they will run again in the next iteration of the <a href="#crashcheck----">Crash.check()</a> loop.<br>
+That's where <a href="#crashcancel----false">Crash.cancel()</a> comes in. When you move a collider inside a <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>, call <a href="or%20the%20fourth%20argument%20of%20the%20listener,%20which%20is%20the%20exact%20same%20function">Crash.cancel()</a> to cancel all further (unnecessary) collision checks.</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.onCollision(<span class="pl-k">function</span>(<span class="pl-smi">a</span>, <span class="pl-smi">b</span>, <span class="pl-smi">res</span>, <span class="pl-smi">cancel</span>) {
+    a.<span class="pl-c1">moveBy</span>(<span class="pl-k">-</span>res.overlapV.<span class="pl-c1">x</span>, <span class="pl-k">-</span>res.overlapV.<span class="pl-c1">y</span>);
+    cancel();
+});</pre></div>
+
+<blockquote>
+<p><strong>Important Note:</strong> all the above is only valid for the <em>first</em> collider (named <code>a</code>), because that's the one that collision checks are run for. If yo move <code>b</code>, nothing has to be done.</p>
+</blockquote>
+
+<div class="highlight highlight-javascript"><pre>Crash.onCollision(<span class="pl-k">function</span>(<span class="pl-smi">a</span>, <span class="pl-smi">b</span>, <span class="pl-smi">res</span>, <span class="pl-smi">cancel</span>) {
+    b.<span class="pl-c1">moveBy</span>(res.overlapV.<span class="pl-c1">x</span>, res.overlapV.<span class="pl-c1">y</span>);
+});</pre></div>
+
+<h3>
+<a id="crashgetteststring-string-type1-string-type2---string" class="anchor" href="#crashgetteststring-string-type1-string-type2---string" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.getTestString (string type1, string type2) - <em>string</em>
+</h3>
+
+<p><strong>type1:</strong> <em>string</em>. The type of the first <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>.<br>
+<strong>type2:</strong> <em>string</em>. The type of the second <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>.<br>
+<strong><em>return:</em></strong> <em>string</em>. The appropriate SAT testing string.</p>
+
+<p>Gives you the right SAT method name to test for a collision between two <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s. Be sure to pass <a href="#collidertype--string">Collider.type</a>, ans not a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>!</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> circle <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Circle</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">0</span>,<span class="pl-c1">0</span>), <span class="pl-c1">10</span>);
+<span class="pl-k">var</span> box <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Box</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.Vector</span>(<span class="pl-c1">5</span>,<span class="pl-c1">5</span>), <span class="pl-c1">7</span>, <span class="pl-c1">15</span>);
+
+<span class="pl-k">var</span> string <span class="pl-k">=</span> Crash.getTestString(circle.<span class="pl-c1">type</span>, box.<span class="pl-c1">type</span>); <span class="pl-c">// 'testCirclePolygon'</span></pre></div>
+
+<h3>
+<a id="crashoncollision-function-listener---" class="anchor" href="#crashoncollision-function-listener---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.onCollision (function listener) - .</h3>
+
+<p><strong>listener:</strong> <em>function</em>. The <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a> to add to the <code>collision</code> event. See <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a> for more info.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Adds a <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a> to <a href="#crash__listeners--array">Crash.__listeners</a> and will be called every time a collision occurs. See <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a> for more info.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> <span class="pl-en">listener</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">a</span>, <span class="pl-smi">b</span>, <span class="pl-smi">res</span>, <span class="pl-smi">cancel</span>) {
+    <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">"</span>Oh my, there is a collision!<span class="pl-pds">"</span></span>);
+    a.<span class="pl-c1">moveBy</span>(<span class="pl-k">-</span>res.overlapV.<span class="pl-c1">x</span>, <span class="pl-k">-</span>res.overlapV.<span class="pl-c1">y</span>);
+}
+Crash.onCollision(listener);</pre></div>
+
+<h3>
+<a id="crashoffcollision-function-listener---" class="anchor" href="#crashoffcollision-function-listener---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.offCollision (function listener) - .</h3>
+
+<p><strong>listener:</strong> <em>function</em>. The <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a> to remove.
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Removes a <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a> from the <code>collision</code> event. So, this is the opposite of <a href="#crashoncollision-function-listener---">Crash.onCollision()</a>.</p>
+
+<div class="highlight highlight-javascript"><pre>Crash.offCollision(listener);</pre></div>
+
+<h3>
+<a id="crash__oncollision-collider-a-collider-b-response-res---" class="anchor" href="#crash__oncollision-collider-a-collider-b-response-res---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.__onCollision (Collider a, Collider b, Response res) - .</h3>
+
+<p><em>Private</em><br>
+<strong>a:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that collides with <code>b</code>.<br>
+<strong>b:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that collides with <code>a</code>.<br>
+<strong>res:</strong> <em>Response</em>. The <a href="#crashresponse--response">Crash.Response</a> for thsi collision.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Calls all the <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s when a <code>collision</code> event occurs. It takes three arguments: the two <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s that are colliding and the <a href="#crashresponse--response">Crash.Response</a> for this collision. It will take care of injecting <a href="#crashcancel----false">Crash.cancel()</a> by itself.<br>
+Intended for private use.</p>
+
+<h3>
+<a id="crashextend-function-child-function-base---undefined" class="anchor" href="#crashextend-function-child-function-base---undefined" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.extend (function child, function base) - <em>undefined</em>
+</h3>
+
+<p><strong>child:</strong> <em>function</em>. This constructor that inherits from <code>parent</code>.<br>
+<strong>base:</strong> <em>function</em>. The constructor that is the parent of <code>child</code>.<br>
+<strong><em>return:</em></strong> <em>undefined</em>.</p>
+
+<p>Extends the prototype chain of <code>base</code> to <code>child</code>, so child inherits from base. This is used to make the collider classes inherit from <code>Collider</code>.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> <span class="pl-en">Child</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(){}
+<span class="pl-k">var</span> <span class="pl-en">Parent</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(){}
+Crash.extend(Child, Parent);</pre></div>
+
+<h3>
+<a id="crashupdateaabb-collider-collider---" class="anchor" href="#crashupdateaabb-collider-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.updateAABB (Collider collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> whose AABB should be updated.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Calls <a href="#crashupdateaabbpolygon-polygon-collider---">Crash.updateAABBPolygon()</a>, <a href="#crashupdateaabbbox-box-collider---">Crash.updateAABBBox()</a>, <a href="#crashupdateaabbcircle-circle-collider---">Crash.updateAABBCircle()</a> or <a href="#crashupdateaabbpoint-point-collider---">Crash.updateAABBPoint()</a> based on <code>collider</code>'s <code>type</code>.</p>
+
+<h3>
+<a id="crashupdateaabbpolygon-polygon-collider---" class="anchor" href="#crashupdateaabbpolygon-polygon-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.updateAABBPolygon (Polygon collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Polygon</em>. The <a href="#crashpolygon-vector-pos-vector-points-boolean-insertfalse-any-data--crashcollider">Crash.Polygon</a> whose AABB should be updated.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Updates a <a href="#crashpolygon-vector-pos-vector-points-boolean-insertfalse-any-data--crashcollider">Crash.Polygon</a>'s <code>aabb</code> attribute (<a href="#collideraabb--object">Collider.aabb</a>), based on its position and size.</p>
+
+<h3>
+<a id="crashupdateaabbbox-box-collider---" class="anchor" href="#crashupdateaabbbox-box-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.updateAABBBox (Box collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Box</em>. The <a href="#crashbox-vector-position-number-width-number-height-boolean-insertfalse-any-data--crashcollider">Crash.Box</a> whose AABB should be updated.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Updates a <a href="#crashbox-vector-position-number-width-number-height-boolean-insertfalse-any-data--crashcollider">Crash.Box</a>'s <code>aabb</code> attribute (<a href="#collideraabb--object">Collider.aabb</a>), based on its position and size.</p>
+
+<h3>
+<a id="crashupdateaabbcircle-circle-collider---" class="anchor" href="#crashupdateaabbcircle-circle-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.updateAABBCircle (Circle collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Circle</em>. The <a href="#crashcircle-vector-center-number-radius-boolean-insertfalse-any-data--crashcollider">Crash.Circle</a> whose AABB should be updated.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Updates a <a href="#crashcircle-vector-center-number-radius-boolean-insertfalse-any-data--crashcollider">Crash.Circle</a>'s <code>aabb</code> attribute (<a href="#collideraabb--object">Collider.aabb</a>), based on its position and size.</p>
+
+<h3>
+<a id="crashupdateaabbpoint-point-collider---" class="anchor" href="#crashupdateaabbpoint-point-collider---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.updateAABBPoint (Point collider) - .</h3>
+
+<p><strong>collider:</strong> <em>Point</em>. The <a href="#crashpoint-vector-position-boolean-insertfalse-any-data--crashcollider">Crash.Point</a> whose AABB should be updated.<br>
+<strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Updates a <a href="#crashpoint-vector-position-boolean-insertfalse-any-data--crashcollider">Crash.Point</a>'s <code>aabb</code> attribute (<a href="#collideraabb--object">Collider.aabb</a>), based on its position.</p>
+
+<h3>
+<a id="crashtest-collider-a-collider-b-response-res---boolean" class="anchor" href="#crashtest-collider-a-collider-b-response-res---boolean" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.test (Collider a, Collider b, [Response res]) - <em>boolean</em>
+</h3>
+
+<p><strong>a:</strong> <em>Collider</em>. The first <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to test for.<br>
+<strong>b:</strong> <em>Collider</em>. The second <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to test for.<br>
+<strong>res:</strong> <em>Response|optional</em>. The optional <a href="#crashresponse--response">Crash.Response</a> to use.<br>
+<strong><em>return:</em></strong> <em>boolean</em>. Indicates whether there is a collision between <code>a</code>and <code>b</code>.</p>
+
+<p>Tests for a collision between <code>a</code> and <code>b</code>, using SAT. The boolean return value indicates whether <code>a</code> and <code>b</code> are colliding: <code>true</code> if there is a collision, <code>false</code> otherwise.<br>
+You can optionally pass in a <a href="#crashresponse--response">Crash.Response</a> to get some information about the collision (if there is one). If you don't, <a href="#crashresponse--response">Crash.RESPONSE</a> will be used instead.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> c1 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Circle</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.V</span>(<span class="pl-c1">0</span>,<span class="pl-c1">0</span>), <span class="pl-c1">5</span>);
+<span class="pl-k">var</span> c2 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Point</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.V</span>(<span class="pl-c1">3</span>,<span class="pl-c1">0</span>));
+<span class="pl-k">var</span> c3 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Box</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.V</span>(<span class="pl-c1">15</span>,<span class="pl-c1">20</span>), <span class="pl-c1">10</span>, <span class="pl-c1">10</span>);
+<span class="pl-k">var</span> res <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Response</span>();
+
+Crash.<span class="pl-c1">test</span>(c1, c2, res);
+<span class="pl-c">// true, info in 'res'</span>
+
+Crash.<span class="pl-c1">test</span>(c1, c3);
+<span class="pl-c">//false, info in Crash.RESPONSE</span></pre></div>
+
+<h3>
+<a id="crashtestall-collider-collider-response-res---boolean" class="anchor" href="#crashtestall-collider-collider-response-res---boolean" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.testAll (Collider collider, [Response res]) - <em>boolean</em>
+</h3>
+
+<p><strong>collider:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to test collisions for.<br>
+<strong>res:</strong> <em>Response|optional</em>. The optional <a href="#crashresponse--response">Crash.Response</a> to use.<br>
+<strong><em>return:</em></strong> <em>boolean</em>. Whether the loop was stopped.</p>
+
+<p>Tests for collisions between <code>collider</code> and any <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that has been <a href="#crashinsert-collider-collider---">Crash.insert()</a>ed in <a href="#crashrbush--rbush">Crash.rbush</a>. This will <a href="#crashsearch-collider-collider---collider">Crash.search()</a> for <code>collider</code>, do a collision check for every <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> returned by that search and finally call <a href="#crash__oncollision-collider-a-collider-b-response-res---">Crash.__onCollision()</a> for every collision.<br>
+You can stop this loop (the one that checks for collisions) simply by calling <a href="#crashcancel----false">Crash.cancel()</a>. This sets <a href="#crashbreak--boolean">Crash.BREAK</a> to <code>true</code> (which is what <code>testAll</code> actually looks for). In <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s, the recommended way is to call their <code>cancel</code> argument, which is the exact same function as <a href="#crashcancel----false">Crash.cancel()</a>.<br>
+Stopping the loop comes in handy when you move <code>collider</code> in any of the <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s, because all consequent collision checks become unnecessary: you will have to run <code>testAll()</code> again for the new position.<br>
+The value returned by <code>testAll()</code> indicates whether the loop was cancelled: if it was, <code>false</code> is returned, otherwise, it returns <code>true</code>.</p>
+
+<p>You probably don't want to use this method, because it isn't really intended to be used publicly (but rather by <a href="#crashcheck----">Crash.check()</a> internally), and <a href="#crashcheck----">Crash.check()</a> is more convenient in most situations anyway. </p>
+
+<p>Finally, I would like to note a few things:</p>
+
+<ol>
+<li>
+<code>res</code> is optional: if you don't pass it, <a href="#crashresponse--response">Crash.RESPONSE</a> will be used instead.</li>
+<li>this method doesn't really provide direct feedback, like <a href="#crashtest-collider-a-collider-b-response-res---boolean">Crash.test()</a> does: it rather calls the attached <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s. This means <code>res</code> (or <a href="#crashresponse--response">Crash.RESPONSE</a>) will be passed to the <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s, and will only hold info about the last collision when the call is finished.</li>
+<li>if this method returns <code>false</code>, the loop was cancelled, so you probably want to run it again.</li>
+<li>
+<code>testAll</code> will not run [Crash.__onCollision()] when the overlap is smaller than [Crash.OVERLAP_LIMIT]. If [Crash.OVERLAP_LIMIT] is falsy, [Crash.__onCollision] will always be called.</li>
+<li>
+<code>testAll</code> won't call <a href="#crashupdate-collider-collider---">Crash.update()</a> on <code>collider</code>, so make sure it's updated.</li>
+<li>
+<code>testAll</code> is not really intended to be used publicly, but rather by <a href="#crashcheck----">Crash.check()</a> internally.</li>
+</ol>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> c1 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Circle</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.V</span>(<span class="pl-c1">0</span>,<span class="pl-c1">0</span>), <span class="pl-c1">5</span>, <span class="pl-c1">true</span>);
+<span class="pl-k">var</span> c2 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Point</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.V</span>(<span class="pl-c1">3</span>,<span class="pl-c1">0</span>), <span class="pl-c1">true</span>);
+<span class="pl-k">var</span> c3 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Box</span>(<span class="pl-k">new</span> <span class="pl-en">Crash.V</span>(<span class="pl-c1">15</span>,<span class="pl-c1">20</span>), <span class="pl-c1">10</span>, <span class="pl-c1">10</span>, <span class="pl-c1">true</span>);
+<span class="pl-k">var</span> res <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Crash.Response</span>();
+Crash.onCollision(<span class="pl-k">function</span>(<span class="pl-smi">a</span>, <span class="pl-smi">b</span>, <span class="pl-smi">res</span>, <span class="pl-smi">cancel</span>){
+    <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">"</span>Oh my, there is a collision!<span class="pl-pds">"</span></span>);
+});
+
+Crash.testAll(c1, res);
+<span class="pl-c">// calls the listener for (c1, c2), but not for (c1, c3).</span>
+<span class="pl-c">// the response passed to the listener is 'res'.</span>
+
+Crash.<span class="pl-c1">test</span>(c2);
+<span class="pl-c">// calls the listener for (c2, c1), but not for (c2, c3).</span>
+<span class="pl-c">// the response passed to the listener is Crash.RESPONSE.</span>
+
+Crash.<span class="pl-c1">test</span>(c3);
+<span class="pl-c">// the listener will not be called.</span></pre></div>
+
+<h3>
+<a id="crashcheck----" class="anchor" href="#crashcheck----" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.check () - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>Calls <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> for every <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> in <a href="#crash__moved--array">Crash.__moved</a>. This means that it performs collision checks for all the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s that have moved since the last <a href="#crashcheck----">Crash.check()</a>, which makes it the perfect function to handle collisions after everything was moved to new positions by physics. This integrates neatly in game loops: just do your updates, and then call <a href="#crashcheck----">Crash.check()</a> to handle collisions.</p>
+
+<p>Important to note is that Colliders may be moved inside <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s: they will be added to <a href="#crash__moved--array">Crash.__moved</a> and checked in further iterations of the (current) <a href="#crashcheck----">Crash.check()</a> loop.<br>
+To prevent infinite loops (a collider is moved, checked in the following iteration, moved again, etc.), the loop will be forced to stop after <a href="#crashmax_checks--number">Crash.MAX_CHECKS</a> loops, which is <code>100</code> by default.</p>
+
+<p>For a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> to be checked, Crash must be notified it has moved (i.e. it must be pushed to <a href="#crash__moved--array">Crash.__moved</a>. You can use <a href="#crashmoved-collider-collider---">Crash.moved()</a> or <a href="#crashaddtomoved-collider-collider---">Crash.addToMoved()</a> to achieve this.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-c">// apply updates to colliders ...</span>
+<span class="pl-c">// things may be colliding!</span>
+Crash.check();
+<span class="pl-c">// nothing is colliding anymore!</span>
+<span class="pl-c">// if the right listeners have been added, that is.</span></pre></div>
+
+<h3>
+<a id="crashcheckall----" class="anchor" href="#crashcheckall----" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.checkAll () - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Crash</em>. For chaining.</p>
+
+<p>This does the same as <a href="#crashcheck----">Crash.check()</a>, with one difference: it doesn't check <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s in <a href="#crash__moved--array">Crash.__moved</a>, but rather all <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s (as returned by <a href="#crashall----collider">Crash.all()</a>). This is especially handy when you just loaded you <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s and you don't know which ones are colliding and/or have moved.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-c">// I have no idea what's up with my Colliders:</span>
+<span class="pl-c">// I haven't moved any yet, but I don't know if any are colliding!</span>
+Crash.checkAll();
+<span class="pl-c">// Ahh, that's better! Everything is sorted out!</span></pre></div>
+
+<h3>
+<a id="crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor" class="anchor" href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.Collider (string type, SAT.Polygon|SAT.Circle satCollider, [boolean insert:false], [any data]) : <em>constructor</em>
+</h3>
+
+<p><strong>type:</strong> <em>string</em>. The type of collider this is. Valid values: <code>polygon</code>, <code>box</code>, <code>point</code>, <code>circle</code>.<br>
+<strong>satCollider:</strong> <em>SAT.Polygon or SAT.Circle</em>. The SAT Collider to use for collision checks.<br>
+<strong>insert:</strong> <em>boolean|optional</em>. Whether to <a href="#crashinsert-collider-collider---">Crash.insert()</a> this Collider.<br>
+<strong>data:</strong> <em>any|optional</em>. Some data to store in <a href="#colliderdata--any">Collider.data</a>.<br>
+<strong><em>return:</em></strong> <em>Collider</em>. The new Collider.</p>
+
+<p>This is the main Collider constructor, which provides some housekeeping methods, like <code>moveBy</code>, <code>update</code>, etc. All the other constructors (<a href="#crashpolygon-vector-pos-vector-points-boolean-insertfalse-any-data--crashcollider">Crash.Polygon</a>, <a href="#crashbox-vector-position-number-width-number-height-boolean-insertfalse-any-data--crashcollider">Crash.Box</a>, <a href="#crashpoint-vector-position-boolean-insertfalse-any-data--crashcollider">Crash.Point</a> and <a href="#crashcircle-vector-center-number-radius-boolean-insertfalse-any-data--crashcollider">Crash.Circle</a>) inherit from this class. They pass their type and a custom SAT Collider to <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>, and pass through <code>insert</code> and <code>data</code>. This way, they inherit the housekeeping functions from Collider's prototype and they can add their own on their own prototype.</p>
+
+<h3>
+<a id="collidertype--string" class="anchor" href="#collidertype--string" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.type : <em>string</em>
+</h3>
+
+<p>The type of collider this is. Valid values: <code>polygon</code>, <code>box</code>, <code>point</code>, <code>circle</code>.<br>
+This attribute is used by <a href="#crashupdateaabb-collider-collider---">Crash.updateAABB()</a> to determine how to update the <a href="#collideraabb--object">Collider.aabb</a> attribute.</p>
+
+<h3>
+<a id="collidersat--satpolygonsatcircle" class="anchor" href="#collidersat--satpolygonsatcircle" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.sat : <em>SAT.Polygon|SAT.Circle</em>
+</h3>
+
+<p>The actual SAT collider used to do the collision checking. For <a href="#crashpolygon-vector-pos-vector-points-boolean-insertfalse-any-data--crashcollider">Crash.Polygon</a>s, <a href="#crashbox-vector-position-number-width-number-height-boolean-insertfalse-any-data--crashcollider">Crash.Box</a>es and <a href="#crashpoint-vector-position-boolean-insertfalse-any-data--crashcollider">Crash.Point</a>s, this is a SAT.Polygon, for <a href="#crashcircle-vector-center-number-radius-boolean-insertfalse-any-data--crashcollider">Crash.Circle</a>s, this is a SAT.Circle.<br>
+For further documentation, I refer to the <a href="https://github.com/jriecken/sat-js/blob/master/README.md">SAT.js docs</a>.</p>
+
+<h3>
+<a id="colliderdata--any" class="anchor" href="#colliderdata--any" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.data : <em>any</em>
+</h3>
+
+<p>Some data that has to be carried around with the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>. It can be of any type, and doesn't mean anything to Crash; it's just for your convenience.</p>
+
+<h3>
+<a id="colliderpos--vector" class="anchor" href="#colliderpos--vector" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.pos : <em>Vector</em>
+</h3>
+
+<p>This is the same <a href="#crashvector--constructor">Crash.Vector</a> as <a href="#collidersat--satpolygonsatcircle">Collider.sat</a><code>.pos</code> (so <code>collider.pos === collider.sat.pos</code> is <code>true</code>).<br>
+This position is not garanteed to be 'safe', i.e. the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> may still be colliding with something. <a href="#colliderpos--vector">Collider.pos</a> is the <a href="#crashvector--constructor">Crash.Vector</a> that is moved by <a href="#collidermoveto-number-x-number-y---">Collider.moveTo()</a> and <a href="#collidermoveby-number-x-number-y---">Collider.moveBy()</a>, and is therefore always the most up-to-date, but not always collision checked.</p>
+
+<h3>
+<a id="colliderlastpos--vector" class="anchor" href="#colliderlastpos--vector" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.lastPos : <em>Vector</em>
+</h3>
+
+<p>This is a <a href="#crashvector--constructor">Crash.Vector</a> keeping track of the last position as it was at the end of the <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> loop. So, during a <a href="#crashcheck----">Crash.check()</a> loop, the <a href="#colliderlastpos--vector">Collider.lastPos</a> attribute as it is inside the <a href="#listener-collider-a-collider-b-response-res-function-cancel--function">Listener</a>s, is a copy of <a href="#colliderpos--vector">Collider.pos</a> at the end of the previous iteration.</p>
+
+<h3>
+<a id="colliderlastcheckedpos--vector" class="anchor" href="#colliderlastcheckedpos--vector" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.lastCheckedPos : <em>Vector</em>
+</h3>
+
+<p>This is a <a href="#crashvector--constructor">Crash.Vector</a> keeping track of the last fully collision checked position of the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>, i.e. a copy of <a href="#colliderpos--vector">Collider.pos</a> at the end of the <a href="#crashcheck----">Crash.check()</a> loop.</p>
+
+<h3>
+<a id="collideraabb--object" class="anchor" href="#collideraabb--object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.aabb : <em>object</em>
+</h3>
+
+<p>An Object with <code>x1</code>, <code>y1</code>, <code>x2</code> and <code>y2</code> attributes, that keeps track of the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>'s axis-aligned bounding box (AABB). It is used to perform <a href="#crashsearch-collider-collider---collider">Crash.search()</a>es.<br>
+When you move a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>, don't forget to update this attribute, with <a href="#crashupdateaabb-collider-collider---">Crash.updateAABB()</a>. Note that the built-in move methods (<code>moveBy</code>, <code>rotate</code>, etc.) already do this for you.</p>
+
+<h3>
+<a id="colliderinsert----" class="anchor" href="#colliderinsert----" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.insert () - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>Shortcut for <a href="#crashinsert-collider-collider---">Crash.insert()</a>.</p>
+
+<h3>
+<a id="colliderremove----" class="anchor" href="#colliderremove----" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.remove () - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>Shortcut for <a href="#crashremove-collider-collider---">Crash.remove()</a>.</p>
+
+<h3>
+<a id="colliderupdate----" class="anchor" href="#colliderupdate----" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.update () - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>Shortcut for <a href="#crashupdate-collider-collider---">Crash.update()</a>.</p>
+
+<h3>
+<a id="colliderupdateaabb----" class="anchor" href="#colliderupdateaabb----" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.updateAABB () - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>Shortcut for <a href="#crashupdateaabb-collider-collider---">Crash.updateAABB()</a>.</p>
+
+<h3>
+<a id="collidermoved----" class="anchor" href="#collidermoved----" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.moved () - .</h3>
+
+<p><strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>Shortcut for <a href="#crashmoved-collider-collider---">Crash.moved()</a>.</p>
+
+<h3>
+<a id="collidersearch----collider" class="anchor" href="#collidersearch----collider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.search () - <em>Collider[]</em>
+</h3>
+
+<p><strong><em>return:</em></strong> <em>Array.&lt;Collider&gt;</em>. An array of <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s that may be colliding with <code>this</code>.</p>
+
+<p>Shortcut for <a href="#crashsearch-collider-collider---collider">Crash.search()</a>.</p>
+
+<h3>
+<a id="collidersetdata-any-data---" class="anchor" href="#collidersetdata-any-data---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.setData (any data) - .</h3>
+
+<p><strong>data:</strong> <em>any</em>. The data to set as the new <a href="#colliderdata--any">Collider.data</a>.<br>
+<strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>Sets the <code>data</code> attribute (<a href="#colliderdata--any">Collider.data</a>) to any value that's passed as the first argument. See <a href="#colliderdata--any">Collider.data</a> for more info.</p>
+
+<h3>
+<a id="collidergetdata----any" class="anchor" href="#collidergetdata----any" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.getData () - <em>any</em>
+</h3>
+
+<p><strong><em>return:</em></strong> <em>any</em>. The value of the <code>data</code> attribute (<a href="#colliderdata--any">Collider.data</a>).</p>
+
+<p>Returns the value of the <code>data</code> attribute (<a href="#colliderdata--any">Collider.data</a>). See <a href="#colliderdata--any">Collider.data</a> for more info.</p>
+
+<h3>
+<a id="collidermoveto-number-x-number-y---" class="anchor" href="#collidermoveto-number-x-number-y---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.moveTo (number x, number y) - .</h3>
+
+<p><strong>x:</strong> <em>number</em>. The x-coordinate to move to.<br>
+<strong>y:</strong> <em>number</em>. The y-coordinate to move to.<br>
+<strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>This moves the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>'s <code>pos</code> (<a href="#colliderpos--vector">Collider.pos</a>) and <code>sat.pos</code> attributes <strong>to</strong> (<code>x</code>, <code>y</code>). This calls <a href="#collidermoved----">Collider.moved()</a> for you.</p>
+
+<h3>
+<a id="collidermoveby-number-x-number-y---" class="anchor" href="#collidermoveby-number-x-number-y---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.moveBy (number x, number y) - .</h3>
+
+<p><em>Alias:</em> <a href="#collidermove-number-x-number-y---">Collider.move()</a><br>
+<strong>x:</strong> <em>number</em>. The distance in x direction to move by.<br>
+<strong>y:</strong> <em>number</em>. The distance in y direction to move by.<br>
+<strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>This moves the <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>'s <code>pos</code> (<a href="#colliderpos--vector">Collider.pos</a>) and <code>sat.pos</code> attributes <strong>by</strong> (<code>x</code>, <code>y</code>). This calls <a href="#collidermoved----">Collider.moved()</a> for you.</p>
+
+<h3>
+<a id="collidermove-number-x-number-y---" class="anchor" href="#collidermove-number-x-number-y---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Collider.move (number x, number y) - .</h3>
+
+<p><em>Alias:</em> <a href="#collidermoveby-number-x-number-y---">Collider.moveBy()</a><br>
+<strong>x:</strong> <em>number</em>. The distance in x direction to move by.<br>
+<strong>y:</strong> <em>number</em>. The distance in y direction to move by.<br>
+<strong><em>return:</em></strong> <em>Collider</em>. For chaining.</p>
+
+<p>Alias of <a href="#collidermoveby-number-x-number-y---">Collider.moveBy()</a>.</p>
+
+<h3>
+<a id="crashpolygon-vector-pos-vector-points-boolean-insertfalse-any-data--crashcollider" class="anchor" href="#crashpolygon-vector-pos-vector-points-boolean-insertfalse-any-data--crashcollider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.Polygon (Vector pos, Vector[] points, [boolean insert:false], [any data]) ~ <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>
+</h3>
+
+<p><em>Inherits from:</em> <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a><br>
+<strong>pos:</strong> <em>Vector</em>. The base position of the Polygon.<br>
+<strong>points:</strong> <em>Array.&lt;Vector&gt;</em>. The points/corners of the Polygon.<br>
+<strong>insert:</strong> <em>boolean|optional</em>. Whether to insert the Polygon.<br>
+<strong>data:</strong> <em>any|optional</em>. Any data to set as <a href="#colliderdata--any">Collider.data</a>.<br>
+<strong><em>return:</em></strong> <em>Polygon</em>.</p>
+
+<p>A Polygon is a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> with a base position (<a href="#colliderpos--vector">Collider.pos</a>) and a few points/corners. The points are defined by an array of <a href="#crashvector--constructor">Crash.Vector</a>s, relative to the base position (<a href="#colliderpos--vector">Collider.pos</a>), in counter-clockwise order.<br>
+For the <code>insert</code> and <code>data</code> arguments, see <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>.</p>
+
+<h3>
+<a id="polygonsetpoints-vector-points---" class="anchor" href="#polygonsetpoints-vector-points---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Polygon.setPoints (Vector[] points) - .</h3>
+
+<p><strong>points:</strong> <em>Array.&lt;Vector&gt;</em>. The points/corners of the Polygon.<br>
+<strong><em>return:</em></strong> <em>Polygon</em>. For chaining.</p>
+
+<p>A shortcut for <a href="#collidersat--satpolygonsatcircle">Collider.sat</a><code>.setPoints()</code>, which calls <a href="#collidermoved----">Collider.moved()</a> for you.</p>
+
+<h3>
+<a id="polygonsetangle-number-angle---" class="anchor" href="#polygonsetangle-number-angle---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Polygon.setAngle (number angle) - .</h3>
+
+<p><strong>angle:</strong> <em>number</em>. The angle by which to rotate the Polygon (in radians).<br>
+<strong><em>return:</em></strong> <em>Polygon</em>. For chaining.</p>
+
+<p>A shortcut for <a href="#collidersat--satpolygonsatcircle">Collider.sat</a><code>.setAngle()</code>, which calls <a href="#collidermoved----">Collider.moved()</a> for you.</p>
+
+<h3>
+<a id="polygonsetoffset-number-offset---" class="anchor" href="#polygonsetoffset-number-offset---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Polygon.setOffset (number offset) - .</h3>
+
+<p><strong>offset:</strong> <em>number</em>. The offset by which to translate the points of the Polygon.<br>
+<strong><em>return:</em></strong> <em>Polygon</em>. For chaining.</p>
+
+<p>A shortcut for <a href="#collidersat--satpolygonsatcircle">Collider.sat</a><code>.setOffset()</code>, which calls <a href="#collidermoved----">Collider.moved()</a> for you.</p>
+
+<h3>
+<a id="polygonrotate-number-angle---" class="anchor" href="#polygonrotate-number-angle---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Polygon.rotate (number angle) - .</h3>
+
+<p><strong>angle:</strong> <em>number</em>. The angle by which to rotate the points of the Polygon.<br>
+<strong><em>return:</em></strong> <em>Polygon</em>. For chaining.</p>
+
+<p>A shortcut for <a href="#collidersat--satpolygonsatcircle">Collider.sat</a><code>.rotate()</code>, which calls <a href="#collidermoved----">Collider.moved()</a> for you.</p>
+
+<h3>
+<a id="crashcircle-vector-center-number-radius-boolean-insertfalse-any-data--crashcollider" class="anchor" href="#crashcircle-vector-center-number-radius-boolean-insertfalse-any-data--crashcollider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.Circle (Vector center, number radius, [boolean insert:false], [any data]) ~ <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>
+</h3>
+
+<p><strong>center:</strong> <em>Vector</em>. The position of the center of the Circle.<br>
+<strong>radius:</strong> <em>number</em>. The radius of the Circle.<br>
+<strong>insert:</strong> <em>boolean|optional</em>. Whether to insert the Circle.<br>
+<strong>data:</strong> <em>any|optional</em>. Any data to set as <a href="#colliderdata--any">Collider.data</a>.
+<strong><em>return:</em></strong> <em>Circle</em></p>
+
+<p>A Circle is a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>, with a center and radius.<br>
+For the <code>insert</code> and <code>data</code> arguments, see <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>.</p>
+
+<h3>
+<a id="crashpoint-vector-position-boolean-insertfalse-any-data--crashcollider" class="anchor" href="#crashpoint-vector-position-boolean-insertfalse-any-data--crashcollider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.Point (Vector position, [boolean insert:false], [any data]) ~ <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>
+</h3>
+
+<p><strong>position:</strong> <em>Vector</em>. The position of the Point.<br>
+<strong>insert:</strong> <em>boolean|optional</em>. Whether to insert the Point.<br>
+<strong>data:</strong> <em>any|optional</em>. Any data to set as <a href="#colliderdata--any">Collider.data</a>.
+<strong><em>return:</em></strong> <em>Point</em></p>
+
+<p>A Point is a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> with just a position. It doesn't have a size.<br>
+For the <code>insert</code> and <code>data</code> arguments, see <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>.</p>
+
+<h3>
+<a id="crashbox-vector-position-number-width-number-height-boolean-insertfalse-any-data--crashcollider" class="anchor" href="#crashbox-vector-position-number-width-number-height-boolean-insertfalse-any-data--crashcollider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crash.Box (Vector position, number width, number height, [boolean insert:false], [any data]) ~ <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>
+</h3>
+
+<p><strong>position:</strong> <em>Vector</em>. The position of the Box.<br>
+<strong>width:</strong> <em>number</em>. The width of the Box.<br>
+<strong>height:</strong> <em>number</em>. The height of the Box.<br>
+<strong>insert:</strong> <em>boolean|optional</em>. Whether to insert the Box.<br>
+<strong>data:</strong> <em>any|optional</em>. Any data to set as <a href="#colliderdata--any">Collider.data</a>.
+<strong><em>return:</em></strong> <em>Box</em></p>
+
+<p>A Box is a <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> in a rectangular shape with a position (the bottom-left corner), a width and a height.<br>
+For the <code>insert</code> and <code>data</code> arguments, see <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>.</p>
+
+<h3>
+<a id="listener-collider-a-collider-b-response-res-function-cancel--function" class="anchor" href="#listener-collider-a-collider-b-response-res-function-cancel--function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Listener (Collider a, Collider b, Response res, function cancel) : <em>function</em>
+</h3>
+
+<p><strong>a:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that collides with <code>b</code>.<br>
+<strong>b:</strong> <em>Collider</em>. The <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a> that collides with <code>a</code>.<br>
+<strong>res:</strong> <em>Response</em>. The <a href="#crashresponse--response">Crash.Response</a> for this collision.<br>
+<strong>cancel:</strong> <em>function</em>. Cancels the current check loop. See <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> for more info.</p>
+
+<p>A listener is a function that is called every time a collision is detected by <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a>, <a href="#crashcheck----">Crash.check()</a> or <a href="#crashcheckall----">Crash.checkAll()</a> and will be passed four arguments: the two <a href="#crashcollider-string-type-satpolygonsatcircle-satcollider-boolean-insertfalse-any-data--constructor">Crash.Collider</a>s that are colliding, the <a href="#crashresponse--response">Crash.Response</a> for this collision and <a href="#crashcancel----false">Crash.cancel()</a>, which cancels the current check loop. See <a href="#crashtestall-collider-collider-response-res---boolean">Crash.testAll()</a> for more info about this.<br>
+The context of the listener (<code>this</code>) will be set to <code>Crash</code>.<br>
+You can add a listener with <a href="#crashoncollision-function-listener---">Crash.onCollision()</a> and you can remove them with <a href="#crashoffcollision-function-listener---">Crash.offCollision()</a>. All listeners are stored in <a href="#crash__listeners--array">Crash.__listeners</a>, which is intended for private use.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2014-2015 Tuur Dutoit</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/TuurDutoit/crash/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/TuurDutoit/crash/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/TuurDutoit/crash"></a> is maintained by <a href="https://github.com/TuurDutoit">TuurDutoit</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-62013657-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
