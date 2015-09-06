@@ -10,9 +10,9 @@ Crash is perfectly happy in the browser and on Node.js.
 ## Contents
 * [Contents](#contents)
 * [Installation](#installation)
-  * [Node.js](#nodejs)
-  * [Browser](#browser)
+  * [Node.js or Browserify](#nodejs-or-browserify)
   * [Require.js](#requirejs)
+  * [Browser](#browser-global)
 * [Getting Started](#getting-started)
   * [Adding Colliders](#adding-colliders)
   * [Testing for collisions](#testing-for-collisions)
@@ -31,26 +31,25 @@ Crash is perfectly happy in the browser and on Node.js.
 
 
 ## Installation
-At the moment, package managers are not yet set up. Just download one of the following files from this repo and load it in your project.
+Just download one of the following files from this repo.
 
 1. [crash.js]: full source, with comments and all (13.6kB).
 2. [crash.min.js]: minified, ready to be used in production (5.6kB or 1.8kB gzipped).
 
+Or get the code from [NPM] by typing the following command in a terminal (without the `$`):
+```shell
+$ npm install crash-colliders
+```
+
+You can find instruction on how to load Crash in your project below.  
 When you have installed Crash, head over to the [Getting Started section][getting-started].
 
-### Node.js
+### Node.js or Browserify
 Add the following snippet to your code:
 ```javascript
-var Crash = require("path/to/crash.js");
+var Crash = require("crash-colliders");
 ```
 Now, you can use the [API] on the `Crash` variable.
-
-### Browser
-Add the following snippet to your HTML file:
-```html
-<script type="text/javascript" src="path/to/crash.js"></script>
-```
-Now, you can use the [API] on the global `Crash` variable (`window.Crash`).
 
 ### Require.js
 If you're using [require.js] in your project, use the following snippet to load Crash:
@@ -61,6 +60,13 @@ define(["path/to/crash"], function(Crash) {
 ```
 Now, you can use the [API] on the `Crash` variable in your module.
 
+### Browser Global
+Add the following snippet to your HTML file:
+```html
+<script type="text/javascript" src="path/to/crash.js"></script>
+```
+Now, you can use the [API] on the global `Crash` variable (`window.Crash`).
+
 
 
 
@@ -70,14 +76,14 @@ Before you can do anything useful with Crash, you have to initialize it. You can
 Crash.init();
 ```
 This method will make sure that RBush is being initialized correctly, so Colliders can be added.  
-`Crash.init()` accepts one argument, a number called `maxEntries`. This is specific to RBush, so I refer to their [documentation][rbush-docs]. This argument is not required, though, so just leave it out for now and use the default value.  
+`Crash.init()` accepts one argument, a number called `maxEntries`. This is specific to RBush, so I refer to their [documentation][rbush-docs-maxentries]. This argument is not required, though, so just leave it out for now and use the default value.  
 
-> __Fun Fact:__ Actually, when `Crash.init()` has not been called yet, a lot of things just work, and nothing should break. You can use the full API safely, although some things may not work correctly (specifically those that need rbush). Although it should be safe, it's a good habit to call `Crash.init()` before you do anything.
+> __Fun Fact:__ Actually, when `Crash.init()` has not been called yet, a lot of things just work, and nothing should break. You can use the full API safely, although some things may not work correctly (specifically those that need rbush). Although it should be safe (i.e. no errors should be thrown), it's a good habit to call `Crash.init()` before you do anything.
 
 
 ### Adding Colliders
 Now that everything is ready to roll, let's add some colliders. All colliders in Crash inherit from the `Crash.Collider` class, which provides some basic methods that perform household tasks, like moving, updating its AABB and testing collisions. That would lead us too far, though, so I refer to the full [API docs][API] for more info.  
-All that stuff is awesome, but a `Collider` on its own is not very useful: it doesn't have a shape. Before you can use a Collider, you have to give it a shape, but, luckily, Crash has some built-in ones for us. Let's try them out!
+All that stuff is awesome, but a `Collider` on its own isn't very useful: it doesn't have a shape. Before you can use a Collider, you have to give it a shape, but, luckily, Crash has some built-in ones for us. Let's try them out!
 
 ```javascript
 var point =   new Crash.Point  (new Crash.Vector(0,0));
@@ -88,7 +94,7 @@ var polygon = new Crash.Polygon(new Crash.Vector(3,7),  [new Crash.Vector(0,0), 
 
 Wow, what's all that!? Let's clarify this step by step.
 
-1. Each shape has its own constructor, so a point is initialized with `Crash.Point` etc.
+1. Each shape has its own constructor, e.g. a point is initialized with `Crash.Point` etc.
 2. The first argument to each constructor is a Vector, setting the base position for the Collider. So, for a Point, this would be its position, for a Circle it would be the center and for a Box it would be the bottom-left corner.
 3. Some constructors take a few extra arguments: 
  * Circle: the radius
@@ -97,11 +103,13 @@ Wow, what's all that!? Let's clarify this step by step.
 4. All the above arguments are required.
 5. These constructors also take two more (optional) arguments:
  * insert: a boolean indicating whether the collider should be inserted into RBush. More info on this is following in the next few steps.
- * data: some data to add to the collider. This can be anything you want and doesn't do anything for Crash; it's just there for your convenience.
+ * data: some data to add to the collider. You can store anything you want here, but it doesn't do anything for Crash; it's just there for your convenience.
 
 > __Fun Fact:__ the unit you use for the numbers is completely up to you. Crash only stores the numbers, you can interpret them as you wish, so you can use pixels, millimeters or even some game-specific unit you invented!
+
+> __Another Fun Fact:__ it doesn't matter how you define `position` (e.g. top or bottom left corner for a Box etc.), as long as you use it consistently.
  
-> __Important Fun Fact:__ there is a very important difference between Point and Vector: a Point is a Collider, so it can be used for collision checks. A Vector, on the other hand, is just a thing that defines positions in Colliders, like the center of a Circle or the corners of a Polygon.
+> __Important Fun Fact:__ there is a very important difference between Point and Vector: a Point is a Collider, so it can be used for collision checks. A Vector, on the other hand, is just an Object with `x` and `y` properties, used to define positions in Colliders, like the center of a Circle or the corners of a Polygon.
 
 
 ### Testing for collisions
@@ -109,11 +117,11 @@ Now that we have some colliders, we would probably like to know if they are coll
 
 ```javascript
 if(Crash.test(circle, box)) {
-    alert("Oh my, there is a collision!");
+    alert("Oh my, we crashed!");
 }
 ```
 
-This is already quite nice, but not very useful: now we know that our colliders are touching, but we don't know how to undo this crash (pun intended)! Enter `Response`, the all-knowing crash guru.  
+This is already quite nice, but not very useful: now we know that our colliders are touching, but we don't know how to undo this crash! Enter `Response`, the all-knowing crash guru.  
 First, let's create one:
 
 ```javascript
@@ -126,7 +134,7 @@ Then, let's do a subtle change to our testing code:
 
 ```javascript
 if(Crash.test(circle, box, res)) {
-    alert("Oh my, there is a collision!");
+    alert("Oh my, we crashed!");
 }
 ```
 
@@ -134,7 +142,7 @@ Now, we can query the Response for some useful information and undo this embaras
 
 ```javascript
 if(Crash.test(circle, box, res)) {
-    alert("Oh my, there is a collision!");
+    alert("Oh my, we crashed!");
     var overlap = res.overlapV;
     circle.moveBy(-overlap.x, -overlap.y);
 }
@@ -142,7 +150,7 @@ if(Crash.test(circle, box, res)) {
 
 And just like that, our colliders aren't touching anymore!
 
-> __Fun Fact:__ you could also use circle.test(box, res). This just abstracts `Crash.test()`, but it's a little more concise.
+> __Fun Fact:__ you could also use circle.test(box, res). This uses `Crash.test()` under the hood, but it's a little more concise.
 
 
 
@@ -161,20 +169,20 @@ Crash.insert(polygon);
 
 You could have achieved the same by passing `true` for the `insert` argument of the constructors, like I mentioned at the beginning.
 
-> __Fun Fact:__ just like `Crash.test()`, you could use `collider.insert()`, as a convenience method.
+> __Fun Fact:__ just like you can use `Collider.test()` instead of `Crash.test()`, you can use `Collider.insert()`, as a convenience method.
 
-Now that our colliders have been inserted, we can let Crash do all the hard work: it will do all the collision checks for us! And because Crash leverages the power of RBush, only the checks that make sense will actually be performed, causing a huge gain in CPU time.
+Now that our colliders have been inserted, we can let Crash do all the hard work: it will do all the collision checks for us! And because Crash leverages the power of RBush, only the checks that make sense will actually be performed, which saves a lot of resources.
 
-Before we can let Crash do anything, we would like to make sure it can report to us what it's doing, to let us react to collisions. To do that, we add a listener with `Crash.onCollision()`. This listener will be called every time a collision occurs.
+Before we can let Crash do anything, we would like to make sure it can report to us what it's doing, so we can react to collisions. To do that, we add a listener with `Crash.onCollision()`. This listener will be called every time a collision occurs.
 
 ```javascript
 var listener = function(a, b, res, cancel) {
-    alert("Oh my, there is a collision!");
+    alert("Oh my, we crashed!");
 }
 Crash.onCollision(listener);
 ```
 
-Here, `a` and `b` are the colliders that are colliding, `res` is the all-knowing Response, and cancel is a function that cancels all further collision checks for this collider. This may be useful if you move the collider (and all checks become invalid) and/or when you use `Crash.check()`, which we will cover in the next step.
+Here, `a` and `b` are the colliders that are colliding, `res` is the all-knowing Response, and `cancel` is a function that cancels all further collision checks for this collider. This may be useful if you move the collider (rendering all the subsequent checks useless, as we will have to run them again for the new position) and/or when you use `Crash.check()`, which we will cover in the next step.
 
 > __Fun Fact:__ you can easily remove a listener with `Crash.offCollision(listener)`. Just make sure you saved it somewhere when you added it, so you can pass it to `offCollision()` as an argument!
 
@@ -196,7 +204,7 @@ We can even go one step further: let's make Crash do __everything__!
 
 For this to work, we need to make sure that we call `Crash.moved()` on all the colliders that have moved:
 
-> __Fun Fact:__ you probably already guessed: you can use `collider.moved()` instead!
+> __Fun Fact:__ you probably already guessed: you can use `Collider.moved()` instead!
 
 ```
 Crash.moved(point);
@@ -245,12 +253,12 @@ Questions and feature requests belong in the [issue tracker], __with the right t
 
 In this section, I'll assume you're using Crash to power a game (engine), because that's probably what the majority will be using it for, and not having to cover all the edge cases makes it easier to explain.
 
-The very heart of Crash is its [Crash.check()] loop: this is where all the magic is happening. During the update cycle of your game (engine), you can move your objects around freely (probably using some physics) and not care about collisions; just move them to where you would like them to be. You can move the Colliders either by using the move functions (`moveBy`, `rotate`,...), which is easiest way, or by setting their `x` and `y` coordinates. If you're using the latter, you have to be cautious.  
+The very heart of Crash is its [Crash.check()] loop: this is where all the magic is happening. During the update cycle of your game (engine), you can move your objects around freely (probably using some physics) and not care about collisions; just move them to where you would like them to be. You can move the Colliders either by using the move functions (`moveBy`, `rotate`,...), which is the easiest way, or by setting their `x` and `y` coordinates. If you're using the latter, you have to be cautious.  
 After every move, a few things have to happen:
 
 1. The AABB of the Collider must be updated. Use [Crash.updateAABB()] to achieve this.
-2. The Collider's position in RBush must be updated. Use [Crash.update()] for this, but be aware that this calls [Crash.updateAABB()] also! You could also manually `remove()` and re-`insert()` the collider in `rbush`, just like `update()` is doing.
-3. The Collider must be added to [Crash.__moved] in order for it to be collision checked during the next [Crash.check()]. Use [Crash.addToMoved()] to achieve this. You could also add it manually, but make sure you're no adding it twice.
+2. The Collider's position in RBush must be updated. Use [Crash.update()] for this, but be aware that this calls also [Crash.updateAABB()]! You could also manually `remove()` and re-`insert()` the collider in `rbush`, just like `update()` is doing.
+3. The Collider must be added to [Crash.__moved] in order for it to be collision checked during the next [Crash.check()]. Use [Crash.addToMoved()] to achieve this. You could also add it manually, but make sure you're no adding it twice (that would be a waste of resources).
 
 1\. and 2. can be bundled in one [Crash.update()] call, and all the above can be bundled in one [Crash.moved()] call, which is the method the move functions are calling for you. This is why using the move functions is the easiest: all this is done for you.
 
@@ -263,7 +271,7 @@ Then, [Crash.testAll()] \(loop B\) returns, and the next iteration of A begins.
 At the end of [Crash.check()] \(loop A\), all the Colliders that have been processed have their `lastCheckedPos` set to a copy of their position at that time.
 
 
-I hope this has helped to clarify some of Crash's misty bits. If it hasn't, let me know and take a look at the source: it's not that complex and it's not that much.
+I hope this has helped to clarify some of Crash's misty bits. If it hasn't, let me know and/or take a look at the source: it's not that complex and it's not that much.
 
 
 
@@ -994,6 +1002,7 @@ THE SOFTWARE.
 [crash.min.js]: https://raw.githubusercontent.com/TuurDutoit/crash/master/crash.min.js
 [RBush]: https://github.com/mourner/rbush
 [rbush-docs]: https://github.com/mourner/rbush/blob/master/README.md
+[rbush-docs-maxentries]: https://github.com/mourner/rbush/blob/master/README.md#creating-a-tree
 [SAT.js]: https://github.com/jriecken/sat-js
 [sat-docs]: https://github.com/jriecken/sat-js/blob/master/README.md
 [require.js]: http://requirejs.org
@@ -1001,6 +1010,7 @@ THE SOFTWARE.
 [issue tracker]: https://github.com/TuurDutoit/crash/issues
 [getting-started]: #getting-started
 [API]: #api
+[NPM]: https://www.npmjs.com/package/crash-colliders
 
 
 [Crash]: #crash-1
