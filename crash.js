@@ -1,5 +1,5 @@
 // Crash
-// Version 1.1.1 - Copyright 2015 - Tuur Dutoit <me@tuurdutoit.be>
+// Version 1.1.2 - Copyright 2015 - Tuur Dutoit <me@tuurdutoit.be>
 //
 // Released under the MIT License - https://github.com/TuurDutoit/crash
 //
@@ -188,9 +188,13 @@
             SEARCH_ARRAY[2] = collider.aabb.x2;
             SEARCH_ARRAY[3] = collider.aabb.y2;
             var res = this.rbush.search(SEARCH_ARRAY);
-            var index = res.indexOf(collider);
-            if(index > -1) {
-                res.splice(index, 1);
+            
+            // Remove 'collider' from 'res'
+            // In some cases, it appears multiple times, so we have to loop over 'res' and splice it out
+            for(var i = 0; i < res.length; i++) {
+                if(res[i] === collider) {
+                    res.splice(i, 1);
+                }
             }
             
             return res;
@@ -358,7 +362,7 @@
             
             if(SAT[str](a.sat, b.sat, res)) {
                 // Fix collisions with infinitely small overlaps causing way too many loops
-                if( (this.OVERLAP_LIMIT && Math.abs(res.overlap) > this.OVERLAP_LIMIT) || !this.OVERLAP_LIMIT) {
+                if( !this.OVERLAP_LIMIT || Math.abs(res.overlap) > this.OVERLAP_LIMIT ) {
                     this.__onCollision(a, b, res);
                     if(this.BREAK) {
                         break loop;
@@ -393,7 +397,7 @@
         for(var i = 0, len = ALL_MOVED.length; i < len; i++) {
             ALL_MOVED[i].lastCheckedPos.copy(ALL_MOVED[i].pos);
         }
-        ALL_MOVED.splice(0, ALL_MOVED.length);
+        ALL_MOVED.length = 0;
         
         return this;
     }
