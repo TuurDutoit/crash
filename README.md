@@ -1,6 +1,6 @@
 Crash
 =====
-v.1.1.1
+v.1.1.2
 
 Crash performs optimized 2D collisions, powered by [RBush] and [SAT.js], written in javascript.  
 It's most obvious use-case is in game engines, but it's flexible enough to be used anywhere.  
@@ -33,7 +33,7 @@ Crash is perfectly happy in the browser and on Node.js.
 ## Installation
 Just download one of the following files from this repo.
 
-1. [crash.js]: full source, with comments and all (13.6kB).
+1. [crash.js]: full source, with comments and all (13.7kB).
 2. [crash.min.js]: minified, ready to be used in production (5.6kB or 1.8kB gzipped).
 
 Or get the code from [NPM] by typing the following command in a terminal (without the `$`):
@@ -415,6 +415,8 @@ __*return:*__ *Array.\<Collider\>*. An array of colliders that may be colliding 
 Runs `rbush.search()` based on a [Crash.Collider], which will look for all [Crash.Collider]s that have (nearly) colliding axis-aligned bounding boxes (AABBs). This search is optimized by an RTree (that's a special algorithm, designed for this), implemented by RBush.
 
 RBush usually requires an array of AABB coordinates to perform a search, so [Crash.search()] translates the [Crash.collider]'s `aabb` coordinates to the correct array.
+
+The array returned by `rbush.search()` __may__ contain one or more references of `collider` (that's the one passed into the method). [Crash.search()] filters out these references.
 
 ```javascript
 var possibleCollisions = Crash.search(collider);
