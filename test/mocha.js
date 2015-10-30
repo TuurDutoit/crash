@@ -1,12 +1,229 @@
 if(typeof require === "function") {
     var expect = require("expect.js");
     var sinon = require("sinon");
-    var Crash = require("../crash.js");
+    var CrashCtor = require("../crash.js");
+    var Crash = new CrashCtor();
 }
 
 
 
+
+
+
+/***************
+ * CONSTRUCTOR *
+ ***************/
+
+// Checks if the constructor does what it's supposed to do
+// Also, some methods of Crash (those that don't require 'this'), are exposed on the constructor itself
+// They should be the same exact functions as on the prototype and will thus be tested further down
+// That is why we just check for equality with their counterparts on the prototype
+
+
+describe("constructor", function() {
+    it("should be a function", function() {
+        expect(CrashCtor).to.be.a("function");
+    });
+
+    describe("options", function() {
+        it("should not crash when no options are passed in", function() {
+            var fn = function() {
+                return new CrashCtor();
+            }
+
+            expect(fn).to.not.throwError();
+        });
+        it("should create an __options object", function() {
+            var c = new CrashCtor();
+
+            expect(c.__options).to.be.a("object");
+        });
+
+        describe("maxEntries", function() {
+            it("should set maxEntries correctly", function() {
+                var c = new CrashCtor({maxEntries: 10});
+
+                expect(c.__options.maxEntries).to.be(10);
+            });
+            it("should set maxEntries to 9 by default", function() {
+                var c = new CrashCtor();
+
+                expect(c.__options.maxEntries).to.be(9);
+            });
+        });
+
+        describe("maxChecks", function() {
+            it("should set maxChecks correctly", function() {
+                var c = new CrashCtor({maxChecks: 50});
+
+                expect(c.__options.maxChecks).to.be(50);
+            });
+            it("should set maxChecks correctly when 0", function() {
+                var c = new CrashCtor({maxChecks: 0});
+
+                expect(c.__options.maxChecks).to.be(0);
+            });
+            it("should set maxChecks to 100 by default", function() {
+                var c = new CrashCtor();
+
+                expect(c.__options.maxChecks).to.be(100);
+            });
+        });
+
+        describe("overlapLimit", function() {
+            it("should set overlapLimit correctly when it's a number", function() {
+                var c = new CrashCtor({overlapLimit: 2});
+
+                expect(c.__options.overlapLimit).to.be(2);
+            });
+            it("should set overlapLimit correctly when 0", function() {
+                var c = new CrashCtor({overlapLimit: 0});
+
+                expect(c.__options.overlapLimit).to.be(0);
+            });
+            it("should set overlapLimit correctly when false", function() {
+                var c = new CrashCtor({overlapLimit: false});
+
+                expect(c.__options.overlapLimit).to.be(false);
+            });
+            it("should set overlapLimit to 0.5 by default", function() {
+                var c = new CrashCtor();
+
+                expect(c.__options.overlapLimit).to.be(0.5);
+            });
+        });
+    });
+
+    describe("setup", function() {
+        it("should initialize rbush", function() {
+            var c = new CrashCtor({maxEntries: 10});
+            
+            expect(c.rbush).to.be.ok();
+            expect(c.rbush).to.be.a("object");
+            expect(c.rbush._maxEntries).to.be(10);
+        });
+        it("should set MAX_CHECKS", function() {
+            var c = new CrashCtor({maxChecks: 50});
+            
+            expect(c.MAX_CHECKS).to.be.ok();
+            expect(c.MAX_CHECKS).to.be(50);
+        });
+        it("should set OVERLAP_LIMIT", function() {
+            var c = new CrashCtor({overlapLimit: 2});
+            
+            expect(c.OVERLAP_LIMIT).to.be.ok();
+            expect(c.OVERLAP_LIMIT).to.be(2);
+        });
+        it("should initialize a new Response for RESPONSE", function() {
+            var c = new CrashCtor();
+            
+            expect(c.RESPONSE).to.be.ok();
+            expect(c.RESPONSE).to.be.a(CrashCtor.Response);
+        });
+        it("should set BREAK to false", function() {
+            var c = new CrashCtor();
+            
+            expect(c.BREAK).to.be(false);
+        });
+        it("should set __moved to an empty array", function() {
+            var c = new CrashCtor();
+            
+            expect(c.__moved).to.be.ok();
+            expect(c.__moved).to.eql([]);
+        });
+        it("should set __listeners to an empty array", function() {
+            var c = new CrashCtor();
+            
+            expect(c.__listeners).to.be.ok();
+            expect(c.__listeners).to.eql([]);
+        });
+        it("should call createColliders", function() {
+            sinon.spy(CrashCtor.prototype, "createColliders");
+            var c = new CrashCtor();
+
+            expect(CrashCtor.prototype.createColliders.called).to.be.ok();
+            expect(CrashCtor.prototype.createColliders.callCount).to.be(1);
+            expect(CrashCtor.prototype.createColliders.calledWith(c)).to.be.ok();
+
+            CrashCtor.prototype.createColliders.restore();
+        });
+    });
+
+    describe("properties", function() {
+        it("should have RBush", function() {
+            expect(CrashCtor.RBush).to.be(CrashCtor.prototype.RBush);
+        });
+        it("should have SAT", function() {
+            expect(CrashCtor.SAT).to.be(CrashCtor.prototype.SAT);
+        });
+        it("should have Vector", function() {
+            expect(CrashCtor.Vector).to.be(CrashCtor.prototype.Vector);
+        });
+        it("should have V", function() {
+            expect(CrashCtor.V).to.be(CrashCtor.prototype.V);
+        });
+        it("should have Response", function() {
+            expect(CrashCtor.Response).to.be(CrashCtor.prototype.Response);
+        });
+        it("should have extend", function() {
+            expect(CrashCtor.extend).to.be(CrashCtor.prototype.extend);
+        });
+        it("should have getTestString", function() {
+            expect(CrashCtor.getTestString).to.be(CrashCtor.prototype.getTestString);
+        });
+        it("should have updateAABB", function() {
+            expect(CrashCtor.updateAABB).to.be(CrashCtor.prototype.updateAABB);
+        });
+        it("should have updateAABBPolygon", function() {
+            expect(CrashCtor.updateAABBPolygon).to.be(CrashCtor.prototype.updateAABBPolygon);
+        });
+        it("should have updateAABBCircle", function() {
+            expect(CrashCtor.updateAABBCircle).to.be(CrashCtor.prototype.updateAABBCircle);
+        });
+        it("should have updateAABBPoint", function() {
+            expect(CrashCtor.updateAABBPoint).to.be(CrashCtor.prototype.updateAABBPoint);
+        });
+        it("should have updateAABBBox", function() {
+            expect(CrashCtor.updateAABBBox).to.be(CrashCtor.prototype.updateAABBBox);
+        });
+        it("should have test", function() {
+            expect(CrashCtor.test).to.be(CrashCtor.prototype.test);
+        });
+        it("should have createColliders", function() {
+            expect(CrashCtor.createColliders).to.be(CrashCtor.prototype.createColliders);
+        });
+    });
+});
+    
+    
+    
+    
+    
+    
+    
+
+describe("createColliders", function() {
+    var obj = {};
+    CrashCtor.createColliders(obj);
+
+    expect(obj.Collider).to.be.a("function");
+    expect(obj.Polygon).to.be.a("function");
+    expect(obj.Circle).to.be.a("function");
+    expect(obj.Point).to.be.a("function");
+    expect(obj.Box).to.be.a("function");
+});
+
+
+
+
+
+
+
+
+
 describe("Crash", function() {
+    
+    
     
     
     
@@ -59,75 +276,6 @@ describe("Crash", function() {
         });
         it("should equal SAT.Response", function() {
             expect(Crash.Response).to.equal(Crash.SAT.Response);
-        });
-    });
-    
-    describe("rbush", function() {
-        it("should be null (default)", function() {
-            expect(Crash.rbush).to.be(null);
-        }); 
-    });
-
-    describe("RESPONSE", function() {
-        it("should be defined", function() {
-            expect(Crash.RESPONSE).to.be.ok();
-        });
-        it("should be a Response", function() {
-            expect(Crash.RESPONSE).to.be.a(Crash.Response);
-        });
-    });
-    
-    describe("BREAK", function() {
-        it("should be false by default", function() {
-            expect(Crash.BREAK).to.be(false);
-        });
-    });
-    
-    describe("MAX_CHECKS", function() {
-        it("should be defined", function() {
-            expect(Crash.MAX_CHECKS).to.be.ok();
-        });
-        it("should be a number", function() {
-            expect(Crash.MAX_CHECKS).to.be.a("number");
-        });
-        it("should equal 100 (default)", function() {
-            expect(Crash.MAX_CHECKS).to.equal(100);
-        });
-    });
-    
-    describe("OVERLAP_LIMIT", function() {
-        it("should be defined", function() {
-            expect(Crash.OVERLAP_LIMIT).to.be.ok();
-        });
-        it("should be 0.5 by default", function() {
-            expect(Crash.OVERLAP_LIMIT).to.be(0.5);
-        });
-    });
-    
-    describe("__listeners", function() {
-        it("should expose __listeners", function() {
-            expect(Crash.__listeners).to.be.ok();
-        });
-        it("should be an array", function() {
-            expect(Crash.__listeners).to.eql([]);
-        });
-    });
-
-    describe("__notYetInserted", function() {
-        it("should be defined", function() {
-            expect(Crash.__notYetInserted).to.be.ok();
-        });
-        it("should be an array", function() {
-            expect(Crash.__notYetInserted).to.be.an("array");
-        });
-    });
-
-    describe("__moved", function() {
-        it("should be defined", function() {
-            expect(Crash.__moved).to.be.ok();
-        });
-        it("should be an array", function() {
-            expect(Crash.__moved).to.be.an("array");
         });
     });
     
@@ -196,13 +344,13 @@ describe("Crash", function() {
             Crash.MAX_CHECKS = 500;
             Crash.reset();
             
-            expect(Crash.MAX_CHECKS).to.be(100);
+            expect(Crash.MAX_CHECKS).to.be(Crash.__options.maxChecks);
         });
         it("should reset OVERLAP_LIMIT", function() {
             Crash.OVERLAP_LIMIT = 0.01;
             Crash.reset();
             
-            expect(Crash.OVERLAP_LIMIT).to.be(0.5);
+            expect(Crash.OVERLAP_LIMIT).to.be(Crash.__options.overlapLimit);
         });
         it("should call RESPONSE.clear", function() {
             sinon.spy(Crash.RESPONSE, "clear");
@@ -212,16 +360,6 @@ describe("Crash", function() {
             expect(Crash.RESPONSE.clear.callCount).to.be(1);
             
             Crash.RESPONSE.clear.restore();
-        });
-        it("should call init", function() {
-            sinon.spy(Crash, "init");
-            Crash.reset(5);
-            
-            expect(Crash.init.called).to.be.ok();
-            expect(Crash.init.callCount).to.be(1);
-            expect(Crash.init.calledWith(5)).to.be.ok();
-            
-            Crash.init.restore();
         });
     });
     
@@ -355,28 +493,6 @@ describe("Crash", function() {
      ***********/
     
     
-    describe("init", function() {
-        it("should be defined", function() {
-            expect(Crash.init).to.be.ok();
-        });
-        it("should be a function", function() {
-            expect(Crash.init).to.be.a("function");
-        });
-        it("should create Crash.rbush", function() {
-            Crash.init();
-            expect(Crash.rbush).to.be.ok();
-            expect(Crash.rbush).to.be.a(Crash.RBush);
-        });
-        it("should set the right maxEntries", function() {
-            Crash.init(5);
-            expect(Crash.rbush._maxEntries).to.be(5);
-        });
-        it("should set maxEntries to 9 by default", function() {
-            Crash.init();
-            expect(Crash.rbush._maxEntries).to.be(9);
-        });
-    });
-    
     describe("insert", function() {
         it("should be defined", function() {
             expect(Crash.insert).to.be.ok();
@@ -384,17 +500,8 @@ describe("Crash", function() {
         it("should be a function", function() {
             expect(Crash.insert).to.be.a("function");
         });
-        it("should add the collider to __notYetInserted when rbush is not defined", function() {
+        it("should add the collider to rbush", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
-            Crash.rbush = null;
-            Crash.__notYetInserted = [];
-            Crash.insert(collider);
-            
-            expect(Crash.__notYetInserted).to.eql([collider]);
-        });
-        it("should add the collider to rbush when it is defined", function() {
-            var collider = new Crash.Circle(new Crash.V, 5);
-            Crash.__notYetInserted = [];
             Crash.reset();
             Crash.insert(collider);
             
@@ -409,7 +516,7 @@ describe("Crash", function() {
         it("should be a function", function() {
             expect(Crash.remove).to.be.a("function");
         });
-        it("should remove the collider from rbush if it is defined", function() {
+        it("should remove the collider from rbush", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
             Crash.reset();
             Crash.insert(collider);
@@ -417,18 +524,8 @@ describe("Crash", function() {
             
             expect(Crash.rbush.all()).to.be.empty();
         });
-        it("should remove the collider from __notYetInserted if rbush is not defined", function() {
-            var collider = new Crash.Circle(new Crash.V, 5);
-            Crash.rbush = null;
-            Crash.__notYetInserted = [collider];
-            Crash.remove(collider);
-            
-            expect(Crash.__notYetInserted).to.be.empty();
-        });
         it("should not crash when the collider has not been inserted", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
-            Crash.rbush = null;
-            Crash.__notYetInserted = [collider];
             var fn = function() {
                 Crash.remove(collider);
             }
@@ -444,12 +541,7 @@ describe("Crash", function() {
         it("should be a function", function() {
             expect(Crash.all).to.be.a("function");
         });
-        it("should return __notYetInserted if rbush is not defined", function() {
-            Crash.rbush = null;
-            
-            expect(Crash.all()).to.be(Crash.__notYetInserted);
-        });
-        it("should return rbush.all() if rbush is defined", function() {
+        it("should return rbush.all()", function() {
             Crash.reset();
             
             expect(Crash.all()).to.eql(Crash.rbush.all());
@@ -501,15 +593,6 @@ describe("Crash", function() {
             
             expect(Crash.search(collider)).to.not.contain(collider);
         });
-        it("should not crash if rbush is not defined", function() {
-            Crash.rbush = null;
-            var c1 = new Crash.Point(new Crash.V);
-            var fn = function() {
-                Crash.search(c1);
-            }
-            
-            expect(fn).to.not.throwError();
-        });
     });
     
     describe("clear", function() {
@@ -523,20 +606,10 @@ describe("Crash", function() {
             Crash.reset();
             Crash.insert(new Crash.Point(new Crash.V));
             Crash.__moved = ["content"];
-            Crash.__notYetInserted = ["content"];
             Crash.clear();
 
             expect(Crash.all()).to.be.empty();
             expect(Crash.__moved).to.be.empty();
-            expect(Crash.__notYetInserted).to.be.empty();
-        });
-        it("should not crash if rbush is not defined", function() {
-            Crash.rbush = null;
-            var fn = function() {
-                Crash.clear();
-            }
-            
-            expect(fn).to.not.throwError();
         });
     });
     
@@ -605,15 +678,6 @@ describe("Crash", function() {
             expect(Crash.insert.calledWith(collider)).to.be.ok();
             
             Crash.insert.restore();
-        });
-        it("should not crash when rbush is not defined", function() {
-            Crash.rbush = null;
-            var collider = new Crash.Point(new Crash.V);
-            var fn = function() {
-                Crash.update(collider);
-            }
-            
-            expect(fn).to.not.throwError();
         });
     });
     

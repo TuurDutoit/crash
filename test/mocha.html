@@ -22,6 +22,9 @@
     <body>
         <div id="mocha"></div>
         <script type="text/javascript">
+            var CrashCtor = Crash;
+            var Crash = new CrashCtor();
+            
             mocha.checkLeaks();
             mocha.run();
         </script>
