@@ -27,7 +27,7 @@ Crash is perfectly happy in the browser and on Node.js.
   * [Collision testing][crash.test()]
   * [Colliders][crash.Collider]
   * [Other][Listener]
-* [License](#License)
+* [License](#license)
 
 
 ## Installation
@@ -311,7 +311,14 @@ var crash = new Crash(options);
 
 Where `options` is an object as defined below.
 
-### options
+### __options : *object*
+
+*Private*  
+The (normalized) options passed to the constructor. Three (optional) properties are being used by Crash:
+
+ * [maxEntries][crash.options.maxEntries]
+ * [maxChecks][crash.options.maxChecks]
+ * [overlapLimit][crash.options.overlapLimit]
 
 #### maxEntries : *number* (9)
 This option is passed to RBush, so I refer to the [RBush docs](rbush-docs-maxentries) for more info on this.  
@@ -641,7 +648,7 @@ __res:__ *Response|optional*. The optional [crash.Response] to use.
 __*return:*__ *boolean*. Indicates whether there is a collision between `a`and `b`.
 
 Tests for a collision between `a` and `b`, using SAT. The boolean return value indicates whether `a` and `b` are colliding: `true` if there is a collision, `false` otherwise.  
-You can optionally pass in a [crash.Response] to get some information about the collision (if there is one). If you don't, [crash.RESPONSE] will be used instead.
+You can optionally pass in a [crash.Response] to get some information about the collision (if there is one). If you don't, [crash.RESPONSE][crash.RESPONSE-const] will be used instead.
 
 ```javascript
 var c1 = new crash.Circle(new crash.V(0,0), 5);
@@ -671,8 +678,8 @@ You probably don't want to use this method, because it isn't really intended to 
 
 Finally, I would like to note a few things:
 
-1. `res` is optional: if you don't pass it, [crash.RESPONSE] will be used instead.
-2. this method doesn't really provide direct feedback, like [crash.test()] does: it rather calls the attached [Listener]s. This means `res` (or [crash.RESPONSE]) will be passed to the [Listener]s, and will only hold info about the last collision when the call is finished.
+1. `res` is optional: if you don't pass it, [crash.RESPONSE][crash.RESPONSE-const] will be used instead.
+2. this method doesn't really provide direct feedback, like [crash.test()] does: it rather calls the attached [Listener]s. This means `res` (or [crash.RESPONSE][crash.RESPONSE-const]) will be passed to the [Listener]s, and will only hold info about the last collision when the call is finished.
 3. if this method returns `false`, the loop was cancelled, so you probably want to run it again.
 4. `testAll` will not run [crash.\_\_onCollision()] when the overlap is smaller than [crash.OVERLAP\_LIMIT]. If [crash.OVERLAP\_LIMIT] is falsy, [crash.\_\_onCollision] will always be called.
 5. `testAll` won't call [crash.update()] on `collider`, so make sure it's updated.
@@ -1023,7 +1030,7 @@ THE SOFTWARE.
 [NPM]: https://www.npmjs.com/package/crash-colliders
 
 
-[Crash]: #crash
+[Crash]: #crash-1
 [Crash.options.maxEntries]: #maxentries--number-9
 [Crash.options.maxChecks]: #maxchecks--number-100
 [Crash.options.overlapLimit]: #overlaplimit--numberfalse-0.5
@@ -1033,12 +1040,12 @@ THE SOFTWARE.
 [crash.V]: #crashv--constructor
 [crash.Response]: #crashresponse--constructor
 [crash.rbush]: #crashrbush--rbush
-[crash.RESPONSE]: #crashresponse--response
+[crash.RESPONSE-const]: #crashresponse--response
 [crash.BREAK]: #crashbreak--boolean
 [crash.MAX_CHECKS]: #crashmax_checks--number
 [crash.OVERLAP_LIMIT]: #crashoverlap_limit--number
-[crash.__listeners]: #crash__listeners--array
-[crash.__moved]: #crash__moved--array
+[crash.__listeners]: #crash__listeners--arrayfunction
+[crash.__moved]: #crash__moved--arraycollider
 [crash.insert()]: #crashinsert-collider-collider---
 [crash.remove()]: #crashremove-collider-collider---
 [crash.all()]: #crashall----collider
