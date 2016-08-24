@@ -560,61 +560,6 @@ describe("Crash", function() {
 
             expect(Crash.rbush.all()).to.be.empty();
 	});
-	/*
-	describe('with async', function() {
-	    beforeEach(function(done) {
-		Crash.reset();
-		var colliders = [];
-
-		for (var i = 0; i < 50; i ++) {
-		    var collider = new Crash.Circle(new Crash.V, i + 10);
-		    Crash.insert(collider);
-		    colliders.push(collider);
-		}
-		
-		var async_collider_1 = new Crash.Circle(new Crash.V, 5);
-		var async_collider_2 = new Crash.Circle(new Crash.V, 7);
-		var insert_collider_and_setTimeout = function(Crash, c, count, resolve) {
-		    if (count > 0) {n
-			Crash.insert(c);
-			count --;
-			setTimeout(remove_collider_and_setTimeout.bind(this, Crash, c, count, resolve), 0);
-		    }
-		    else {
-			resolve()
-		    }
-		}
-		var remove_collider_and_setTimeout = function(Crash, c, count, resolve) {
-		    Crash.remove(c);
-		    setTimeout(insert_collider_and_setTimeout.bind(this, Crash, c, count, resolve), 0);
-		}
-
-		var test_async = function(Crash, c, count) {
-		    return new Promise(function(resolve, reject) {
-			insert_collider_and_setTimeout(Crash, c, count, resolve);
-		    }.bind(this));
-		}
-
-		var promises = [test_async(Crash, async_collider_1, 50),
-				test_async(Crash, async_collider_2, 50)];
-
-		Promise.all(promises)
-		    .then(function() {
-
-			colliders.forEach(function(value, index) {
-			    Crash.remove(value);
-			})
-			
-			done();
-		    }.bind(this));
-
-	    });
-	    it("should work asynchronously", function() {
-		expect(Crash.rbush.all()).to.be.empty();
-	    });
-
-	});
-*/	
         it("should not crash when the collider has not been inserted", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
             var fn = function() {
