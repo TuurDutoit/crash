@@ -207,8 +207,11 @@
     }
     
     Crash.prototype.update = function(collider) {
-        this.updateAABB(collider);
+	// for some reason, rbush can fail to
+	// remove the collider if updateAABB
+	// is called before the collider is removed
         this.remove(collider);
+	this.updateAABB(collider);
         this.insert(collider);
         
         return this;

@@ -507,7 +507,29 @@ describe("Crash", function() {
             
             expect(Crash.rbush.all()).to.eql([collider]);
         });
+	it("should reliably insert many colliders", function() {
+	    Crash.reset();
+	    var colliders = [];
+	    for (var i = 0; i < 50; i ++) {
+		var collider = new Crash.Circle(new Crash.V, i + 1);
+		Crash.insert(collider);
+		colliders.push(collider);
+	    }
+
+	    
+	    var arrayCompare = function(a, b)  {
+		if (a.length !== b.length) return false;
+		for (var ae of a) if (!b.includes(ae)) return false;
+		return true;
+	    }
+	    
+	    var rbush_array = Crash.rbush.all();
+	    expect(arrayCompare(colliders, rbush_array)).to.equal(true);
+		
+	});
+	    
     });
+
     
     describe("remove", function() {
         it("should be defined", function() {
@@ -524,6 +546,75 @@ describe("Crash", function() {
             
             expect(Crash.rbush.all()).to.be.empty();
         });
+	it("should reliably remove many colliders from rbush", function() {
+            Crash.reset();
+	    var colliders = [];
+	    for (var i = 0; i < 50; i ++) {
+		var collider = new Crash.Circle(new Crash.V, i + 1);
+		Crash.insert(collider);
+		colliders.push(collider);
+	    }
+	    colliders.forEach(function(value, index) {
+		Crash.remove(value);
+	    })
+
+            expect(Crash.rbush.all()).to.be.empty();
+	});
+	/*
+	describe('with async', function() {
+	    beforeEach(function(done) {
+		Crash.reset();
+		var colliders = [];
+
+		for (var i = 0; i < 50; i ++) {
+		    var collider = new Crash.Circle(new Crash.V, i + 10);
+		    Crash.insert(collider);
+		    colliders.push(collider);
+		}
+		
+		var async_collider_1 = new Crash.Circle(new Crash.V, 5);
+		var async_collider_2 = new Crash.Circle(new Crash.V, 7);
+		var insert_collider_and_setTimeout = function(Crash, c, count, resolve) {
+		    if (count > 0) {n
+			Crash.insert(c);
+			count --;
+			setTimeout(remove_collider_and_setTimeout.bind(this, Crash, c, count, resolve), 0);
+		    }
+		    else {
+			resolve()
+		    }
+		}
+		var remove_collider_and_setTimeout = function(Crash, c, count, resolve) {
+		    Crash.remove(c);
+		    setTimeout(insert_collider_and_setTimeout.bind(this, Crash, c, count, resolve), 0);
+		}
+
+		var test_async = function(Crash, c, count) {
+		    return new Promise(function(resolve, reject) {
+			insert_collider_and_setTimeout(Crash, c, count, resolve);
+		    }.bind(this));
+		}
+
+		var promises = [test_async(Crash, async_collider_1, 50),
+				test_async(Crash, async_collider_2, 50)];
+
+		Promise.all(promises)
+		    .then(function() {
+
+			colliders.forEach(function(value, index) {
+			    Crash.remove(value);
+			})
+			
+			done();
+		    }.bind(this));
+
+	    });
+	    it("should work asynchronously", function() {
+		expect(Crash.rbush.all()).to.be.empty();
+	    });
+
+	});
+*/	
         it("should not crash when the collider has not been inserted", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
             var fn = function() {
@@ -533,7 +624,40 @@ describe("Crash", function() {
             expect(fn).to.not.throwError();
         });
     });
-    
+
+    describe("moveTo", function() {
+	it("should correctly handle moving colliders when rbush has many entries", function() {
+	    Crash.reset();
+	    var colliders = [];
+	    for (var i = 0; i < 9; i ++) {
+		// data is just for sorting
+		var collider = new Crash.Circle(new Crash.V, i + 10, false, i + 10);
+		colliders.push(collider);
+		Crash.insert(collider);
+
+	    }
+	    
+	    var moved_collider = new Crash.Circle(new Crash.V, 5, false, 0);
+	    colliders.push(moved_collider);
+	    Crash.insert(moved_collider);
+	    moved_collider.moveTo(100, 100);
+	    moved_collider.moveTo(-50,20);
+//	    moved_collider.moveTo(0,0);
+	    
+	    var sort = function(a, b) {return a.data - b.data}
+	    
+	    var from_rbush = Crash.rbush.all().sort(sort);
+	    colliders.sort(sort);
+	    var rbush_data = from_rbush.map(function(c) {return c.data});
+	    var colliders_data = colliders.map(function(c) {return c.data});
+
+	    expect(from_rbush).to.eql(colliders);
+//	    expect(rbush_data).to.eql(colliders_data);
+	    
+	});
+
+    });
+
     describe("all", function() {
         it("should be defined", function() {
             expect(Crash.all).to.be.ok();
