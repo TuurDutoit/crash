@@ -1,5 +1,5 @@
 // Crash
-// Version 2.0.0 - Copyright 2015 - Tuur Dutoit <me@tuurdutoit.be>
+// Version 2.0.1 | Copyright 2015 - 2017 | Tuur Dutoit <me@tuurdutoit.be>
 //
 // Released under the MIT License - https://github.com/TuurDutoit/crash
 //
@@ -243,16 +243,12 @@
         switch(collider.type) {
             case "polygon":
                 return this.updateAABBPolygon(collider);
-                break;
             case "box":
                 return this.updateAABBBox(collider);
-                break;
             case "circle":
                 return this.updateAABBCircle(collider);
-                break;
             case "point":
                 return this.updateAABBPoint(collider);
-                break;
         }
     }
     

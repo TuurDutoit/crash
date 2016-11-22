@@ -1,6 +1,6 @@
 Crash
 =====
-v2.0.0
+v2.0.1
 
 Crash performs optimized 2D collisions, powered by [RBush] and [SAT.js], written in javascript.  
 It's most obvious use-case is in game engines, but it's flexible enough to be used anywhere.  
@@ -99,7 +99,7 @@ Wow, what's all that!? Let's clarify this step by step.
 
 1. Each shape has its own constructor, e.g. a point is initialized with `crash.Point` etc.
 2. The first argument to each constructor is a Vector, setting the base position for the Collider. So, for a Point, this would be its position, for a Circle it would be the center and for a Box it would be the bottom-left corner.
-3. Some constructors take a few extra arguments: 
+3. Some constructors take a few extra arguments:
  * Circle: the radius
  * Box: the width and height
  * Polygon: an array of Vectors, representing its corners, relative to the base position
@@ -111,7 +111,7 @@ Wow, what's all that!? Let's clarify this step by step.
 > __Fun Fact:__ the unit you use for the numbers is completely up to you. Crash only stores the numbers, you can interpret them as you wish, so you can use pixels, millimeters or even some game-specific unit you invented!
 
 > __Another Fun Fact:__ it doesn't matter how you define `position` (e.g. top or bottom left corner for a Box etc.), as long as you use it consistently.
- 
+
 > __Important Fun Fact:__ there is a very important difference between Point and Vector: a Point is a Collider, so it can be used for collision checks. A Vector, on the other hand, is just an Object with `x` and `y` properties, used to define positions in Colliders, like the center of a Circle or the corners of a Polygon.
 
 
@@ -497,7 +497,7 @@ collider.moveBy(5,0);
 ```
 
 
-### crash.reset () - . 
+### crash.reset () - .
 __*return:*__ *Crash*. For chaining.
 
 Resets `crash` with the options passed to the constructor. This basically calls [crash.clear()] and resets some variables.  
@@ -674,7 +674,7 @@ You can stop this loop (the one that checks for collisions) simply by calling [c
 Stopping the loop comes in handy when you move `collider` in any of the [Listener]s, because all consequent collision checks become unnecessary: you will have to run `testAll()` again for the new position.  
 The value returned by `testAll()` indicates whether the loop was cancelled: if it was, `false` is returned, otherwise, it returns `true`.
 
-You probably don't want to use this method, because it isn't really intended to be used publicly (but rather by [crash.check()] internally), and [crash.check()] is more convenient in most situations anyway. 
+You probably don't want to use this method, because it isn't really intended to be used publicly (but rather by [crash.check()] internally), and [crash.check()] is more convenient in most situations anyway.
 
 Finally, I would like to note a few things:
 
@@ -899,29 +899,29 @@ __points:__ *Array.\<Vector\>*. The points/corners of the Polygon.
 __*return:*__ *Polygon*. For chaining.
 
 A shortcut for [Collider.sat]`.setPoints()`, which calls [Collider.moved()] for you.
- 
- 
+
+
 ### Polygon.setAngle (number angle) - .
 __angle:__ *number*. The angle by which to rotate the Polygon (in radians).  
 __*return:*__ *Polygon*. For chaining.
 
 A shortcut for [Collider.sat]`.setAngle()`, which calls [Collider.moved()] for you.
- 
- 
+
+
 ### Polygon.setOffset (number offset) - .
 __offset:__ *number*. The offset by which to translate the points of the Polygon.  
 __*return:*__ *Polygon*. For chaining.
 
 A shortcut for [Collider.sat]`.setOffset()`, which calls [Collider.moved()] for you.
- 
- 
+
+
 ### Polygon.rotate (number angle) - .
 __angle:__ *number*. The angle by which to rotate the points of the Polygon.  
 __*return:*__ *Polygon*. For chaining.
 
 A shortcut for [Collider.sat]`.rotate()`, which calls [Collider.moved()] for you.
- 
- 
+
+
 ### crash.Circle (Vector center, number radius, [boolean insert:false], [any data]) ~ [crash.Collider]
 __center:__ *Vector*. The position of the center of the Circle.  
 __radius:__ *number*. The radius of the Circle.  
@@ -983,7 +983,7 @@ You can add a listener with [crash.onCollision()] and you can remove them with [
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2015 Tuur Dutoit
+Copyright (c) 2014-2017 Tuur Dutoit
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
