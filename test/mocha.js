@@ -507,7 +507,29 @@ describe("Crash", function() {
             
             expect(Crash.rbush.all()).to.eql([collider]);
         });
+	it("should reliably insert many colliders", function() {
+	    Crash.reset();
+	    var colliders = [];
+	    for (var i = 0; i < 50; i ++) {
+		var collider = new Crash.Circle(new Crash.V, i + 1);
+		Crash.insert(collider);
+		colliders.push(collider);
+	    }
+
+	    
+	    var arrayCompare = function(a, b)  {
+		if (a.length !== b.length) return false;
+		for (var ae of a) if (!b.includes(ae)) return false;
+		return true;
+	    }
+	    
+	    var rbush_array = Crash.rbush.all();
+	    expect(arrayCompare(colliders, rbush_array)).to.equal(true);
+		
+	});
+	    
     });
+
     
     describe("remove", function() {
         it("should be defined", function() {
@@ -524,6 +546,20 @@ describe("Crash", function() {
             
             expect(Crash.rbush.all()).to.be.empty();
         });
+	it("should reliably remove many colliders from rbush", function() {
+            Crash.reset();
+	    var colliders = [];
+	    for (var i = 0; i < 50; i ++) {
+		var collider = new Crash.Circle(new Crash.V, i + 1);
+		Crash.insert(collider);
+		colliders.push(collider);
+	    }
+	    colliders.forEach(function(value, index) {
+		Crash.remove(value);
+	    })
+
+            expect(Crash.rbush.all()).to.be.empty();
+	});
         it("should not crash when the collider has not been inserted", function() {
             var collider = new Crash.Circle(new Crash.V, 5);
             var fn = function() {
@@ -533,7 +569,40 @@ describe("Crash", function() {
             expect(fn).to.not.throwError();
         });
     });
-    
+
+    describe("moveTo", function() {
+	it("should correctly handle moving colliders when rbush has many entries", function() {
+	    Crash.reset();
+	    var colliders = [];
+	    for (var i = 0; i < 9; i ++) {
+		// data is just for sorting
+		var collider = new Crash.Circle(new Crash.V, i + 10, false, i + 10);
+		colliders.push(collider);
+		Crash.insert(collider);
+
+	    }
+	    
+	    var moved_collider = new Crash.Circle(new Crash.V, 5, false, 0);
+	    colliders.push(moved_collider);
+	    Crash.insert(moved_collider);
+	    moved_collider.moveTo(100, 100);
+	    moved_collider.moveTo(-50,20);
+//	    moved_collider.moveTo(0,0);
+	    
+	    var sort = function(a, b) {return a.data - b.data}
+	    
+	    var from_rbush = Crash.rbush.all().sort(sort);
+	    colliders.sort(sort);
+	    var rbush_data = from_rbush.map(function(c) {return c.data});
+	    var colliders_data = colliders.map(function(c) {return c.data});
+
+	    expect(from_rbush).to.eql(colliders);
+//	    expect(rbush_data).to.eql(colliders_data);
+	    
+	});
+
+    });
+
     describe("all", function() {
         it("should be defined", function() {
             expect(Crash.all).to.be.ok();

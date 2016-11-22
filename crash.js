@@ -42,7 +42,7 @@
      * UTILITIES   *
      ***************/
     
-    var SEARCH_ARRAY = [];  // will hold the AABB coordinates during search()
+    var SEARCH_OBJECT = {};  // will hold the AABB coordinates during search()
     var ALL_MOVED = [];     // will hold all the colliders that have moved during check(), so we can update their lastCheckedPos
     
     
@@ -173,11 +173,11 @@
     }
     
     Crash.prototype.search = function(collider) {
-        SEARCH_ARRAY[0] = collider.aabb.x1;
-        SEARCH_ARRAY[1] = collider.aabb.y1;
-        SEARCH_ARRAY[2] = collider.aabb.x2;
-        SEARCH_ARRAY[3] = collider.aabb.y2;
-        var res = this.rbush.search(SEARCH_ARRAY);
+        SEARCH_OBJECT["minX"] = collider.aabb.x1;
+        SEARCH_OBJECT["minY"] = collider.aabb.y1;
+        SEARCH_OBJECT["maxX"] = collider.aabb.x2;
+        SEARCH_OBJECT["maxY"] = collider.aabb.y2;
+        var res = this.rbush.search(SEARCH_OBJECT);
 
         // Remove 'collider' from 'res'
         // In some cases, it appears multiple times, so we have to loop over 'res' and splice it out
@@ -207,8 +207,11 @@
     }
     
     Crash.prototype.update = function(collider) {
-        this.updateAABB(collider);
+	// for some reason, rbush can fail to
+	// remove the collider if updateAABB
+	// is called before the collider is removed
         this.remove(collider);
+	this.updateAABB(collider);
         this.insert(collider);
         
         return this;
