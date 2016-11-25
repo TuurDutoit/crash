@@ -267,7 +267,7 @@ After every move, a few things have to happen:
 
 When all your Colliders are in place, just call [crash.check()]. This will iterate over [crash.__moved] and do the following for every Collider (this happens in [crash.testAll()]). Let's call this loop A.
 
-First, all the possible collisions are retrieved using RBush, with a [crash.search()]. Then, for every possibly colliding collider (loop B), Crash will test for a collision using SAT, and if there is, it will call [crash.\_\_onCollision()], which in turn calls the [Listener]s, passing in the two Colliders and the Response of the collision. If, during this [crash.\_\_onCollision()], [crash.BREAK] is set to true, loop B is stopped. This can happen when, for example, the first collider (that will be the one passed from A to B) is moved inside a [Listener]; the Collider will then be added to [crash.\_\_moved] and thus be checked in the next iteration of loop A, making everything that happens in B useless (it will be done again in the next iteration of A, and the possible collisions may not be accurate anymore). This doesn't happen when the second Collider passed to [Listener]s (the one 'generated' by B) is moved, because it will just be added to [crash.\_\_moved] to be handled in the next iteration of A, but doesn't render everything happening inside B useless (it's the first Collider that is our focus).  
+First, all the possible collisions are retrieved using RBush, with a [crash.search()]. Then, for every possibly colliding collider (loop B), Crash will test for a collision using SAT, and if there is, it will call [crash.__onCollision()], which in turn calls the [Listener]s, passing in the two Colliders and the Response of the collision. If, during this [crash.__onCollision()], [crash.BREAK] is set to true, loop B is stopped. This can happen when, for example, the first collider (that will be the one passed from A to B) is moved inside a [Listener]; the Collider will then be added to [crash.__moved] and thus be checked in the next iteration of loop A, making everything that happens in B useless (it will be done again in the next iteration of A, and the possible collisions may not be accurate anymore). This doesn't happen when the second Collider passed to [Listener]s (the one 'generated' by B) is moved, because it will just be added to [crash.__moved] to be handled in the next iteration of A, but doesn't render everything happening inside B useless (it's the first Collider that is our focus).  
 At the end of loop B (so, for every iteration of A), the Collider passed from A to B has its `lastPos` set to a copy of its position at that moment.  
 Then, [crash.testAll()] \(loop B\) returns, and the next iteration of A begins.
 
@@ -311,7 +311,7 @@ var crash = new Crash(options);
 
 Where `options` is an object as defined below.
 
-### __options : *object*
+### \_\_options : *object*
 
 *Private*  
 The (normalized) options passed to the constructor. Three (optional) properties are being used by Crash:
@@ -326,12 +326,12 @@ Default: 9
 
 #### maxChecks : *number* (100)
 The maximum amount of times to run [crash.testAll()] during [crash.check()]. See [crash.check()] for more info.  
-This sets [crash.MAX\_CHECKS].  
+This sets [crash.MAX_CHECKS].  
 Default: 100
 
 #### overlapLimit : *number|false* (0.5)
 The minimum amount two [crash.Collider]s should overlap to call the [Listener]s. If falsy, `overlapLimit` will not be taken into account. See [crash.testAll()] for more info.  
-This sets [crash.OVERLAP\_LIMIT].  
+This sets [crash.OVERLAP_LIMIT].  
 Default: 0.5
 
 ### crash.RBush : *function*
@@ -363,17 +363,17 @@ Used by the testing functions. When no Response has been passed to them, they us
 ### crash.BREAK : *boolean*
 Whether to stop the currently running check loop. This is set to `true` by [crash.cancel()]. See [crash.testAll()] for more info.
 
-### crash.MAX_CHECKS : *number*
+### crash.MAX\_CHECKS : *number*
 The maximum amount of times to run [crash.testAll()] during [crash.check()]. See [crash.check()] for more info.
 
 ### crash.OVERLAP_LIMIT : *number*
 The minimum amount two [crash.Collider]s should overlap to call the [Listener]s. If falsy, `OVERLAP_LIMIT` will not be taken into account. See [crash.testAll()] for more info.
 
-### crash.__listeners : *Array.\<function\>*
+### crash.\_\_listeners : *Array.\<function\>*
 *Private*  
 An array of functions to call when a collision occurs. You can add to this with [crash.onCollision()].
 
-### crash.__moved : *Array.\<Collider\>*
+### crash.\_\_moved : *Array.\<Collider\>*
 *Private*  
 An array of colliders that have moved since the last [crash.check()]. This is used internally by [crash.check()] to optimize collision checks. For more info, see [crash.check()].
 
@@ -1033,7 +1033,7 @@ THE SOFTWARE.
 [Crash]: #crash-1
 [Crash.options.maxEntries]: #maxentries--number-9
 [Crash.options.maxChecks]: #maxchecks--number-100
-[Crash.options.overlapLimit]: #overlaplimit--numberfalse-0.5
+[Crash.options.overlapLimit]: #overlaplimit--numberfalse-05
 [Crash.RBush]: #crashrbush--function
 [crash.SAT]: #crashsat--object
 [crash.Vector]: #crashvector--constructor
