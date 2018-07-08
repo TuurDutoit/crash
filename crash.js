@@ -305,11 +305,12 @@
     Crash.updateAABBBox = Crash.prototype.updateAABBBox = function(collider) {
         var points = collider.sat.calcPoints;
         var aabb = collider.aabb;
-        
-        aabb.x1 = points[0].x;
-        aabb.y1 = points[0].y;
-        aabb.x2 = points[2].x;
-        aabb.y2 = points[2].y;
+        var pos = collider.sat.pos;
+
+        aabb.x1 = pos.x + points[0].x;
+        aabb.y1 = pos.y + points[0].y;
+        aabb.x2 = pos.x + points[2].x;
+        aabb.y2 = pos.y + points[2].y;
     }
     
     
