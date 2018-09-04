@@ -856,10 +856,10 @@ describe("Crash", function() {
             expect(Crash.updateAABBPolygon).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
-            var collider = new Crash.Polygon(new Crash.V, [new Crash.V(0,0), new Crash.V(5,0), new Crash.V(3,2)]);
+            var collider = new Crash.Polygon(new Crash.V(1,1), [new Crash.V(0,0), new Crash.V(5,0), new Crash.V(3,2)]);
             Crash.updateAABBPolygon(collider);
           
-            expect(collider.aabb).to.eql({x1:0, y1:0, x2:5, y2: 2});
+            expect(collider.aabb).to.eql({x1:1, y1:1, x2:6, y2: 3});
         });
     });
 
@@ -871,10 +871,10 @@ describe("Crash", function() {
             expect(Crash.updateAABBCircle).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
-            var collider = new Crash.Circle(new Crash.V, 5);
+            var collider = new Crash.Circle(new Crash.V(1,1), 5);
             Crash.updateAABBCircle(collider);
 
-            expect(collider.aabb).to.eql({x1:-5, y1:-5, x2:5, y2: 5});
+            expect(collider.aabb).to.eql({x1:-4, y1:-4, x2:6, y2: 6});
         });
     });
 
@@ -886,10 +886,10 @@ describe("Crash", function() {
             expect(Crash.updateAABBPoint).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
-            var collider = new Crash.Point(new Crash.V);
+            var collider = new Crash.Point(new Crash.V(1,1));
             Crash.updateAABBPoint(collider);
 
-            expect(collider.aabb).to.eql({x1:0, y1:0, x2:0, y2: 0});
+            expect(collider.aabb).to.eql({x1:1, y1:1, x2:1, y2: 1});
         });
     });
 
@@ -901,10 +901,10 @@ describe("Crash", function() {
             expect(Crash.updateAABBBox).to.be.a("function");
         });
         it("should update the AABB correctly", function() {
-            var collider = new Crash.Box(new Crash.V, 5, 2);
+            var collider = new Crash.Box(new Crash.V(1,1), 5, 2);
             Crash.updateAABBBox(collider);
 
-            expect(collider.aabb).to.eql({x1:0, y1:0, x2:5, y2: 2});
+            expect(collider.aabb).to.eql({x1:1, y1:1, x2:6, y2: 3});
         });
     });
     
