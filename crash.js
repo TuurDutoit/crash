@@ -1,5 +1,5 @@
 // Crash
-// Version 2.0.1 | Copyright 2015 - 2017 | Tuur Dutoit <me@tuurdutoit.be>
+// Version 2.0.2 | Copyright 2015 - 2018 | Tuur Dutoit <me@tuurdutoit.be>
 //
 // Released under the MIT License - https://github.com/TuurDutoit/crash
 //

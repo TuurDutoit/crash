@@ -1,6 +1,6 @@
 {
     "name": "crash-colliders",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "Crash performs optimized 2D collisions, powered by RBush and SAT.js, written in javascript.",
     "main": "crash.js",
     "dependencies": {
@@ -10,13 +10,15 @@
     "devDependencies": {
         "expect.js": "^0.3.1",
         "mocha": "^5.2.0",
-        "sinon": "^1.14.1"
+        "sinon": "^1.14.1",
+        "uglify-js": "^3.4.9"
     },
     "directories": {
         "test": "test"
     },
     "scripts": {
-        "test": "mocha"
+        "test": "mocha",
+        "build": "uglifyjs crash.js --compress --mangle --output crash.min.js"
     },
     "repository": {
         "type": "git",
